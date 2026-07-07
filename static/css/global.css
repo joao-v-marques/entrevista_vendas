@@ -1,0 +1,401 @@
+/* =============================================
+   global.css — Reset, variáveis, tipografia, utilitários
+   ============================================= */
+
+/* ---------- Reset ---------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-bg-page);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img, svg {
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ---------- Variáveis globais ---------- */
+:root {
+  /* Verde Unimed — paleta principal */
+  --green-50:  #f0faf4;
+  --green-100: #d4f0e0;
+  --green-200: #a8e0c0;
+  --green-400: #3dba72;
+  --green-500: #22a04e;
+  --green-600: #1a7a3c;
+  --green-700: #145c2b;
+  --green-800: #0e3f1e;
+  --green-900: #08230f;
+
+  /* Âmbar — alertas/pendências */
+  --amber-50:  #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #92400e;
+
+  /* Azul — info/enviadas */
+  --blue-50:  #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --blue-800: #1e3a8a;
+
+  /* Vermelho — erros */
+  --red-50:  #fef2f2;
+  --red-100: #fee2e2;
+  --red-500: #ef4444;
+  --red-700: #b91c1c;
+
+  /* Neutros */
+  --gray-50:  #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  /* Semânticas de uso geral */
+  --color-text:          var(--gray-800);
+  --color-text-muted:    var(--gray-500);
+  --color-text-hint:     var(--gray-400);
+  --color-bg-page:       var(--gray-100);
+  --color-bg-surface:    #ffffff;
+  --color-bg-secondary:  var(--gray-50);
+  --color-border:        var(--gray-200);
+  --color-border-light:  var(--gray-100);
+
+  /* Brand */
+  --color-brand:         var(--green-600);
+  --color-brand-dark:    var(--green-700);
+  --color-brand-light:   var(--green-500);
+  --color-brand-faint:   var(--green-50);
+
+  /* Dimensões */
+  --navbar-height: 62px;
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.09), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
+
+  /* Transições */
+  --transition: 0.18s ease;
+}
+
+/* ---------- Tipografia ---------- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+
+/* ---------- Botões compartilhados ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition),
+              border-color var(--transition), transform var(--transition),
+              box-shadow var(--transition);
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--primary {
+  background: var(--color-brand);
+  color: #fff;
+  border-color: var(--color-brand);
+}
+
+.btn--primary:hover {
+  background: var(--color-brand-dark);
+  border-color: var(--color-brand-dark);
+  box-shadow: var(--shadow-md);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+.btn--outline:hover {
+  background: var(--color-brand-faint);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.btn--ghost:hover {
+  background: var(--gray-100);
+  color: var(--color-text);
+}
+
+.btn--danger {
+  background: var(--red-500);
+  color: #fff;
+  border-color: var(--red-500);
+}
+
+.btn--danger:hover {
+  background: var(--red-700);
+  border-color: var(--red-700);
+}
+
+.btn--sm {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+/* ---------- Status pills ---------- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pill--green {
+  background: var(--green-100);
+  color: var(--green-700);
+}
+.pill--green::before { background: var(--green-500); }
+
+.pill--amber {
+  background: var(--amber-100);
+  color: var(--amber-700);
+}
+.pill--amber::before { background: var(--amber-500); }
+
+.pill--blue {
+  background: var(--blue-100);
+  color: var(--blue-700);
+}
+.pill--blue::before { background: var(--blue-500); }
+
+.pill--red {
+  background: var(--red-100);
+  color: var(--red-700);
+}
+.pill--red::before { background: var(--red-500); }
+
+/* ---------- Inputs compartilhados ---------- */
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 9px 13px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px rgba(26, 122, 60, 0.12);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--color-text-hint);
+}
+
+.input.error,
+.select.error,
+.textarea.error {
+  border-color: var(--red-500);
+}
+
+.input.error:focus,
+.select.error:focus,
+.textarea.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+/* ---------- Form group ---------- */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+}
+
+.form-label.required::after {
+  content: ' *';
+  color: var(--red-500);
+}
+
+.form-hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.form-error {
+  font-size: 12px;
+  color: var(--red-500);
+  display: none;
+}
+
+.form-error.visible {
+  display: block;
+}
+
+/* ---------- Checkbox / Radio custom ---------- */
+.check-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.check-group input[type="checkbox"],
+.check-group input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-brand);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.check-group span {
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+/* ---------- Utilitários gerais ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-muted   { color: var(--color-text-muted); }
+.text-green   { color: var(--green-600); }
+.text-amber   { color: var(--amber-600); }
+.text-red     { color: var(--red-500); }
+.text-center  { text-align: center; }
+
+.mt-1 { margin-top: 4px; }
+.mt-2 { margin-top: 8px; }
+.mt-3 { margin-top: 12px; }
+.mt-4 { margin-top: 16px; }
+
+/* ---------- Animação de entrada ---------- */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  animation: fadeUp 0.4s ease both;
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border-light);
+  background: var(--color-bg-surface);
+  margin-top: 3rem;
+}

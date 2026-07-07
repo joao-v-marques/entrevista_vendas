@@ -1,0 +1,230 @@
+/* =============================================
+   nova_ficha.css — Estilo da página Nova Ficha
+   ============================================= */
+
+body {
+  background: radial-gradient(circle at top left, rgba(34, 160, 78, 0.12), transparent 28%),
+              radial-gradient(circle at bottom right, rgba(14, 82, 28, 0.08), transparent 22%),
+              var(--color-bg-page);
+}
+
+.main-content {
+  padding: 2rem 1.5rem 3rem;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.form-card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.form-card-header {
+  padding: 2rem 2.2rem 1.5rem;
+  background: linear-gradient(135deg, rgba(34,160,78,0.12), rgba(34,160,78,0.04));
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.form-card-title {
+  font-size: clamp(1.7rem, 1.6vw, 2.2rem);
+  margin-bottom: 0.5rem;
+  color: var(--green-800);
+}
+
+.form-card-description {
+  max-width: 720px;
+  color: var(--color-text-muted);
+}
+
+.form-section {
+  padding: 1.75rem 2.2rem 2rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+}
+
+.form-section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.35rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--green-700);
+  background: var(--green-50);
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+}
+
+.form-subsection {
+  grid-column: 1 / -1;
+  padding: 1.1rem 1rem 0.8rem;
+  background: var(--green-50);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+}
+
+.form-subsection-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--green-700);
+}
+
+.form-subsection .form-grid {
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.form-group.full-width,
+.checkbox-grid.full-width {
+  grid-column: 1 / -1;
+}
+
+.radio-group {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+}
+
+.radio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.radio-item input {
+  accent-color: var(--green-600);
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 0.9rem;
+  padding: 1rem 0.5rem 0.5rem;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  color: var(--color-text);
+  background: var(--gray-50);
+  border: 1px solid var(--color-border-light);
+}
+
+.checkbox-item input {
+  margin-top: 3px;
+  accent-color: var(--green-600);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.85rem;
+  padding: 1.5rem 2.2rem 2rem;
+  background: var(--color-bg-secondary);
+}
+
+.form-actions .btn {
+  min-width: 140px;
+  display: flex;
+  justify-content: center;
+}
+
+.input,
+.select,
+.textarea {
+  background: #fff;
+  border-color: var(--color-border);
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: var(--green-600);
+  box-shadow: 0 0 0 3px rgba(34, 160, 78, 0.12);
+}
+
+.textarea {
+  min-height: 130px;
+}
+
+@media (max-width: 1100px) {
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .main-content {
+    padding: 1.2rem 1rem 2rem;
+  }
+
+  .form-section,
+  .form-card-header,
+  .form-actions {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .form-grid,
+  .checkbox-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox-grid {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .form-actions {
+    justify-content: stretch;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .navbar {
+    padding: 0 0.9rem;
+  }
+
+  .form-card-header {
+    padding: 1.5rem 1rem 1rem;
+  }
+
+  .form-section {
+    padding: 1.25rem 1rem 1.5rem;
+  }
+
+  .form-section-title {
+    font-size: 0.95rem;
+  }
+}
