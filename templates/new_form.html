@@ -395,7 +395,7 @@
 
                             <!-- Estado civil do responsável da empresa -->
                             <div class="form-group">
-                                <label for="estado_civil_responsavel" class="form-label">E.C. R. Emp.</label>
+                                <label for="estado_civil_responsavel" class="form-label">Estado Civil do Responsável da Empresa</label>
                                 <input id="estado_civil_responsavel" class="input" name="estado_civil_responsavel" type="text" placeholder="Ex: Casado(a), Solteiro(a)">
                             </div>
 
@@ -414,7 +414,7 @@
                             <div class="form-grid">
                                 <!-- Realizar Análise de Portabilidade -->
                                 <div class="form-group">
-                                    <label for="analise_portabilidade" class="form-label">Realizar análise de portabilidade</label>
+                                    <label for="analise_portabilidade" class="form-label">É inclusão via portabilidade?</label>
                                     <select id="analise_portabilidade" class="select" name="analise_portabilidade">
                                         <option value="NÃO">NÃO</option>
                                         <option value="SIM">SIM</option>
@@ -422,19 +422,39 @@
                                 </div>
 
                                 <!-- Portabilidade Aceita -->
-                                <div class="form-group">
+                                <div class="form-group" id="portabilidade_aceita_group" hidden>
                                     <label for="portabilidade_aceita" class="form-label">Portabilidade aceita</label>
-                                    <select id="portabilidade_aceita" class="select" name="portabilidade_aceita">
+                                    <select id="portabilidade_aceita" class="select" name="portabilidade_aceita" disabled>
                                         <option value="NÃO">NÃO</option>
                                         <option value="SIM">SIM</option>
                                     </select>
                                 </div>
 
                                 <!-- Data do aceite caso seja portabilidade -->
-                                <div class="form-group">
+                                <div class="form-group" id="data_aceite_group" hidden>
                                     <label for="data_aceite" class="form-label">Data do aceite</label>
-                                    <input id="data_aceite" class="input" name="data_aceite" type="date">
+                                    <input id="data_aceite" class="input" name="data_aceite" type="date" disabled>
                                 </div>
+
+                                <!-- Observações da portabilidade -->
+                                <div class="form-group full-width" id="observacoes_portabilidade_group" hidden>
+                                    <label for="observacoes_portabilidade" class="form-label">Observações da portabilidade</label>
+                                    <textarea id="observacoes_portabilidade" class="textarea" name="observacoes_portabilidade" placeholder="Detalhes adicionais sobre a análise ou o aceite da portabilidade" disabled></textarea>
+                                </div>
+                            </div>
+
+                            <!-- ! Botão para anexar o formulário de análise (lógica a ser implementada futuramente) -->
+                            <div class="form-subsection-footer" id="portabilidade_footer_group" hidden>
+                                <div class="form-subsection-footer-text">
+                                    <span class="form-subsection-footer-title">Formulário de análise</span>
+                                    <span class="form-subsection-footer-desc">Anexe o formulário utilizado na análise desta portabilidade.</span>
+                                </div>
+                                <button type="button" id="btnAddAnaliseForm" class="btn btn--outline btn--sm">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                        <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                    </svg>
+                                    Adicionar formulário de análise
+                                </button>
                             </div>
                         </div>
                     </div>

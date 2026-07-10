@@ -64,6 +64,39 @@ function toggleDiscountField() {
 isDiscountSelect.addEventListener("change", toggleDiscountField);
 toggleDiscountField();
 
+// ! ========== Validação: campos de portabilidade só aparecem se "Realizar análise de portabilidade" for SIM ==========
+const analisePortabilidadeSelect = document.getElementById("analise_portabilidade");
+const portabilidadeAceitaGroup = document.getElementById("portabilidade_aceita_group");
+const portabilidadeAceitaSelect = document.getElementById("portabilidade_aceita");
+const dataAceiteGroup = document.getElementById("data_aceite_group");
+const dataAceiteInput = document.getElementById("data_aceite");
+const observacoesPortabilidadeGroup = document.getElementById("observacoes_portabilidade_group");
+const observacoesPortabilidadeInput = document.getElementById("observacoes_portabilidade");
+const portabilidadeFooterGroup = document.getElementById("portabilidade_footer_group");
+
+function togglePortabilidadeFields() {
+    const realizarAnalise = analisePortabilidadeSelect.value === "SIM";
+
+    portabilidadeAceitaGroup.hidden = !realizarAnalise;
+    dataAceiteGroup.hidden = !realizarAnalise;
+    observacoesPortabilidadeGroup.hidden = !realizarAnalise;
+    portabilidadeFooterGroup.hidden = !realizarAnalise;
+
+    // campo desabilitado não é incluído no FormData, então não é enviado ao backend
+    portabilidadeAceitaSelect.disabled = !realizarAnalise;
+    dataAceiteInput.disabled = !realizarAnalise;
+    observacoesPortabilidadeInput.disabled = !realizarAnalise;
+
+    if (!realizarAnalise) {
+        portabilidadeAceitaSelect.value = "NÃO";
+        dataAceiteInput.value = "";
+        observacoesPortabilidadeInput.value = "";
+    }
+}
+
+analisePortabilidadeSelect.addEventListener("change", togglePortabilidadeFields);
+togglePortabilidadeFields();
+
 form.addEventListener("submit", async (event) => {
     event.preventDefault(); // impede o envio padrão do form
 
