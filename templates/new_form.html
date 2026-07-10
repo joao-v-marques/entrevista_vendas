@@ -137,12 +137,19 @@
         <section class="section">
             <div class="form-card">
                 <div class="form-card-header">
-                    <h2 class="form-card-title">Modelo de ficha de adesão</h2>
+                    <h2 class="form-card-title">
+                        {% if tipo == 'primary' %}
+                        Lançar nova ficha de adesão — Beneficiário Titular
+                        {% else %}
+                        Lançar nova ficha de adesão — Beneficiário Dependente
+                        {% endif %}
+                    </h2>
                     <p class="form-card-description">Preencha os dados do beneficiário e do plano diretamente no
                         formulário abaixo.</p>
                 </div>
 
                 <form id="novaFichaForm" novalidate>
+                    <input type="hidden" name="tipo" value="{{ tipo }}">
                     <div class="form-section">
                         <div class="form-section-title">Entrevista e contratação</div>
                         <div class="form-grid">
@@ -157,6 +164,7 @@
                                     <option value="João Melles">João Melles</option>
                                 </select>
                             </div>
+
                             <!-- Campo de tipo de inclusão -->
                             <div class="form-group">
                                 <label for="tipo_inclusao" class="form-label">Tipo de inclusão</label>
@@ -167,12 +175,14 @@
                                     <option value="Troca de Plano">Troca de Plano</option>
                                 </select>
                             </div>
+
                             <!-- Campo de plano anterior -->
                             <div class="form-group">
                                 <label for="plano_anterior" class="form-label">Plano anterior</label>
                                 <input id="plano_anterior" class="input" name="plano_anterior" type="text"
                                     placeholder="Plano anterior">
                             </div>
+
                             <!-- Informar CNPJ -->
                             <div class="form-group">
                                 <label for="cnpj_empresa" class="form-label">NOVO CONTRATO EMPRESARIAL INFORMAR
@@ -180,19 +190,23 @@
                                 <input id="cnpj_empresa" class="input" name="cnpj_empresa" type="text"
                                     placeholder="00.000.000/0000-00">
                             </div>
-                            <!-- Dados do beneficiário titular -->
+
+                            {% if tipo == 'primary' %}
+                            <!-- ! ========== Dados do beneficiário titular ========== -->
                             <!-- Nome -->
                             <div class="form-group">
                                 <label for="beneficiario_titular" class="form-label">Beneficiário titular</label>
                                 <input id="beneficiario_titular" class="input" name="beneficiario_titular" type="text"
                                     placeholder="Nome do beneficiário titular">
                             </div>
+
                             <!-- Idade -->
                             <div class="form-group">
                                 <label for="idade_titular" class="form-label">Idade</label>
                                 <input id="idade_titular" class="input" name="idade_titular" type="number"
                                     placeholder="Idade">
                             </div>
+
                             <!-- Contratação -->
                             <div class="form-group">
                                 <label for="contratacao_titular" class="form-label">Contratação</label>
@@ -205,32 +219,35 @@
                                     <option value="ACISSP">ACISSP</option>
                                 </select>
                             </div>
-                            <!-- Dados do beneficiário dependente -->
+                            {% else %}
+                            <!-- ! ========== Dados do beneficiário dependente ========== -->
                             <!-- Nome -->
                             <div class="form-group">
                                 <label for="beneficiario_dependente" class="form-label">Beneficiário dependente</label>
                                 <input id="beneficiario_dependente" class="input" name="beneficiario_dependente"
                                     type="text" placeholder="Nome do beneficiário dependente">
                             </div>
+
                             <!-- Idade -->
                             <div class="form-group">
                                 <label for="idade_dependente" class="form-label">Idade</label>
                                 <input id="idade_dependente" class="input" name="idade_dependente" type="number"
                                     placeholder="Idade">
                             </div>
+
                             <!-- CPF -->
                             <div class="form-group">
                                 <label for="cpf_dependente" class="form-label">CPF</label>
                                 <input id="cpf_dependente" class="input" name="cpf_dependente" type="text"
                                     placeholder="000.000.000-00">
                             </div>
+
                             <!-- Se dependente, nome do titular -->
                             <div class="form-group">
-                                <label for="titular_dependente" class="form-label">Se dependente, nome do
-                                    titular</label>
-                                <input id="titular_dependente" class="input" name="titular_dependente" type="text"
-                                    placeholder="Nome do titular">
+                                <label for="titular_dependente" class="form-label">Se dependente, nome do titular</label>
+                                <input id="titular_dependente" class="input" name="titular_dependente" type="text" placeholder="Nome do titular">
                             </div>
+
                             <!-- Qual plano -->
                             <div class="form-group">
                                 <label for="plano_dependente" class="form-label">Qual plano?</label>
@@ -239,51 +256,48 @@
                                     <option value="UNIPOP PESSOA FISICA">UNIPOP PESSOA FÍSICA</option>
                                     <option value="UNIVIDA PESSOA FISICA">UNIVIDA PESSOA FÍSICA</option>
                                     <option value="UNIMED FRANCA PF">UNIMED FRANCA PF</option>
-                                    <option value="PESSOA FISICA HOSPITALAR - REFERENCIA">PESSOA FÍSICA HOSPITALAR -
-                                        REFERÊNCIA</option>
+                                    <option value="PESSOA FISICA HOSPITALAR - REFERENCIA">PESSOA FÍSICA HOSPITALAR - REFERÊNCIA</option>
                                     <option value="UNIPOP PESSOA JURIDICA">UNIPOP PESSOA JURIDICA</option>
                                     <option value="UNIMED FACIL">UNIMED FÁCIL</option>
                                     <option value="UNIEMPRESA ECONOMY STANDARD">UNIEMPRESA ECONOMY STANDARD</option>
                                     <option value="UNIMED RIBEIRAO PRETO PJ">UNIMED RIBEIRÃO PRETO PJ</option>
                                     <option value="UNIMED FRANCA PJ">UNIMED FRANCA PJ</option>
-                                    <option value="UNIMED REGIONAL ENF. CO-PARTICIPATIVO">UNIMED REGIONAL ENF.
-                                        CO-PARTICIPATIVO</option>
+                                    <option value="UNIMED REGIONAL ENF. CO-PARTICIPATIVO">UNIMED REGIONAL ENF. CO-PARTICIPATIVO</option>
                                     <option value="UNIPLAN CO-PARTICIPATIVO ENF.">UNIPLAN CO-PARTICIPATIVO ENF.</option>
                                     <option value="UNIPOP ACISSP">UNIPOP ACISSP</option>
-                                    <option value="PLANO LOCAL CO-PART 30% ACISSP">PLANO LOCAL CO-PART 30% ACISSP
-                                    </option>
-                                    <option value="PLANO EXECUTIVO S/ CO-PART ACISSP">PLANO EXECUTIVO S/ CO-PART ACISSP
-                                    </option>
-                                    <option value="UNIMED LOCAL + RIB. PRETO - ACISSP">UNIMED LOCAL + RIB. PRETO -
-                                        ACISSP</option>
+                                    <option value="PLANO LOCAL CO-PART 30% ACISSP">PLANO LOCAL CO-PART 30% ACISSP</option>
+                                    <option value="PLANO EXECUTIVO S/ CO-PART ACISSP">PLANO EXECUTIVO S/ CO-PART ACISSP</option>
+                                    <option value="UNIMED LOCAL + RIB. PRETO - ACISSP">UNIMED LOCAL + RIB. PRETO - ACISSP</option>
                                     <option value="UNIPLAN ACISSP">UNIPLAN ACISSP</option>
                                     <option value="OUTROS">OUTROS</option>
                                 </select>
                             </div>
+                            {% endif %}
+
                             <!-- Modelo/Proposta -->
                             <div class="form-group">
                                 <label for="modelo_proposta" class="form-label">Mod./Prop.</label>
-                                <input id="modelo_proposta" class="input" name="modelo_proposta" type="text"
-                                    placeholder="Digite o modelo e proposta">
+                                <input id="modelo_proposta" class="input" name="modelo_proposta" type="text" placeholder="Digite o modelo e proposta">
                             </div>
+
                             <!-- Responsável pela inclusão -->
                             <div class="form-group">
                                 <label for="responsavel_inclusao" class="form-label">Responsável pela inclusão</label>
-                                <input id="responsavel_inclusao" class="input" name="responsavel_inclusao" type="text"
-                                    placeholder="Digite o nome do responsável">
+                                <input id="responsavel_inclusao" class="input" name="responsavel_inclusao" type="text" placeholder="Digite o nome responsável">
                             </div>
+
                             <!-- CPF Responsável pela inclusão -->
                             <div class="form-group">
-                                <label for="cpf_responsavel_inclusao" class="form-label">CPF do responsável pela
-                                    inclusão</label>
-                                <input id="cpf_responsavel_inclusao" class="input" name="cpf_responsavel_inclusao"
-                                    type="text" placeholder="000.000.000-00">
+                                <label for="cpf_responsavel_inclusao" class="form-label">CPF do responsável pela inclusão</label>
+                                <input id="cpf_responsavel_inclusao" class="input" name="cpf_responsavel_inclusao" type="text" placeholder="000.000.000-00">
                             </div>
+
                             <!-- Data da inclusão -->
                             <div class="form-group">
                                 <label for="data_inclusao" class="form-label">Data da inclusão</label>
                                 <input id="data_inclusao" class="input" name="data_inclusao" type="date">
                             </div>
+
                             <!-- Ano de vencimento -->
                             <div class="form-group">
                                 <label for="vencimento" class="form-label">Vencimento</label>
@@ -295,42 +309,43 @@
                                     <option value="25">25</option>
                                 </select>
                             </div>
+
                             <!-- Telefone ou Celular -->
                             <div class="form-group">
                                 <label for="telefone" class="form-label">Fone / Celular</label>
-                                <input id="telefone" class="input" name="telefone" type="text"
-                                    placeholder="Digite o telefone ou celualar">
+                                <input id="telefone" class="input" name="telefone" type="text" placeholder="Digite o telefone ou celualar">
                             </div>
+
                             <!-- E-mail do beneficiário -->
                             <div class="form-group">
                                 <label for="email_beneficiario" class="form-label">E-mail beneficiário</label>
-                                <input id="email_beneficiario" class="input" name="email_beneficiario" type="email"
-                                    placeholder="email@exemplo.com">
+                                <input id="email_beneficiario" class="input" name="email_beneficiario" type="email" placeholder="email@exemplo.com">
                             </div>
+
                             <!-- E-mail de cobrança -->
                             <div class="form-group">
                                 <label for="email_cobranca" class="form-label">E-mail de cobrança</label>
-                                <input id="email_cobranca" class="input" name="email_cobranca" type="email"
-                                    placeholder="email@exemplo.com">
+                                <input id="email_cobranca" class="input" name="email_cobranca" type="email" placeholder="email@exemplo.com">
                             </div>
+
                             <!-- Estado civil do beneficiário -->
                             <div class="form-group">
                                 <label for="estado_civil_beneficiario" class="form-label">Estado Civil</label>
-                                <input id="estado_civil_beneficiario" class="input" name="estado_civil_beneficiario"
-                                    type="text" placeholder="Ex: Casado(a), Solteiro(a)">
+                                <input id="estado_civil_beneficiario" class="input" name="estado_civil_beneficiario" type="text" placeholder="Ex: Casado(a), Solteiro(a)">
                             </div>
+
                             <!-- Estado civil do responsável da empresa -->
                             <div class="form-group">
                                 <label for="estado_civil_responsavel" class="form-label">E.C. R. Emp.</label>
-                                <input id="estado_civil_responsavel" class="input" name="estado_civil_responsavel"
-                                    type="text" placeholder="Ex: Casado(a), Solteiro(a)">
+                                <input id="estado_civil_responsavel" class="input" name="estado_civil_responsavel" type="text" placeholder="Ex: Casado(a), Solteiro(a)">
                             </div>
+
                             <!-- Profissão do responsável da empresa -->
                             <div class="form-group">
                                 <label for="profissao_responsavel" class="form-label">Profissão do responsável</label>
-                                <input id="profissao_responsavel" class="input" name="profissao_responsavel" type="text"
-                                    placeholder="Profissão do responsável">
+                                <input id="profissao_responsavel" class="input" name="profissao_responsavel" type="text" placeholder="Profissão do responsável">
                             </div>
+
                             <!-- Desconto -->
                             <div class="form-group">
                                 <label for="desconto" class="form-label">Desconto</label>
@@ -339,6 +354,7 @@
                                     <option value="">SIM</option>
                                 </select>
                             </div>
+
                             <!-- Incluir adesão ao PA digital -->
                             <div class="form-group">
                                 <label for="pa_digital" class="form-label">Adesão ao PA Digital</label>
@@ -347,6 +363,7 @@
                                     <option value="SIM">SIM</option>
                                 </select>
                             </div>
+
                             <!-- Aeromedico -->
                             <div class="form-group">
                                 <label for="aeromedico" class="form-label">Aeromedico</label>
@@ -355,16 +372,17 @@
                                     <option value="SIM">SIM</option>
                                 </select>
                             </div>
+
                             <!-- Realizar Análise de Portabilidade -->
                             <div class="form-group">
-                                <label for="analise_portabilidade" class="form-label">Realizar análise de
-                                    portabilidade</label>
+                                <label for="analise_portabilidade" class="form-label">Realizar análise de portabilidade</label>
                                 <select id="analise_portabilidade" class="select" name="analise_portabilidade">
                                     <option value="NÃO">NÃO</option>
                                     <option value="SIM">SIM</option>
                                 </select>
                             </div>
-                            <!-- Portabilidade Aceita / Data do aceite -->
+
+                            <!-- Portabilidade Aceita -->
                             <div class="form-group">
                                 <label for="portabilidade_aceita" class="form-label">Portabilidade aceita</label>
                                 <select id="portabilidade_aceita" class="select" name="portabilidade_aceita">
@@ -372,211 +390,19 @@
                                     <option value="SIM">SIM</option>
                                 </select>
                             </div>
+
+                            <!-- Data do aceite caso seja portabilidade -->
                             <div class="form-group">
                                 <label for="data_aceite" class="form-label">Data do aceite</label>
                                 <input id="data_aceite" class="input" name="data_aceite" type="date">
                             </div>
-
-                            <div class="form-subsection">
-                                <div class="form-subsection-title">Espaço reservado para análise financeira</div>
-                                <div class="form-grid">
-                                    <!-- Liberado pelo júridico? -->
-                                    <div class="form-group">
-                                        <label for="liberado_juridico" class="form-label">Liberado pelo
-                                            júridico?</label>
-                                        <select id="liberado_juridico" class="select" name="liberado_juridico">
-                                            <option value="NÃO">NÃO</option>
-                                            <option value="SIM">SIM</option>
-                                        </select>
-                                    </div>
-                                    <!-- Liberado pelo financeiro? -->
-                                    <div class="form-group">
-                                        <label for="liberado_financeiro" class="form-label">Liberado pelo
-                                            financeiro?</label>
-                                        <select id="liberado_financeiro" class="select" name="liberado_financeiro">
-                                            <option value="NÃO">NÃO</option>
-                                            <option value="SIM">SIM</option>
-                                        </select>
-                                    </div>
-                                    <!-- Observações do financeiro -->
-                                    <div class="form-group full-width">
-                                        <label for="observacoes_financeiro" class="form-label">Observações do
-                                            financeiro</label>
-                                        <textarea id="observacoes_financeiro" class="input"
-                                            name="observacoes_financeiro" placeholder=""></textarea>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div class="form-section">
-                        <div class="form-section-title">Questionário - Experiência do Cliente</div>
-                        <div class="form-grid">
-                            <!-- Esse plano será para quem? -->
-                            <div class="form-group">
-                                <label for="pessoa_plano" class="form-label">Esse Plano será para quem?</label>
-                                <select id="pessoa_plano" class="select" name="pessoa_plano">
-                                    <option value="">Somente para mim</option>
-                                    <option value="">Funcionários da minha empresa COLOCAR UM CAMPO DE QUANTIDADE
-                                    </option>
-                                    <option value="">Para minha familia COLOCAR UM CAMPO DE QUAIS</option>
-                                </select>
-                            </div>
-                            <!-- Como você conheceu nosso plano de saúde? -->
-                            <div class="form-group">
-                                <label for="conheceu_plano" class="form-label">Como você conheceu nosso plano de
-                                    saúde?</label>
-                                <select id="conheceu_plano" class="select" name="conheceu_plano">
-                                    <option value="">Indicação de amigo/familiar</option>
-                                    <option value="">Busca na internet</option>
-                                    <option value="">Propaganda COLOCAR OPÇÃO DE QUAL MEIO DA PROPAGANDA</option>
-                                    <option value="">Outros COLOCAR UM CAMPO DE QUAL?</option>
-                                </select>
-                            </div>
-                            <!-- O que te levou a contratar o plano de saúde Unimed S. S. Paraiso? -->
-                            <div class="form-group">
-                                <label for="motivo_contratacao" class="form-label">Por que escolheu a Unimed S. S.
-                                    Paraíso?</label>
-                                <select name="motivo_contratacao" id="motivo_contratacao" class="select">
-                                    <option value="">Promoção á saúde / Prevenção de doenças</option>
-                                    <option value="">Acompanhamento com médico especifico da Unimed</option>
-                                    <option value="">Realização de um tratamento de saúde especifico</option>
-                                    <option value="">Beneficio empresarial</option>
-                                    <option value="">Atendimento de urgência nacional</option>
-                                    <option value="">Pretensão de engravidar</option>
-                                    <option value="">Outros COLOCAR UM CAMPO DE QUAL?</option>
-                                </select>
-                            </div>
-                            <!-- Justificativa da resposta acima -->
-                            <div class="form-group full-width">
-                                <label for="justificativa_motivo_contratacao" class="form-label">Justifique a resposta
-                                    acima</label>
-                                <textarea id="justificativa_motivo_contratacao" class="textarea"
-                                    name="justificativa_motivo_contratacao"
-                                    placeholder="Digite sua justificativa aqui..."></textarea>
-                            </div>
-                            <!-- O que você espera do plano de saúde que está contratando? -->
-                            <div class="form-group">
-                                <label for="estimativa_plano" class="form-label">O que você espera do plano de saúde que
-                                    está contratando?</label>
-                                <select name="estimativa_plano" id="estimativa_plano" class="select">
-                                    <option value="">Assistência para uma doença especifica</option>
-                                    <option value="">Atendimento de urgência em viagens</option>
-                                    <option value="">Acompanhamento para filhos</option>
-                                    <option value="">Assistência no parto</option>
-                                    <option value="">Qualidade de vida</option>
-                                    <option value="">Outros COLOCAR UM CAMPO DE QUAL</option>
-                                </select>
-                            </div>
-                            <!-- Justificativa da resposta acima -->
-                            <div class="form-group full-width">
-                                <label for="justificativa_estimativa_plano" class="form-label">Justifique a resposta
-                                    acima</label>
-                                <textarea id="justificativa_estimativa_plano" class="textarea"
-                                    name="justificativa_estimativa_plano"
-                                    placeholder="Digite sua justificativa aqui..."></textarea>
-                            </div>
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <div class="form-section-title">Caso a triagem seja aprovada, agendar a entrevista</div>
-                        <div class="form-grid">
-                            <!-- Data da entrevista -->
-                            <div class="form-group">
-                                <label for="dataEntrevista" class="form-label">Data da entrevista</label>
-                                <input id="dataEntrevista" class="input" name="dataEntrevista" type="date">
-                            </div>
-                            <!-- Entrevistador -->
-                            <div class="form-group">
-                                <label for="entrevistador" class="form-label">Entrevistador</label>
-                                <input id="entrevistador" class="input" name="entrevistador" type="text">
-                            </div>
-                            <!-- Hora -->
-                            <div class="form-group">
-                                <label for="hora_entrevista" class="form-label">Hora da entrevista</label>
-                                <input id="hora_entrevista" class="input" name="hora_entrevista" type="time">
-                            </div>
-                            <!-- Entrevista aprovada/reprovada -->
-                            <div class="form-group">
-                                <label for="entrevistaAprovada" class="form-label">Entrevista aprovada/reprovada</label>
-                                <div class="radio-group">
-                                    <label class="radio-item"><input type="radio" name="entrevistaAprovada"
-                                            value="aprovada" />Aprovada</label>
-                                    <label class="radio-item"><input type="radio" name="entrevistaAprovada"
-                                            value="reprovada" />Reprovada</label>
-                                    <label class="radio-item"><input type="radio" name="entrevistaAprovada"
-                                            value="">Nenhum</label>
-                                </div>
-                            </div>
-                            <!-- Considerações Gerência/Diretoria -->
-                            <div class="form-group full-width">
-                                <label for="consideracoes_gerencia" class="form-label">Considerações
-                                    Gerência/Diretoria</label>
-                                <textarea id="consideracoes_gerencia" class="textarea" name="consideracoes_gerencia"
-                                    placeholder="Digite suas considerações aqui..."></textarea>
-                            </div>
-
-                            <!-- VERIFICAR SE É POSSIVEL COLOCAR UMA ASSINATURA DA GERENCIA/DIRETORIA -->
-                        </div>
-
-                        <div class="form-section">
-                            <div class="form-grid">
-                                <!-- checkbox de validações padrão -->
-                                <div class="checkbox-grid full-width">
-                                    <div class="form-group">
-                                        <label class="checkbox-item">
-                                            <input type="checkbox" name="" value="" /> 1- Utilizar Carências do Plano
-                                            Anterior, Troca de Planos Dentro da Unimed
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="checkbox-item">
-                                            <input type="checkbox" name="" value="" /> 2- Incluir Sem Carências para
-                                            Consultas e Exames Simples
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="checkbox-item">
-                                            <input type="checkbox" name="" value="" /> 3- Incluir s/carências conforme
-                                            regra de port. - RN 438/2018
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="checkbox-item">
-                                            <input type="checkbox" name="" value="" /> 4- Incluir Sem Carências, Cumprir
-                                            Carências apenas para Doenças Pré-Existências e Parto
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="checkbox-item">
-                                            <input type="checkbox" name="" value="" /> 5- Incluir Sem Carências, Criança
-                                            nasceu pela Unimed
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="checkbox-item">
-                                            <input type="checkbox" name="" value="" /> 6- Incluir sem carências,
-                                            beneficiário inscrito dentro dos 30 dias de contratação.
-                                        </label>
-                                    </div>
-                                </div>
-                                <!-- Observações e considerações especiais -->
-                                <div class="form-group full-width">
-                                    <label for="observacoes_consideracoes_especiais" class="form-label">Observações e
-                                        considerações especiais</label>
-                                    <textarea id="observacoes_consideracoes_especiais" class="textarea"
-                                        name="observacoes_consideracoes_especiais"
-                                        placeholder="Digite suas observações e considerações especiais aqui..."></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button id="btnSaveDraft" class="btn btn--outline" type="button">Salvar rascunho</button>
-                            <button class="btn btn--primary" type="submit">Enviar ficha</button>
-                        </div>
+                    <div class="form-actions">
+                        <button id="btnSaveDraft" class="btn btn--outline" type="button">Salvar rascunho</button>
+                        <button class="btn btn--primary" type="submit">Enviar ficha</button>
+                    </div>
                 </form>
             </div>
         </section>

@@ -1,0 +1,132 @@
+/* =============================================
+   select_form_type.css — Tela de seleção do tipo de ficha
+   ============================================= */
+
+body {
+  background: radial-gradient(circle at top left, rgba(34, 160, 78, 0.12), transparent 28%),
+              radial-gradient(circle at bottom right, rgba(14, 82, 28, 0.08), transparent 22%),
+              var(--color-bg-page);
+}
+
+.main-content {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3.5rem;
+}
+
+.btn-back {
+  margin-bottom: 1.75rem;
+}
+
+.btn-back svg {
+  transition: transform var(--transition);
+}
+
+.btn-back:hover svg {
+  transform: translateX(-3px);
+}
+
+.select-type-section {
+  text-align: center;
+  animation: fadeUp 0.4s ease both;
+}
+
+.select-type-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--green-600);
+  margin-bottom: 0.75rem;
+}
+
+.select-type-title {
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  color: var(--green-800);
+  margin-bottom: 0.75rem;
+}
+
+.select-type-desc {
+  color: var(--color-text-muted);
+  max-width: 520px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.7;
+}
+
+.opcoes-tipo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem;
+  text-align: left;
+}
+
+.card-opcao {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.6rem 1.4rem;
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition), box-shadow var(--transition),
+              transform var(--transition);
+}
+
+.card-opcao:hover {
+  border-color: var(--green-400);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.card-opcao-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--green-100);
+  color: var(--green-600);
+}
+
+.card-opcao-body {
+  flex: 1;
+}
+
+.card-opcao-body h2 {
+  font-size: 1.05rem;
+  color: var(--color-text);
+  margin-bottom: 0.3rem;
+}
+
+.card-opcao-body p {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.card-opcao-arrow {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-hint);
+  transition: transform var(--transition), color var(--transition);
+  flex-shrink: 0;
+}
+
+.card-opcao:hover .card-opcao-arrow {
+  transform: translateX(4px);
+  color: var(--green-600);
+}
+
+@media (max-width: 620px) {
+  .main-content {
+    padding: 1.75rem 1.1rem 2.5rem;
+  }
+
+  .opcoes-tipo {
+    grid-template-columns: 1fr;
+  }
+}
