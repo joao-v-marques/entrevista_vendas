@@ -5,7 +5,7 @@ bp_render_forms = Blueprint("bp_render_forms", __name__)
 @bp_render_forms.route("/fichas")
 def render_fichas():
     """
-    Renderiza página.
+    Renderiza página de todos os formulários cadastrados no sistema.
     ---
     responses:
       200:
