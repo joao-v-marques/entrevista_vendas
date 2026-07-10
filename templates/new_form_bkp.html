@@ -1,0 +1,523 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unimed SSParaíso — Nova ficha de adesão</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap"
+        rel="stylesheet" />
+
+    <!-- Importações CSS para API -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nova_ficha.css') }}" />
+</head>
+
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-brand">
+            <div class="brand-info">
+                <span class="brand-name">Unimed SS Paraíso</span>
+                <span class="brand-sub">Fichas de Adesão</span>
+            </div>
+        </div>
+
+        <ul class="navbar-links" id="navLinks">
+            <li>
+                <a href="{{ url_for('bp_render_home.render_home') }}" class="nav-link" data-page="home">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 6.5L8 2l6 4.5V14a1 1 0 01-1 1H3a1 1 0 01-1-1V6.5z" stroke="currentColor"
+                            stroke-width="1.4" />
+                    </svg>
+                    Início
+                </a>
+            </li>
+            <li class="nav-dropdown" data-dropdown>
+                <button type="button" class="nav-link nav-dropdown-toggle" data-dropdown-toggle aria-haspopup="true"
+                    aria-expanded="false">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                        <path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" stroke-width="1.4"
+                            stroke-linecap="round" />
+                    </svg>
+                    Vendas
+                    <svg class="nav-dropdown-caret" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <ul class="nav-dropdown-menu" data-dropdown-menu>
+                    <li>
+                        <a href="{{ url_for('bp_render_new_form.render_nova_ficha') }}" class="nav-dropdown-link active"
+                            data-page="nova">
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                            Nova ficha
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('bp_render_forms.render_fichas') }}" class="nav-dropdown-link"
+                            data-page="pendentes">
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4" />
+                                <path d="M8 5v3.5l2.5 1.5" stroke="currentColor" stroke-width="1.4"
+                                    stroke-linecap="round" />
+                            </svg>
+                            Fichas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('bp_render_dashboard.render_dashboard') }}" class="nav-dropdown-link"
+                            data-page="dashboard">
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                <rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor"
+                                    stroke-width="1.4" />
+                                <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor"
+                                    stroke-width="1.4" />
+                                <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor"
+                                    stroke-width="1.4" />
+                                <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor"
+                                    stroke-width="1.4" />
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-dropdown" data-dropdown>
+                <button type="button" class="nav-link nav-dropdown-toggle" data-dropdown-toggle aria-haspopup="true"
+                    aria-expanded="false">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 1.5v13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+                        <path d="M11.3 3.3H6.3a2.3 2.3 0 0 0 0 4.7h3.3a2.3 2.3 0 0 1 0 4.7H4" stroke="currentColor"
+                            stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Financeiro
+                    <svg class="nav-dropdown-caret" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <ul class="nav-dropdown-menu" data-dropdown-menu>
+                    <li>
+                        <a href="{{ url_for('bp_render_approve_form.render_aprovar_ficha') }}" class="nav-dropdown-link"
+                            data-page="aprovar-ficha">
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Aprovar ficha
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('bp_render_credit_inquiry.render_consulta_credito') }}"
+                            class="nav-dropdown-link" data-page="consulta-credito">
+                            <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                <rect x="1.5" y="4" width="13" height="9" rx="1.3" stroke="currentColor"
+                                    stroke-width="1.4" />
+                                <path d="M1.5 6.5h13" stroke="currentColor" stroke-width="1.4" />
+                                <circle cx="11" cy="10.3" r="1" fill="currentColor" />
+                            </svg>
+                            Consulta de crédito
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <section class="section">
+            <div class="form-card">
+                <div class="form-card-header">
+                    <h2 class="form-card-title">Modelo de ficha de adesão</h2>
+                    <p class="form-card-description">Preencha os dados do beneficiário e do plano diretamente no
+                        formulário abaixo.</p>
+                </div>
+
+                <form id="novaFichaForm" novalidate>
+                    <div class="form-section">
+                        <div class="form-section-title">Entrevista e contratação</div>
+                        <div class="form-grid">
+                            <!-- Selecionar o consultor -->
+                            <div class="form-group">
+                                <label for="consultor" class="form-label">Selecione o consultor</label>
+                                <select id="consultor" class="select" name="consultor">
+                                    <option value="">Selecione o consultor</option>
+                                    <option value="Cleber Prates Braghini">Cleber Prates Braghini</option>
+                                    <option value="Erlane Izidoro">Erlane Izidoro</option>
+                                    <option value="Josimar Domingues Resende">Josimar Domingues Resende</option>
+                                    <option value="João Melles">João Melles</option>
+                                </select>
+                            </div>
+                            <!-- Campo de tipo de inclusão -->
+                            <div class="form-group">
+                                <label for="tipo_inclusao" class="form-label">Tipo de inclusão</label>
+                                <select name="tipo_inclusao" id="tipo_inclusao" class="select">
+                                    <option value="">Selecione o tipo de inclusão</option>
+                                    <option value="Existente">Existente</option>
+                                    <option value="Novo Contrato">Novo Contrato</option>
+                                    <option value="Troca de Plano">Troca de Plano</option>
+                                </select>
+                            </div>
+                            <!-- Campo de plano anterior -->
+                            <div class="form-group">
+                                <label for="plano_anterior" class="form-label">Plano anterior</label>
+                                <input id="plano_anterior" class="input" name="plano_anterior" type="text"
+                                    placeholder="Plano anterior">
+                            </div>
+                            <!-- Informar CNPJ -->
+                            <div class="form-group">
+                                <label for="cnpj_empresa" class="form-label">NOVO CONTRATO EMPRESARIAL INFORMAR
+                                    CNPJ:</label>
+                                <input id="cnpj_empresa" class="input" name="cnpj_empresa" type="text"
+                                    placeholder="00.000.000/0000-00">
+                            </div>
+                            <!-- Dados do beneficiário titular -->
+                            <!-- Nome -->
+                            <div class="form-group">
+                                <label for="beneficiario_titular" class="form-label">Beneficiário titular</label>
+                                <input id="beneficiario_titular" class="input" name="beneficiario_titular" type="text"
+                                    placeholder="Nome do beneficiário titular">
+                            </div>
+                            <!-- Idade -->
+                            <div class="form-group">
+                                <label for="idade_titular" class="form-label">Idade</label>
+                                <input id="idade_titular" class="input" name="idade_titular" type="number"
+                                    placeholder="Idade">
+                            </div>
+                            <!-- Contratação -->
+                            <div class="form-group">
+                                <label for="contratacao_titular" class="form-label">Contratação</label>
+                                <select name="contratacao_titular" id="contratacao_titular" class="select">
+                                    <option value="">Selecione a Contratação</option>
+                                    <option value="Pessoa Fisica">Pessoa Física</option>
+                                    <option value="Pessoa Juridica">Pessoa Júridica</option>
+                                    <option value="Odonto">Odonto</option>
+                                    <option value="Coletivo por Adesão">Coletivo por Adesão</option>
+                                    <option value="ACISSP">ACISSP</option>
+                                </select>
+                            </div>
+                            <!-- Dados do beneficiário dependente -->
+                            <!-- Nome -->
+                            <div class="form-group">
+                                <label for="beneficiario_dependente" class="form-label">Beneficiário dependente</label>
+                                <input id="beneficiario_dependente" class="input" name="beneficiario_dependente"
+                                    type="text" placeholder="Nome do beneficiário dependente">
+                            </div>
+                            <!-- Idade -->
+                            <div class="form-group">
+                                <label for="idade_dependente" class="form-label">Idade</label>
+                                <input id="idade_dependente" class="input" name="idade_dependente" type="number"
+                                    placeholder="Idade">
+                            </div>
+                            <!-- CPF -->
+                            <div class="form-group">
+                                <label for="cpf_dependente" class="form-label">CPF</label>
+                                <input id="cpf_dependente" class="input" name="cpf_dependente" type="text"
+                                    placeholder="000.000.000-00">
+                            </div>
+                            <!-- Se dependente, nome do titular -->
+                            <div class="form-group">
+                                <label for="titular_dependente" class="form-label">Se dependente, nome do
+                                    titular</label>
+                                <input id="titular_dependente" class="input" name="titular_dependente" type="text"
+                                    placeholder="Nome do titular">
+                            </div>
+                            <!-- Qual plano -->
+                            <div class="form-group">
+                                <label for="plano_dependente" class="form-label">Qual plano?</label>
+                                <select name="plano_dependente" id="plano_dependente" class="select">
+                                    <option value="">Selecione o plano</option>
+                                    <option value="UNIPOP PESSOA FISICA">UNIPOP PESSOA FÍSICA</option>
+                                    <option value="UNIVIDA PESSOA FISICA">UNIVIDA PESSOA FÍSICA</option>
+                                    <option value="UNIMED FRANCA PF">UNIMED FRANCA PF</option>
+                                    <option value="PESSOA FISICA HOSPITALAR - REFERENCIA">PESSOA FÍSICA HOSPITALAR -
+                                        REFERÊNCIA</option>
+                                    <option value="UNIPOP PESSOA JURIDICA">UNIPOP PESSOA JURIDICA</option>
+                                    <option value="UNIMED FACIL">UNIMED FÁCIL</option>
+                                    <option value="UNIEMPRESA ECONOMY STANDARD">UNIEMPRESA ECONOMY STANDARD</option>
+                                    <option value="UNIMED RIBEIRAO PRETO PJ">UNIMED RIBEIRÃO PRETO PJ</option>
+                                    <option value="UNIMED FRANCA PJ">UNIMED FRANCA PJ</option>
+                                    <option value="UNIMED REGIONAL ENF. CO-PARTICIPATIVO">UNIMED REGIONAL ENF.
+                                        CO-PARTICIPATIVO</option>
+                                    <option value="UNIPLAN CO-PARTICIPATIVO ENF.">UNIPLAN CO-PARTICIPATIVO ENF.</option>
+                                    <option value="UNIPOP ACISSP">UNIPOP ACISSP</option>
+                                    <option value="PLANO LOCAL CO-PART 30% ACISSP">PLANO LOCAL CO-PART 30% ACISSP
+                                    </option>
+                                    <option value="PLANO EXECUTIVO S/ CO-PART ACISSP">PLANO EXECUTIVO S/ CO-PART ACISSP
+                                    </option>
+                                    <option value="UNIMED LOCAL + RIB. PRETO - ACISSP">UNIMED LOCAL + RIB. PRETO -
+                                        ACISSP</option>
+                                    <option value="UNIPLAN ACISSP">UNIPLAN ACISSP</option>
+                                    <option value="OUTROS">OUTROS</option>
+                                </select>
+                            </div>
+                            <!-- Modelo/Proposta -->
+                            <div class="form-group">
+                                <label for="modelo_proposta" class="form-label">Mod./Prop.</label>
+                                <input id="modelo_proposta" class="input" name="modelo_proposta" type="text"
+                                    placeholder="Digite o modelo e proposta">
+                            </div>
+                            <!-- Responsável pela inclusão -->
+                            <div class="form-group">
+                                <label for="responsavel_inclusao" class="form-label">Responsável pela inclusão</label>
+                                <input id="responsavel_inclusao" class="input" name="responsavel_inclusao" type="text"
+                                    placeholder="Digite o nome do responsável">
+                            </div>
+                            <!-- CPF Responsável pela inclusão -->
+                            <div class="form-group">
+                                <label for="cpf_responsavel_inclusao" class="form-label">CPF do responsável pela
+                                    inclusão</label>
+                                <input id="cpf_responsavel_inclusao" class="input" name="cpf_responsavel_inclusao"
+                                    type="text" placeholder="000.000.000-00">
+                            </div>
+                            <!-- Data da inclusão -->
+                            <div class="form-group">
+                                <label for="data_inclusao" class="form-label">Data da inclusão</label>
+                                <input id="data_inclusao" class="input" name="data_inclusao" type="date">
+                            </div>
+                            <!-- Ano de vencimento -->
+                            <div class="form-group">
+                                <label for="vencimento" class="form-label">Vencimento</label>
+                                <select name="vencimento" id="vencimento" class="select">
+                                    <option value="">Selecione o vencimento</option>
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="25">25</option>
+                                </select>
+                            </div>
+                            <!-- Telefone ou Celular -->
+                            <div class="form-group">
+                                <label for="telefone" class="form-label">Fone / Celular</label>
+                                <input id="telefone" class="input" name="telefone" type="text"
+                                    placeholder="Digite o telefone ou celualar">
+                            </div>
+                            <!-- E-mail do beneficiário -->
+                            <div class="form-group">
+                                <label for="email_beneficiario" class="form-label">E-mail beneficiário</label>
+                                <input id="email_beneficiario" class="input" name="email_beneficiario" type="email"
+                                    placeholder="email@exemplo.com">
+                            </div>
+                            <!-- E-mail de cobrança -->
+                            <div class="form-group">
+                                <label for="email_cobranca" class="form-label">E-mail de cobrança</label>
+                                <input id="email_cobranca" class="input" name="email_cobranca" type="email"
+                                    placeholder="email@exemplo.com">
+                            </div>
+                            <!-- Estado civil do beneficiário -->
+                            <div class="form-group">
+                                <label for="estado_civil_beneficiario" class="form-label">Estado Civil</label>
+                                <input id="estado_civil_beneficiario" class="input" name="estado_civil_beneficiario"
+                                    type="text" placeholder="Ex: Casado(a), Solteiro(a)">
+                            </div>
+                            <!-- Estado civil do responsável da empresa -->
+                            <div class="form-group">
+                                <label for="estado_civil_responsavel" class="form-label">E.C. R. Emp.</label>
+                                <input id="estado_civil_responsavel" class="input" name="estado_civil_responsavel"
+                                    type="text" placeholder="Ex: Casado(a), Solteiro(a)">
+                            </div>
+                            <!-- Profissão do responsável da empresa -->
+                            <div class="form-group">
+                                <label for="profissao_responsavel" class="form-label">Profissão do responsável</label>
+                                <input id="profissao_responsavel" class="input" name="profissao_responsavel" type="text"
+                                    placeholder="Profissão do responsável">
+                            </div>
+                            <!-- Desconto -->
+                            <div class="form-group">
+                                <label for="desconto" class="form-label">Desconto</label>
+                                <select id="desconto" class="select" name="desconto">
+                                    <option value="">NÃO</option>
+                                    <option value="">SIM</option>
+                                </select>
+                            </div>
+                            <!-- Incluir adesão ao PA digital -->
+                            <div class="form-group">
+                                <label for="pa_digital" class="form-label">Adesão ao PA Digital</label>
+                                <select id="pa_digital" class="select" name="pa_digital">
+                                    <option value="NÃO">NÃO</option>
+                                    <option value="SIM">SIM</option>
+                                </select>
+                            </div>
+                            <!-- Aeromedico -->
+                            <div class="form-group">
+                                <label for="aeromedico" class="form-label">Aeromedico</label>
+                                <select id="aeromedico" class="select" name="aeromedico">
+                                    <option value="NÃO">NÃO</option>
+                                    <option value="SIM">SIM</option>
+                                </select>
+                            </div>
+                            <!-- Realizar Análise de Portabilidade -->
+                            <div class="form-group">
+                                <label for="analise_portabilidade" class="form-label">Realizar análise de
+                                    portabilidade</label>
+                                <select id="analise_portabilidade" class="select" name="analise_portabilidade">
+                                    <option value="NÃO">NÃO</option>
+                                    <option value="SIM">SIM</option>
+                                </select>
+                            </div>
+                            <!-- Portabilidade Aceita / Data do aceite -->
+                            <div class="form-group">
+                                <label for="portabilidade_aceita" class="form-label">Portabilidade aceita</label>
+                                <select id="portabilidade_aceita" class="select" name="portabilidade_aceita">
+                                    <option value="NÃO">NÃO</option>
+                                    <option value="SIM">SIM</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="data_aceite" class="form-label">Data do aceite</label>
+                                <input id="data_aceite" class="input" name="data_aceite" type="date">
+                            </div>
+
+                            <div class="form-subsection">
+                                <div class="form-subsection-title">Espaço reservado para análise financeira</div>
+                                <div class="form-grid">
+                                    <!-- Liberado pelo júridico? -->
+                                    <div class="form-group">
+                                        <label for="liberado_juridico" class="form-label">Liberado pelo
+                                            júridico?</label>
+                                        <select id="liberado_juridico" class="select" name="liberado_juridico">
+                                            <option value="NÃO">NÃO</option>
+                                            <option value="SIM">SIM</option>
+                                        </select>
+                                    </div>
+                                    <!-- Liberado pelo financeiro? -->
+                                    <div class="form-group">
+                                        <label for="liberado_financeiro" class="form-label">Liberado pelo
+                                            financeiro?</label>
+                                        <select id="liberado_financeiro" class="select" name="liberado_financeiro">
+                                            <option value="NÃO">NÃO</option>
+                                            <option value="SIM">SIM</option>
+                                        </select>
+                                    </div>
+                                    <!-- Observações do financeiro -->
+                                    <div class="form-group full-width">
+                                        <label for="observacoes_financeiro" class="form-label">Observações do
+                                            financeiro</label>
+                                        <textarea id="observacoes_financeiro" class="input"
+                                            name="observacoes_financeiro" placeholder=""></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Caso a triagem seja aprovada, agendar a entrevista</div>
+                        <div class="form-grid">
+                            <!-- Data da entrevista -->
+                            <div class="form-group">
+                                <label for="dataEntrevista" class="form-label">Data da entrevista</label>
+                                <input id="dataEntrevista" class="input" name="dataEntrevista" type="date">
+                            </div>
+                            <!-- Entrevistador -->
+                            <div class="form-group">
+                                <label for="entrevistador" class="form-label">Entrevistador</label>
+                                <input id="entrevistador" class="input" name="entrevistador" type="text">
+                            </div>
+                            <!-- Hora -->
+                            <div class="form-group">
+                                <label for="hora_entrevista" class="form-label">Hora da entrevista</label>
+                                <input id="hora_entrevista" class="input" name="hora_entrevista" type="time">
+                            </div>
+                            <!-- Entrevista aprovada/reprovada -->
+                            <div class="form-group">
+                                <label for="entrevistaAprovada" class="form-label">Entrevista aprovada/reprovada</label>
+                                <div class="radio-group">
+                                    <label class="radio-item"><input type="radio" name="entrevistaAprovada"
+                                            value="aprovada" />Aprovada</label>
+                                    <label class="radio-item"><input type="radio" name="entrevistaAprovada"
+                                            value="reprovada" />Reprovada</label>
+                                    <label class="radio-item"><input type="radio" name="entrevistaAprovada"
+                                            value="">Nenhum</label>
+                                </div>
+                            </div>
+                            <!-- Considerações Gerência/Diretoria -->
+                            <div class="form-group full-width">
+                                <label for="consideracoes_gerencia" class="form-label">Considerações
+                                    Gerência/Diretoria</label>
+                                <textarea id="consideracoes_gerencia" class="textarea" name="consideracoes_gerencia"
+                                    placeholder="Digite suas considerações aqui..."></textarea>
+                            </div>
+
+                            <!-- VERIFICAR SE É POSSIVEL COLOCAR UMA ASSINATURA DA GERENCIA/DIRETORIA -->
+                        </div>
+
+                        <div class="form-section">
+                            <div class="form-grid">
+                                <!-- checkbox de validações padrão -->
+                                <div class="checkbox-grid full-width">
+                                    <div class="form-group">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="" value="" /> 1- Utilizar Carências do Plano
+                                            Anterior, Troca de Planos Dentro da Unimed
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="" value="" /> 2- Incluir Sem Carências para
+                                            Consultas e Exames Simples
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="" value="" /> 3- Incluir s/carências conforme
+                                            regra de port. - RN 438/2018
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="" value="" /> 4- Incluir Sem Carências, Cumprir
+                                            Carências apenas para Doenças Pré-Existências e Parto
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="" value="" /> 5- Incluir Sem Carências, Criança
+                                            nasceu pela Unimed
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="" value="" /> 6- Incluir sem carências,
+                                            beneficiário inscrito dentro dos 30 dias de contratação.
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- Observações e considerações especiais -->
+                                <div class="form-group full-width">
+                                    <label for="observacoes_consideracoes_especiais" class="form-label">Observações e
+                                        considerações especiais</label>
+                                    <textarea id="observacoes_consideracoes_especiais" class="textarea"
+                                        name="observacoes_consideracoes_especiais"
+                                        placeholder="Digite suas observações e considerações especiais aqui..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button id="btnSaveDraft" class="btn btn--outline" type="button">Salvar rascunho</button>
+                            <button class="btn btn--primary" type="submit">Enviar ficha</button>
+                        </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <span>© 2026 Unimed SS Paraíso — Sistema de Fichas de Adesão</span>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/nova_ficha.js') }}"></script>
+</body>
+
+</html>
