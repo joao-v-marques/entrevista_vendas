@@ -14,7 +14,7 @@
     <!-- Importações CSS para API -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/nova_ficha.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/new_form.css') }}" />
 </head>
 
 <body>
@@ -139,9 +139,9 @@
                 <div class="form-card-header">
                     <h2 class="form-card-title">
                         {% if tipo == 'primary' %}
-                        Lançar nova ficha de adesão — Beneficiário Titular
+                            Lançar nova ficha de adesão — Beneficiário Titular
                         {% else %}
-                        Lançar nova ficha de adesão — Beneficiário Dependente
+                            Lançar nova ficha de adesão — Beneficiário Dependente
                         {% endif %}
                     </h2>
                     <p class="form-card-description">Preencha os dados do beneficiário e do plano diretamente no
@@ -186,9 +186,9 @@
                             </div>
 
                             <!-- Caso seja novo contrator empresarial informar CNPJ -->
-                            <div class="form-group">
+                            <div class="form-group" id="cnpj_empresa_group" hidden>
                                 <label for="cnpj_empresa" class="form-label">NOVO CONTRATO EMPRESARIAL INFORMAR CNPJ:</label>
-                                <input id="cnpj_empresa" class="input" name="cnpj_empresa" type="text" placeholder="00.000.000/0000-00">
+                                <input id="cnpj_empresa" class="input" name="cnpj_empresa" type="text" placeholder="00.000.000/0000-00" disabled>
                             </div>
 
                             {% if tipo == 'primary' %}
@@ -416,7 +416,7 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/nova_ficha.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/new_form.js') }}"></script>
 </body>
 
 </html>

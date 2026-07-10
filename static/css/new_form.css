@@ -3,9 +3,7 @@
    ============================================= */
 
 body {
-  background: radial-gradient(circle at top left, rgba(34, 160, 78, 0.12), transparent 28%),
-              radial-gradient(circle at bottom right, rgba(14, 82, 28, 0.08), transparent 22%),
-              var(--color-bg-page);
+  background: radial-gradient(circle at top left, rgba(34, 160, 78, 0.12), transparent 28%), radial-gradient(circle at bottom right, rgba(14, 82, 28, 0.08), transparent 22%), var(--color-bg-page);
 }
 
 .main-content {
@@ -106,6 +104,10 @@ body {
 .form-group.full-width,
 .checkbox-grid.full-width {
   grid-column: 1 / -1;
+}
+
+.form-group[hidden] {
+  display: none;
 }
 
 .radio-group {
