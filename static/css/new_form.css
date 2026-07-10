@@ -95,6 +95,19 @@ body {
   grid-template-columns: repeat(3, minmax(200px, 1fr));
 }
 
+.form-subsection--blue {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+
+.form-subsection--blue .form-subsection-title {
+  color: var(--blue-700);
+}
+
+.form-subsection--blue .form-grid {
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(240px, 1fr));
