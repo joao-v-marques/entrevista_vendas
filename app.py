@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from dotenv import load_dotenv
 from configs import config_all
+from waitress import serve
 
 def create_app():
     load_dotenv()
@@ -22,5 +23,5 @@ if __name__ == '__main__':
     if enviroment == "development":
         app.run(debug=True)
     else:
-        # inicializar servidor waitress
-        pass
+        print("Servidor Waitress iniciado com sucesso...")
+        serve(app, host='0.0.0.0', port=5001, threads=8)
