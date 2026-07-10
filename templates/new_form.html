@@ -407,8 +407,8 @@
                         </div>
                     </div>
 
+                    <!-- ! ========== Portabilidade ========== -->
                     <div class="form-section">
-                        <!-- ! ========== Portabilidade ========== -->
                         <div class="form-subsection form-subsection--amber">
                             <div class="form-subsection-title">Portabilidade</div>
                             <div class="form-grid">
@@ -458,6 +458,56 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Opções extra e observações especiais</div>
+                            <div class="form-grid">
+                                <!-- Opção de carência: seleção única -->
+                                <div class="form-group full-width">
+                                    <span class="form-label">Selecione a opção de carência aplicável</span>
+                                    <div class="option-card-group" role="radiogroup" aria-label="Opção de carência aplicável">
+                                        <label class="option-card">
+                                            <input type="radio" name="opcao_carencia" value="carencias_plano_anterior">
+                                            <span class="option-card-text"><strong>1.</strong> Utilizar Carências do Plano
+                                                Anterior, Troca de Planos Dentro da Unimed</span>
+                                        </label>
+                                        <label class="option-card">
+                                            <input type="radio" name="opcao_carencia" value="sem_carencias_consultas_exames">
+                                            <span class="option-card-text"><strong>2.</strong> Incluir Sem Carências para
+                                                Consultas e Exames Simples</span>
+                                        </label>
+                                        <label class="option-card">
+                                            <input type="radio" name="opcao_carencia" value="sem_carencias_portabilidade_rn438">
+                                            <span class="option-card-text"><strong>3.</strong> Incluir s/carências conforme
+                                                regra de port. - RN 438/2018</span>
+                                        </label>
+                                        <label class="option-card">
+                                            <input type="radio" name="opcao_carencia" value="sem_carencias_exceto_dpe_parto">
+                                            <span class="option-card-text"><strong>4.</strong> Incluir Sem Carências, Cumprir
+                                                Carências apenas para Doenças Pré-Existências e Parto</span>
+                                        </label>
+                                        <label class="option-card">
+                                            <input type="radio" name="opcao_carencia" value="sem_carencias_crianca_nascida_unimed">
+                                            <span class="option-card-text"><strong>5.</strong> Incluir Sem Carências, Criança
+                                                nasceu pela Unimed</span>
+                                        </label>
+                                        <label class="option-card">
+                                            <input type="radio" name="opcao_carencia" value="sem_carencias_inscrito_30_dias">
+                                            <span class="option-card-text"><strong>6.</strong> Incluir sem carências,
+                                                beneficiário inscrito dentro dos 30 dias de contratação.</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- Observações e considerações especiais -->
+                                <div class="form-group full-width">
+                                    <label for="observacoes_consideracoes_especiais" class="form-label">Observações e
+                                        considerações especiais</label>
+                                    <textarea id="observacoes_consideracoes_especiais" class="textarea"
+                                        name="observacoes_consideracoes_especiais"
+                                        placeholder="Digite suas observações e considerações especiais aqui..."></textarea>
+                                </div>
+                            </div>
+                        </div>
 
                     <div class="form-actions">
                         <button id="btnSaveDraft" class="btn btn--outline" type="button">Salvar rascunho</button>
