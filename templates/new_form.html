@@ -149,7 +149,9 @@
                 </div>
 
                 <form id="novaFichaForm" novalidate>
+                    <!-- ! INPUT DO TIPO DE CONTRATO, DEPENDENTE OU TITULAR -->
                     <input type="hidden" name="tipo" value="{{ tipo }}">
+
                     <div class="form-section">
                         <div class="form-section-title">Entrevista e contratação</div>
                         <div class="form-grid">
@@ -183,95 +185,90 @@
                                     placeholder="Plano anterior">
                             </div>
 
-                            <!-- Informar CNPJ -->
+                            <!-- Caso seja novo contrator empresarial informar CNPJ -->
                             <div class="form-group">
-                                <label for="cnpj_empresa" class="form-label">NOVO CONTRATO EMPRESARIAL INFORMAR
-                                    CNPJ:</label>
-                                <input id="cnpj_empresa" class="input" name="cnpj_empresa" type="text"
-                                    placeholder="00.000.000/0000-00">
+                                <label for="cnpj_empresa" class="form-label">NOVO CONTRATO EMPRESARIAL INFORMAR CNPJ:</label>
+                                <input id="cnpj_empresa" class="input" name="cnpj_empresa" type="text" placeholder="00.000.000/0000-00">
                             </div>
 
                             {% if tipo == 'primary' %}
-                            <!-- ! ========== Dados do beneficiário titular ========== -->
-                            <!-- Nome -->
-                            <div class="form-group">
-                                <label for="beneficiario_titular" class="form-label">Beneficiário titular</label>
-                                <input id="beneficiario_titular" class="input" name="beneficiario_titular" type="text"
-                                    placeholder="Nome do beneficiário titular">
-                            </div>
+                                <!-- ! ========== Dados do beneficiário titular ========== -->
+                                <!-- Nome do beneficiário titular -->
+                                <div class="form-group">
+                                    <label for="beneficiario_titular" class="form-label">Beneficiário titular</label>
+                                    <input id="beneficiario_titular" class="input" name="beneficiario_titular" type="text" placeholder="Nome do beneficiário titular">
+                                </div>
 
-                            <!-- Idade -->
-                            <div class="form-group">
-                                <label for="idade_titular" class="form-label">Idade</label>
-                                <input id="idade_titular" class="input" name="idade_titular" type="number"
-                                    placeholder="Idade">
-                            </div>
+                                <!-- Idade do beneficiário titular -->
+                                <div class="form-group">
+                                    <label for="idade_titular" class="form-label">Idade</label>
+                                    <input id="idade_titular" class="input" name="idade_titular" type="number" placeholder="Idade">
+                                </div>
 
-                            <!-- Contratação -->
-                            <div class="form-group">
-                                <label for="contratacao_titular" class="form-label">Contratação</label>
-                                <select name="contratacao_titular" id="contratacao_titular" class="select">
-                                    <option value="">Selecione a Contratação</option>
-                                    <option value="Pessoa Fisica">Pessoa Física</option>
-                                    <option value="Pessoa Juridica">Pessoa Júridica</option>
-                                    <option value="Odonto">Odonto</option>
-                                    <option value="Coletivo por Adesão">Coletivo por Adesão</option>
-                                    <option value="ACISSP">ACISSP</option>
-                                </select>
-                            </div>
-                            {% else %}
-                            <!-- ! ========== Dados do beneficiário dependente ========== -->
-                            <!-- Nome -->
-                            <div class="form-group">
-                                <label for="beneficiario_dependente" class="form-label">Beneficiário dependente</label>
-                                <input id="beneficiario_dependente" class="input" name="beneficiario_dependente"
-                                    type="text" placeholder="Nome do beneficiário dependente">
-                            </div>
+                                <!-- Contratação do beneficiário titular -->
+                                <div class="form-group">
+                                    <label for="contratacao_titular" class="form-label">Contratação</label>
+                                    <select name="contratacao_titular" id="contratacao_titular" class="select">
+                                        <option value="">Selecione a Contratação</option>
+                                        <option value="Pessoa Fisica">Pessoa Física</option>
+                                        <option value="Pessoa Juridica">Pessoa Júridica</option>
+                                        <option value="Odonto">Odonto</option>
+                                        <option value="Coletivo por Adesão">Coletivo por Adesão</option>
+                                        <option value="ACISSP">ACISSP</option>
+                                    </select>
+                                </div>
+                            {% endif %}
 
-                            <!-- Idade -->
-                            <div class="form-group">
-                                <label for="idade_dependente" class="form-label">Idade</label>
-                                <input id="idade_dependente" class="input" name="idade_dependente" type="number"
-                                    placeholder="Idade">
-                            </div>
+                            {% if tipo == 'secondary' %}
+                                <!-- ! ========== Dados do beneficiário dependente ========== -->
+                                <!-- Nome do beneficiário dependente -->
+                                <div class="form-group">
+                                    <label for="beneficiario_dependente" class="form-label">Beneficiário dependente</label>
+                                    <input id="beneficiario_dependente" class="input" name="beneficiario_dependente" type="text" placeholder="Nome do beneficiário dependente">
+                                </div>
 
-                            <!-- CPF -->
-                            <div class="form-group">
-                                <label for="cpf_dependente" class="form-label">CPF</label>
-                                <input id="cpf_dependente" class="input" name="cpf_dependente" type="text"
-                                    placeholder="000.000.000-00">
-                            </div>
+                                <!-- Idade do beneficiário dependente -->
+                                <div class="form-group">
+                                    <label for="idade_dependente" class="form-label">Idade</label>
+                                    <input id="idade_dependente" class="input" name="idade_dependente" type="number" placeholder="Idade">
+                                </div>
 
-                            <!-- Se dependente, nome do titular -->
-                            <div class="form-group">
-                                <label for="titular_dependente" class="form-label">Se dependente, nome do titular</label>
-                                <input id="titular_dependente" class="input" name="titular_dependente" type="text" placeholder="Nome do titular">
-                            </div>
+                                <!-- CPF do beneficiário dependente -->
+                                <div class="form-group">
+                                    <label for="cpf_dependente" class="form-label">CPF</label>
+                                    <input id="cpf_dependente" class="input" name="cpf_dependente" type="text" placeholder="000.000.000-00">
+                                </div>
 
-                            <!-- Qual plano -->
-                            <div class="form-group">
-                                <label for="plano_dependente" class="form-label">Qual plano?</label>
-                                <select name="plano_dependente" id="plano_dependente" class="select">
-                                    <option value="">Selecione o plano</option>
-                                    <option value="UNIPOP PESSOA FISICA">UNIPOP PESSOA FÍSICA</option>
-                                    <option value="UNIVIDA PESSOA FISICA">UNIVIDA PESSOA FÍSICA</option>
-                                    <option value="UNIMED FRANCA PF">UNIMED FRANCA PF</option>
-                                    <option value="PESSOA FISICA HOSPITALAR - REFERENCIA">PESSOA FÍSICA HOSPITALAR - REFERÊNCIA</option>
-                                    <option value="UNIPOP PESSOA JURIDICA">UNIPOP PESSOA JURIDICA</option>
-                                    <option value="UNIMED FACIL">UNIMED FÁCIL</option>
-                                    <option value="UNIEMPRESA ECONOMY STANDARD">UNIEMPRESA ECONOMY STANDARD</option>
-                                    <option value="UNIMED RIBEIRAO PRETO PJ">UNIMED RIBEIRÃO PRETO PJ</option>
-                                    <option value="UNIMED FRANCA PJ">UNIMED FRANCA PJ</option>
-                                    <option value="UNIMED REGIONAL ENF. CO-PARTICIPATIVO">UNIMED REGIONAL ENF. CO-PARTICIPATIVO</option>
-                                    <option value="UNIPLAN CO-PARTICIPATIVO ENF.">UNIPLAN CO-PARTICIPATIVO ENF.</option>
-                                    <option value="UNIPOP ACISSP">UNIPOP ACISSP</option>
-                                    <option value="PLANO LOCAL CO-PART 30% ACISSP">PLANO LOCAL CO-PART 30% ACISSP</option>
-                                    <option value="PLANO EXECUTIVO S/ CO-PART ACISSP">PLANO EXECUTIVO S/ CO-PART ACISSP</option>
-                                    <option value="UNIMED LOCAL + RIB. PRETO - ACISSP">UNIMED LOCAL + RIB. PRETO - ACISSP</option>
-                                    <option value="UNIPLAN ACISSP">UNIPLAN ACISSP</option>
-                                    <option value="OUTROS">OUTROS</option>
-                                </select>
-                            </div>
+                                <!-- Se dependente, nome do titular -->
+                                <div class="form-group">
+                                    <label for="titular_dependente" class="form-label">Se dependente, nome do titular</label>
+                                    <input id="titular_dependente" class="input" name="titular_dependente" type="text" placeholder="Nome do titular">
+                                </div>
+
+                                <!-- Qual plano -->
+                                <div class="form-group">
+                                    <label for="plano_dependente" class="form-label">Qual plano?</label>
+                                    <select name="plano_dependente" id="plano_dependente" class="select">
+                                        <option value="">Selecione o plano</option>
+                                        <option value="UNIPOP PESSOA FISICA">UNIPOP PESSOA FÍSICA</option>
+                                        <option value="UNIVIDA PESSOA FISICA">UNIVIDA PESSOA FÍSICA</option>
+                                        <option value="UNIMED FRANCA PF">UNIMED FRANCA PF</option>
+                                        <option value="PESSOA FISICA HOSPITALAR - REFERENCIA">PESSOA FÍSICA HOSPITALAR - REFERÊNCIA</option>
+                                        <option value="UNIPOP PESSOA JURIDICA">UNIPOP PESSOA JURIDICA</option>
+                                        <option value="UNIMED FACIL">UNIMED FÁCIL</option>
+                                        <option value="UNIEMPRESA ECONOMY STANDARD">UNIEMPRESA ECONOMY STANDARD</option>
+                                        <option value="UNIMED RIBEIRAO PRETO PJ">UNIMED RIBEIRÃO PRETO PJ</option>
+                                        <option value="UNIMED FRANCA PJ">UNIMED FRANCA PJ</option>
+                                        <option value="UNIMED REGIONAL ENF. CO-PARTICIPATIVO">UNIMED REGIONAL ENF. CO-PARTICIPATIVO</option>
+                                        <option value="UNIPLAN CO-PARTICIPATIVO ENF.">UNIPLAN CO-PARTICIPATIVO ENF.</option>
+                                        <option value="UNIPOP ACISSP">UNIPOP ACISSP</option>
+                                        <option value="PLANO LOCAL CO-PART 30% ACISSP">PLANO LOCAL CO-PART 30% ACISSP</option>
+                                        <option value="PLANO EXECUTIVO S/ CO-PART ACISSP">PLANO EXECUTIVO S/ CO-PART ACISSP</option>
+                                        <option value="UNIMED LOCAL + RIB. PRETO - ACISSP">UNIMED LOCAL + RIB. PRETO - ACISSP</option>
+                                        <option value="UNIPLAN ACISSP">UNIPLAN ACISSP</option>
+                                        <option value="OUTROS">OUTROS</option>
+                                    </select>
+                                </div>
                             {% endif %}
 
                             <!-- Modelo/Proposta -->
@@ -373,28 +370,34 @@
                                 </select>
                             </div>
 
-                            <!-- Realizar Análise de Portabilidade -->
-                            <div class="form-group">
-                                <label for="analise_portabilidade" class="form-label">Realizar análise de portabilidade</label>
-                                <select id="analise_portabilidade" class="select" name="analise_portabilidade">
-                                    <option value="NÃO">NÃO</option>
-                                    <option value="SIM">SIM</option>
-                                </select>
-                            </div>
+                            <!-- ! ========== Portabilidade ========== -->
+                            <div class="form-subsection form-subsection--amber">
+                                <div class="form-subsection-title">Portabilidade</div>
+                                <div class="form-grid">
+                                    <!-- Realizar Análise de Portabilidade -->
+                                    <div class="form-group">
+                                        <label for="analise_portabilidade" class="form-label">Realizar análise de portabilidade</label>
+                                        <select id="analise_portabilidade" class="select" name="analise_portabilidade">
+                                            <option value="NÃO">NÃO</option>
+                                            <option value="SIM">SIM</option>
+                                        </select>
+                                    </div>
 
-                            <!-- Portabilidade Aceita -->
-                            <div class="form-group">
-                                <label for="portabilidade_aceita" class="form-label">Portabilidade aceita</label>
-                                <select id="portabilidade_aceita" class="select" name="portabilidade_aceita">
-                                    <option value="NÃO">NÃO</option>
-                                    <option value="SIM">SIM</option>
-                                </select>
-                            </div>
+                                    <!-- Portabilidade Aceita -->
+                                    <div class="form-group">
+                                        <label for="portabilidade_aceita" class="form-label">Portabilidade aceita</label>
+                                        <select id="portabilidade_aceita" class="select" name="portabilidade_aceita">
+                                            <option value="NÃO">NÃO</option>
+                                            <option value="SIM">SIM</option>
+                                        </select>
+                                    </div>
 
-                            <!-- Data do aceite caso seja portabilidade -->
-                            <div class="form-group">
-                                <label for="data_aceite" class="form-label">Data do aceite</label>
-                                <input id="data_aceite" class="input" name="data_aceite" type="date">
+                                    <!-- Data do aceite caso seja portabilidade -->
+                                    <div class="form-group">
+                                        <label for="data_aceite" class="form-label">Data do aceite</label>
+                                        <input id="data_aceite" class="input" name="data_aceite" type="date">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

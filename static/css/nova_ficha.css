@@ -84,6 +84,19 @@ body {
   margin-top: 1rem;
 }
 
+.form-subsection--amber {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.form-subsection--amber .form-subsection-title {
+  color: var(--amber-700);
+}
+
+.form-subsection--amber .form-grid {
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(240px, 1fr));
