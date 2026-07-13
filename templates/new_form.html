@@ -134,6 +134,14 @@
     </nav>
 
     <main class="main-content">
+        <a href="{{ url_for('bp_render_new_form.render_nova_ficha') }}" class="btn btn--ghost btn-back">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path d="M10 3.5L4.5 8l5.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+            Voltar e escolher outro tipo
+        </a>
+
         <section class="section">
             <div class="form-card">
                 <div class="form-card-header">
@@ -500,17 +508,14 @@
                                 </div>
                                 <!-- Observações e considerações especiais -->
                                 <div class="form-group full-width">
-                                    <label for="observacoes_consideracoes_especiais" class="form-label">Observações e
-                                        considerações especiais</label>
-                                    <textarea id="observacoes_consideracoes_especiais" class="textarea"
-                                        name="observacoes_consideracoes_especiais"
-                                        placeholder="Digite suas observações e considerações especiais aqui..."></textarea>
+                                    <label for="observacoes_consideracoes_especiais" class="form-label">Observações e considerações especiais</label>
+                                    <textarea id="observacoes_consideracoes_especiais" class="textarea" name="observacoes_consideracoes_especiais" placeholder="Digite suas observações e considerações especiais aqui..."></textarea>
                                 </div>
                             </div>
                         </div>
 
                     <div class="form-actions">
-                        <button id="btnSaveDraft" class="btn btn--outline" type="button">Salvar rascunho</button>
+                        <a href="{{ url_for('bp_render_new_form.render_nova_ficha') }}" class="btn btn--outline">Cancelar</a>
                         <button class="btn btn--primary" type="submit">Enviar ficha</button>
                     </div>
                 </form>
