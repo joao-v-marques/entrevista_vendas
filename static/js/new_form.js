@@ -1,4 +1,4 @@
-﻿const form = document.getElementById("newMainForm");
+const form = document.getElementById("newMainForm");
 
 // ! ========== Validação: CNPJ só aparece para "Novo Contrato" ==========
 const tipoInclusaoSelect = document.getElementById("tipo_inclusao");
@@ -97,14 +97,74 @@ function togglePortabilidadeFields() {
 analisePortabilidadeSelect.addEventListener("change", togglePortabilidadeFields);
 togglePortabilidadeFields();
 
+// ! ========== Múltiplos responsáveis pela inclusão ==========
+const responsaveisInclusaoContainer = document.getElementById("responsaveisInclusaoContainer");
+const responsavelInclusaoTemplate = document.getElementById("responsavelInclusaoTemplate");
+const btnAddResponsavelInclusao = document.getElementById("btnAddResponsavelInclusao");
+
+let responsavelInclusaoSeq = 0;
+
+function renumberResponsaveisInclusao() {
+    const cards = responsaveisInclusaoContainer.querySelectorAll(".responsavel-inclusao-card");
+
+    cards.forEach((card, index) => {
+        card.querySelector(".responsavel-index").textContent = index + 1;
+        // não permite remover o único responsável restante
+        card.querySelector(".btn-remove-responsavel").hidden = cards.length === 1;
+    });
+}
+
+function addResponsavelInclusaoCard() {
+    responsavelInclusaoSeq += 1;
+
+    const fragment = responsavelInclusaoTemplate.content.cloneNode(true);
+    const card = fragment.querySelector(".responsavel-inclusao-card");
+
+    // gera ids únicos para cada campo clonado, mantendo o vínculo label/input
+    card.querySelectorAll("[id], label[for]").forEach((el) => {
+        if (el.id) el.id = el.id.replace("__INDEX__", responsavelInclusaoSeq);
+        if (el.htmlFor) el.htmlFor = el.htmlFor.replace("__INDEX__", responsavelInclusaoSeq);
+    });
+
+    card.querySelector(".btn-remove-responsavel").addEventListener("click", () => {
+        card.remove();
+        renumberResponsaveisInclusao();
+    });
+
+    responsaveisInclusaoContainer.appendChild(fragment);
+    renumberResponsaveisInclusao();
+}
+
+btnAddResponsavelInclusao.addEventListener("click", addResponsavelInclusaoCard);
+
+// garante que o formulário sempre comece com ao menos um responsável pela inclusão
+addResponsavelInclusaoCard();
+
 form.addEventListener("submit", async (event) => {
     event.preventDefault(); // impede o envio padrão do form
 
     // pega os dados do formulario
     const formData = new FormData(form);
 
-    // transforma em um objeto
+    // agrupa os campos de múltiplos responsáveis pela inclusão em uma lista de objetos
+    const responsavelInclusaoFields = ["responsavel_inclusao", "cpf_responsavel_inclusao", "estado_civil_responsavel", "profissao_responsavel"];
+
+    const responsaveisValores = Object.fromEntries(
+        responsavelInclusaoFields.map((field) => [field, formData.getAll(`${field}[]`)])
+    );
+
+    const responsaveis_inclusao = responsaveisValores.responsavel_inclusao.map((_, index) => ({
+        responsavel_inclusao: responsaveisValores.responsavel_inclusao[index],
+        cpf_responsavel_inclusao: responsaveisValores.cpf_responsavel_inclusao[index],
+        estado_civil_responsavel: responsaveisValores.estado_civil_responsavel[index],
+        profissao_responsavel: responsaveisValores.profissao_responsavel[index],
+    }));
+
+    responsavelInclusaoFields.forEach((field) => formData.delete(`${field}[]`));
+
+    // transforma o restante em um objeto
     const data = Object.fromEntries(formData.entries());
+    data.responsaveis_inclusao = responsaveis_inclusao;
 
     // transforma em json
     const jsonData = JSON.stringify(data);

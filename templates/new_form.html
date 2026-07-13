@@ -204,46 +204,44 @@
                                 <input id="data_inclusao" class="input" name="data_inclusao" type="date" required>
                             </div>
 
-                            {% if tipo == 'primary' %}
-                                <!-- Contratação do beneficiário titular -->
-                                <div class="form-group">
-                                    <label for="contratacao_titular" class="form-label">Contratação</label>
-                                    <select name="contratacao_titular" id="contratacao_titular" class="select" required>
-                                        <option value="">Selecione a Contratação</option>
-                                        <option value="Pessoa Fisica">Pessoa Física</option>
-                                        <option value="Pessoa Juridica">Pessoa Júridica</option>
-                                        <option value="Odonto">Odonto</option>
-                                        <option value="Coletivo por Adesão">Coletivo por Adesão</option>
-                                        <option value="Adesão P.A Digital">Adesão P.A Digital</option>
-                                        <option value="ACISSP">ACISSP</option>
-                                    </select>
-                                </div>
-                            {% else %}
-                                <!-- Qual plano do beneficiário dependente -->
-                                <div class="form-group">
-                                    <label for="plano_dependente" class="form-label">Qual plano?</label>
-                                    <select name="plano_dependente" id="plano_dependente" class="select" required>
-                                        <option value="">Selecione o plano</option>
-                                        <option value="UNIPOP PESSOA FISICA">UNIPOP PESSOA FÍSICA</option>
-                                        <option value="UNIVIDA PESSOA FISICA">UNIVIDA PESSOA FÍSICA</option>
-                                        <option value="UNIMED FRANCA PF">UNIMED FRANCA PF</option>
-                                        <option value="PESSOA FISICA HOSPITALAR - REFERENCIA">PESSOA FÍSICA HOSPITALAR - REFERÊNCIA</option>
-                                        <option value="UNIPOP PESSOA JURIDICA">UNIPOP PESSOA JURIDICA</option>
-                                        <option value="UNIMED FACIL">UNIMED FÁCIL</option>
-                                        <option value="UNIEMPRESA ECONOMY STANDARD">UNIEMPRESA ECONOMY STANDARD</option>
-                                        <option value="UNIMED RIBEIRAO PRETO PJ">UNIMED RIBEIRÃO PRETO PJ</option>
-                                        <option value="UNIMED FRANCA PJ">UNIMED FRANCA PJ</option>
-                                        <option value="UNIMED REGIONAL ENF. CO-PARTICIPATIVO">UNIMED REGIONAL ENF. CO-PARTICIPATIVO</option>
-                                        <option value="UNIPLAN CO-PARTICIPATIVO ENF.">UNIPLAN CO-PARTICIPATIVO ENF.</option>
-                                        <option value="UNIPOP ACISSP">UNIPOP ACISSP</option>
-                                        <option value="PLANO LOCAL CO-PART 30% ACISSP">PLANO LOCAL CO-PART 30% ACISSP</option>
-                                        <option value="PLANO EXECUTIVO S/ CO-PART ACISSP">PLANO EXECUTIVO S/ CO-PART ACISSP</option>
-                                        <option value="UNIMED LOCAL + RIB. PRETO - ACISSP">UNIMED LOCAL + RIB. PRETO - ACISSP</option>
-                                        <option value="UNIPLAN ACISSP">UNIPLAN ACISSP</option>
-                                        <option value="OUTROS">OUTROS</option>
-                                    </select>
-                                </div>
-                            {% endif %}
+                            <!-- Contratação do beneficiário -->
+                            <div class="form-group">
+                                <label for="contratacao_titular" class="form-label">Contratação</label>
+                                <select name="contratacao_titular" id="contratacao_titular" class="select" required>
+                                    <option value="">Selecione a Contratação</option>
+                                    <option value="Pessoa Fisica">Pessoa Física</option>
+                                    <option value="Pessoa Juridica">Pessoa Júridica</option>
+                                    <option value="Odonto">Odonto</option>
+                                    <option value="Coletivo por Adesão">Coletivo por Adesão</option>
+                                    <option value="Adesão P.A Digital">Adesão P.A Digital</option>
+                                    <option value="ACISSP">ACISSP</option>
+                                </select>
+                            </div>
+
+                            <!-- Qual plano do beneficiário -->
+                            <div class="form-group">
+                                <label for="plano_dependente" class="form-label">Qual plano?</label>
+                                <select name="plano_dependente" id="plano_dependente" class="select" required>
+                                    <option value="">Selecione o plano</option>
+                                    <option value="UNIPOP PESSOA FISICA">UNIPOP PESSOA FÍSICA</option>
+                                    <option value="UNIVIDA PESSOA FISICA">UNIVIDA PESSOA FÍSICA</option>
+                                    <option value="UNIMED FRANCA PF">UNIMED FRANCA PF</option>
+                                    <option value="PESSOA FISICA HOSPITALAR - REFERENCIA">PESSOA FÍSICA HOSPITALAR - REFERÊNCIA</option>
+                                    <option value="UNIPOP PESSOA JURIDICA">UNIPOP PESSOA JURIDICA</option>
+                                    <option value="UNIMED FACIL">UNIMED FÁCIL</option>
+                                    <option value="UNIEMPRESA ECONOMY STANDARD">UNIEMPRESA ECONOMY STANDARD</option>
+                                    <option value="UNIMED RIBEIRAO PRETO PJ">UNIMED RIBEIRÃO PRETO PJ</option>
+                                    <option value="UNIMED FRANCA PJ">UNIMED FRANCA PJ</option>
+                                    <option value="UNIMED REGIONAL ENF. CO-PARTICIPATIVO">UNIMED REGIONAL ENF. CO-PARTICIPATIVO</option>
+                                    <option value="UNIPLAN CO-PARTICIPATIVO ENF.">UNIPLAN CO-PARTICIPATIVO ENF.</option>
+                                    <option value="UNIPOP ACISSP">UNIPOP ACISSP</option>
+                                    <option value="PLANO LOCAL CO-PART 30% ACISSP">PLANO LOCAL CO-PART 30% ACISSP</option>
+                                    <option value="PLANO EXECUTIVO S/ CO-PART ACISSP">PLANO EXECUTIVO S/ CO-PART ACISSP</option>
+                                    <option value="UNIMED LOCAL + RIB. PRETO - ACISSP">UNIMED LOCAL + RIB. PRETO - ACISSP</option>
+                                    <option value="UNIPLAN ACISSP">UNIPLAN ACISSP</option>
+                                    <option value="OUTROS">OUTROS</option>
+                                </select>
+                            </div>
 
                             <!-- Modelo/Proposta -->
                             <div class="form-group">
@@ -323,8 +321,8 @@
 
                                 <!-- Idade do beneficiário titular -->
                                 <div class="form-group">
-                                    <label for="idade_titular" class="form-label">Idade</label>
-                                    <input id="idade_titular" class="input" name="idade_titular" type="number" placeholder="Idade" required>
+                                    <label for="idade_titular" class="form-label">Data de Nascimento</label>
+                                    <input id="idade_titular" class="input" name="idade_titular" type="date" placeholder="Idade" required>
                                 </div>
                             {% else %}
                                 <!-- ! ========== Dados do beneficiário dependente ========== -->
@@ -336,8 +334,8 @@
 
                                 <!-- Idade do beneficiário dependente -->
                                 <div class="form-group">
-                                    <label for="idade_dependente" class="form-label">Idade</label>
-                                    <input id="idade_dependente" class="input" name="idade_dependente" type="number" placeholder="Idade" required>
+                                    <label for="idade_dependente" class="form-label">Data de Nascimento</label>
+                                    <input id="idade_dependente" class="input" name="idade_dependente" type="date" placeholder="Idade" required>
                                 </div>
 
                                 <!-- CPF do beneficiário dependente -->
@@ -371,6 +369,12 @@
                                 <input id="email_beneficiario" class="input" name="email_beneficiario" type="email" placeholder="email@exemplo.com" required>
                             </div>
 
+                            <!-- E-mail de cobranca -->
+                            <div class="form-group">
+                                <label for="email_cobranca_id" class="form-label">E-mail de cobrança</label>
+                                <input id="email_cobranca_id" class="input" name="email_cobranca" type="email" placeholder="email@exemplo.com" required>
+                            </div>
+
                             <!-- Estado civil do beneficiário -->
                             <div class="form-group">
                                 <label for="estado_civil_beneficiario" class="form-label">Estado Civil</label>
@@ -379,38 +383,63 @@
                         </div>
                     </div>
 
+                    <!-- ! ========== Responsavel(is) pela inclusao ========== -->
                     <div class="form-section">
-                        <div class="form-section-title">Responsável pela inclusão</div>
-                        <div class="form-grid">
-                            <!-- Responsável pela inclusão -->
-                            <div class="form-group">
-                                <label for="responsavel_inclusao" class="form-label">Responsável pela inclusão</label>
-                                <input id="responsavel_inclusao" class="input" name="responsavel_inclusao" type="text" placeholder="Digite o nome responsável" required>
-                            </div>
+                        <div class="form-section-title">Responsáveis pela inclusão</div>
 
-                            <!-- CPF Responsável pela inclusão -->
-                            <div class="form-group">
-                                <label for="cpf_responsavel_inclusao" class="form-label">CPF do responsável pela inclusão</label>
-                                <input id="cpf_responsavel_inclusao" class="input" name="cpf_responsavel_inclusao" type="text" placeholder="000.000.000-00" required>
-                            </div>
+                        <div id="responsaveisInclusaoContainer" class="responsaveis-inclusao-container"></div>
 
-                            <!-- E-mail de cobrança -->
-                            <div class="form-group">
-                                <label for="email_cobranca" class="form-label">E-mail de cobrança</label>
-                                <input id="email_cobranca" class="input" name="email_cobranca" type="email" placeholder="email@exemplo.com" required>
-                            </div>
+                        <!-- Template clonado via JS para cada responsavel adicionado -->
+                        <template id="responsavelInclusaoTemplate">
+                            <div class="form-subsection responsavel-inclusao-card">
+                                <div class="responsavel-inclusao-header">
+                                    <span class="form-subsection-title">Responsável <span class="responsavel-index">1</span></span>
+                                    <button type="button" class="btn btn--danger btn--sm btn-remove-responsavel">
+                                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                        </svg>
+                                        Remover
+                                    </button>
+                                </div>
+                                <div class="form-grid">
+                                    <!-- Responsavel pela inclusao -->
+                                    <div class="form-group">
+                                        <label for="responsavel_inclusao__INDEX__" class="form-label">Responsável pela inclusão</label>
+                                        <input id="responsavel_inclusao__INDEX__" class="input" name="responsavel_inclusao[]" type="text" placeholder="Digite o nome responsável" required>
+                                    </div>
 
-                            <!-- Estado civil do responsável da empresa -->
-                            <div class="form-group">
-                                <label for="estado_civil_responsavel" class="form-label">Estado Civil do Responsável da Empresa</label>
-                                <input id="estado_civil_responsavel" class="input" name="estado_civil_responsavel" type="text" placeholder="Ex: Casado(a), Solteiro(a)" required>
-                            </div>
+                                    <!-- CPF Responsavel pela inclusao -->
+                                    <div class="form-group">
+                                        <label for="cpf_responsavel_inclusao__INDEX__" class="form-label">CPF do responsável pela inclusão</label>
+                                        <input id="cpf_responsavel_inclusao__INDEX__" class="input" name="cpf_responsavel_inclusao[]" type="text" placeholder="000.000.000-00" required>
+                                    </div>
 
-                            <!-- Profissão do responsável da empresa -->
-                            <div class="form-group">
-                                <label for="profissao_responsavel" class="form-label">Profissão do responsável</label>
-                                <input id="profissao_responsavel" class="input" name="profissao_responsavel" type="text" placeholder="Profissão do responsável" required>
+                                    <!-- Estado civil do responsavel da empresa -->
+                                    <div class="form-group">
+                                        <label for="estado_civil_responsavel__INDEX__" class="form-label">Estado Civil do Responsável da Empresa</label>
+                                        <input id="estado_civil_responsavel__INDEX__" class="input" name="estado_civil_responsavel[]" type="text" placeholder="Ex: Casado(a), Solteiro(a)" required>
+                                    </div>
+
+                                    <!-- Profissao do responsavel da empresa -->
+                                    <div class="form-group">
+                                        <label for="profissao_responsavel__INDEX__" class="form-label">Profissão do responsável</label>
+                                        <input id="profissao_responsavel__INDEX__" class="input" name="profissao_responsavel[]" type="text" placeholder="Profissão do responsável" required>
+                                    </div>
+                                </div>
                             </div>
+                        </template>
+
+                        <div class="form-subsection-footer">
+                            <div class="form-subsection-footer-text">
+                                <span class="form-subsection-footer-title">Múltiplos responsáveis</span>
+                                <span class="form-subsection-footer-desc">Adicione quantos responsáveis pela inclusão forem necessários.</span>
+                            </div>
+                            <button type="button" id="btnAddResponsavelInclusao" class="btn btn--outline btn--sm">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                </svg>
+                                Adicionar responsável
+                            </button>
                         </div>
                     </div>
 

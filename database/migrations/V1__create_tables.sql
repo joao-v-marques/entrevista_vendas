@@ -1,91 +1,73 @@
--- usuários e lógicas deles (roles, location, etc)
-CREATE TABLE users (
-    id,
-    username,
-    name,
-    password_hash,
-    email,
-    role_id,
-    sector_id,
-    is_active,
-    created_at
+create table consultants (
+	id int generated always as identity primary key,
+	name varchar(255)
 );
 
--- ficha (a entidade principal, vai navegar conforme os status)
-CREATE TABLE application_forms (
-    id,
-    code,
-
-    -- Titular
-    beneficiary_name,
-    beneficiary_tax_id,
-    beneficiary_birth_date,
-    beneficiary_phone,
-    beneficiary_email,
-    marital_status,
-
-    -- Plano
-    previous_plan,
-    plan,
-    plan_model,
-    contract_type,
-    company_tax_id,
-    inclusion_date,
-    due_day,
-    grace_period_rule,
-
-    -- Portabilidade
-    is_portability,
-    portability_accepted,
-    portability_accepted_at,
-    previous_cancellation_date,
-
-    -- billing / responsável COLOCAR MESMO???
-    billing_email,
-    responsible_name,
-
-    -- Pesquisa de satisfação do cliente
-    referral_source,
-    main_reasons,
-    expectations,
-
-    sales_rep_id,
-    status,
-    created_at,
-    updated_at
+create table form_status (
+    id int generated always as identity primary key,
+    name varchar(255),
+    description text
 );
 
--- histórico do status, para validar em qual status está e para onde foi
-CREATE TABLE application_form_status_history (
-    id,
-    application_form_id,
-    previous_status,
-    new_status,
-    user_id,
-    notes,
-    created_at
+create table application_forms (
+	id int generated always as identity primary key,
+	
+	-- Dados do formulário
+	beneficiary_type varchar(35),
+	consultant_id int,
+	inclusion_type varchar(35),
+	cnpj varchar(18),
+	previous_plan varchar(25),
+	inclusion_date date,
+	contract_type varchar(35),
+    plan_type varchar(155),
+	model_proposal varchar(35),
+	expiration_month int,
+	is_pa_digital boolean,
+	is_aeromedic boolean,
+	-- Desconto
+	is_discount boolean,
+	discount_percentage numeric(3, 2),
+	discount_observation text,
+	
+	-- Dados do beneficiário
+	beneficiary_name varchar(255),
+	beneficiary_birth_date date,
+	beneficiary_phone varchar(25),
+	beneficiary_email varchar(255),
+	beneficiary_marital_state varchar(35),
+    billing_email varchar(255),
+	
+	secondary_beneficiary_cpf varchar(14),
+	secondary_beneficiary_primary_name varchar(255),
+	secondary_beneficiary_kinship varchar(35),
+	
+	-- Dados de portabilidade
+	is_portability boolean,
+	portability_accepted boolean,
+	portability_accepted_date date,
+	portability_observation text,
+	
+	-- Dados de opção extra e observações especiais
+	grace_option varchar(155),
+	especial_observations text,
+
+    -- Colunas extras necessárias para validações
+    created_at timestamptz not null default now(),
+    form_status_id int,
+	
+	-- Foreign keys
+	constraint fk_consultant_form foreign key (consultant_id) references consultants(id),
+    constraint fk_application_form_status foreign key (form_status_id) references form_status(id)
 );
 
--- entrevista médica
-CREATE TABLE medical_interviews (
-    id,
-    application_form_id,
-    medic_id, -- FK
-    location_id, -- FK
-    scheduled_at,
-    scheduled_by_id,
-    status,
-    decision, -- aprovado ou reprovado
-    medical_notes,
-    created_at
-);
-
--- review financeira
-CREATE TABLE finance_reviews (
-    id,
-    application_form_id,
-    reviewer_id,
-    decision, -- aprovado ou reprovado
-    notes,
-    created_at
+create table inclusion_responsibles (
+	id int generated always as identity primary key,
+	name varchar(255),
+	cpf varchar(14),
+	marital_state varchar(35),
+	profession varchar(155),
+	application_form_id int,
+	
+	constraint fk_application_form_responsible foreign key (application_form_id) references application_forms(id)
 );
