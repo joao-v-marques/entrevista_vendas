@@ -55,11 +55,43 @@
   font-weight: 400;
 }
 
+/* ---------- Right side (links + user) ---------- */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
 /* ---------- Links ---------- */
 .navbar-links {
   display: flex;
   align-items: center;
   gap: 2px;
+}
+
+/* ---------- Usuário logado ---------- */
+.navbar-user {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+  padding-left: 1.25rem;
+  border-left: 1px solid rgba(255,255,255,0.25);
+  white-space: nowrap;
+}
+
+.navbar-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.navbar-user-role {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .nav-link {
@@ -250,6 +282,11 @@
     display: flex;
   }
 
+  .navbar-right {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
   .navbar-links {
     display: none;
     width: 100%;
@@ -262,6 +299,12 @@
 
   .navbar-links.open {
     display: flex;
+  }
+
+  .navbar-user {
+    align-items: flex-start;
+    padding-left: 0;
+    border-left: none;
   }
 
   .nav-link {

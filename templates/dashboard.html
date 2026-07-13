@@ -24,6 +24,7 @@
         </div>
     </div>
 
+    <div class="navbar-right">
     <ul class="navbar-links" id="navLinks">
         <li>
             <a href="{{ url_for('bp_render_home.render_home') }}" class="nav-link" data-page="home">
@@ -80,6 +81,12 @@
             </ul>
         </li>
     </ul>
+
+      <div class="navbar-user" id="navbarUser">
+        <span class="navbar-user-name" id="navbarUserName">Carregando...</span>
+        <span class="navbar-user-role" id="navbarUserRole">Carregando...</span>
+      </div>
+    </div>
   </nav>
 
   <!-- ===== MAIN ===== -->
