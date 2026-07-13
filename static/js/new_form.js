@@ -1,4 +1,4 @@
-﻿const form = document.getElementById("novaFichaForm");
+﻿const form = document.getElementById("newMainForm");
 
 // ! ========== Validação: CNPJ só aparece para "Novo Contrato" ==========
 const tipoInclusaoSelect = document.getElementById("tipo_inclusao");
