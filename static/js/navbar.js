@@ -41,3 +41,22 @@
     if (event.key === 'Escape') closeAll();
   });
 })();
+
+// navbar.js — logout
+(function () {
+  const btnLogout = document.getElementById('btnLogout');
+  if (!btnLogout) return;
+
+  btnLogout.addEventListener('click', async function () {
+    btnLogout.disabled = true;
+
+    try {
+      await fetch('/entrevista-adesao/logout', {
+        method: 'POST',
+        credentials: 'same-origin',
+      });
+    } finally {
+      window.location.href = '/entrevista-adesao/login';
+    }
+  });
+})();

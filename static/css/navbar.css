@@ -345,3 +345,40 @@
     color: #fff;
   }
 }
+/* ---------- Logout ---------- */
+.navbar-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  margin-left: 0.25rem;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  color: rgba(255,255,255,0.78);
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  white-space: nowrap;
+}
+
+.navbar-logout:hover {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  border-color: rgba(255,255,255,0.4);
+}
+
+.navbar-logout:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .navbar-logout {
+    margin-left: 0;
+    margin-top: 8px;
+    justify-content: center;
+  }
+}
