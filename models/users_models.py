@@ -17,7 +17,6 @@ class User:
         return {
             "username": self.username,
             "name": self.name,
-            "password_hash": self.password_hash,
             "email": self.email,
             "role_id": self.role_id,
             "role_name": self.role_name,
