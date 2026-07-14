@@ -22,7 +22,7 @@ class User:
             "role_id": self.role_id,
             "role_name": self.role_name,
             "sector_id": self.sector_id,
-            "sector_name": self.name,
+            "sector_name": self.sector_name,
             "is_active": self.is_active,
             "id": self.id
         }
@@ -37,7 +37,7 @@ class UserModel:
             conn, cursor = get_db_connection()
 
             sql = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.role_id, r.name, u.sector_id, s.name
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id
@@ -59,3 +59,38 @@ class UserModel:
                 conn.close()
             if cursor:
                 cursor.close()
+
+    # GET pelo username para validações de login e autenticação no geral
+    @staticmethod
+    def get_by_username(username):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql = """
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
+                FROM users u
+                INNER JOIN roles r ON r.id = u.role_id
+                INNER JOIN sectors s ON s.id = u.sector_id
+                WHERE u.username = %s
+            """
+            values = (username,)
+
+            cursor.execute(sql, values)
+            userData = cursor.fetchone()
+
+            # transforma o dict do objeto em modelo Users
+            if not userData:
+                return None
+            
+            user = User(**userData)
+
+            return user
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()

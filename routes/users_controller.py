@@ -16,4 +16,18 @@ def get_all():
     except Exception as e:
         return jsonify({
             "message": str(e)
-        })
+        }), 500
+
+@bp_users.route("/users/<string:username>", methods=['GET'])
+def get_by_username(username):
+    try:
+        user = UserService.get_by_username(username)
+
+        if not user:
+            return jsonify({"message": "Nenhum usuário encontrado com esse username"}), 404
+
+        return jsonify(user.to_dict())
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500

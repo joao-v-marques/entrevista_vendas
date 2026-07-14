@@ -9,3 +9,12 @@ class UserService:
             return users
         except Exception as e:
             raise Exception(str(e))
+        
+    @staticmethod
+    def get_by_username(username):
+        try:
+            user = UserModel.get_by_username(username)
+
+            return user
+        except Exception as e:
+            raise Exception(str(e))
