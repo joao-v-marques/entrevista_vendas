@@ -13,7 +13,7 @@ def role_required(*allowed_roles):
                     "message": "Usuário não autenticado"
                 }), 401
             
-            user_role = user.get("role") or user.get("role_description")
+            user_role = user.get("role_name")
 
             if isinstance(user_role, str):
                 user_role = user_role.lower()
