@@ -4,6 +4,11 @@ create table roles (
 	description text
 );
 
+create table sectors (
+	id int generated always as identity primary key,
+	name varchar(155) not null unique
+);
+
 create table users (
 	id int generated always as identity primary key,
 	username varchar(100) unique not null,
@@ -11,10 +16,13 @@ create table users (
 	password_hash varchar(255) not null,
 	email varchar(255),
 	role_id int,
+	sector_id int,
 	is_active boolean not null default true,
-
-	constraint fk_user_role foreign key (role_id) references roles(id) on delete restrict
+	
+	constraint fk_user_role foreign key (role_id) references roles(id) on delete restrict,
+	constraint fk_user_sectors foreign key (sector_id) references sectors(id) on delete restrict	
 );
+
 
 create table consultants (
 	id int generated always as identity primary key,
