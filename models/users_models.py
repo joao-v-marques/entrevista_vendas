@@ -94,3 +94,38 @@ class UserModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # GET pelo id
+    @staticmethod
+    def get_by_id(user_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql = """
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
+                FROM users u
+                INNER JOIN roles r ON r.id = u.role_id
+                INNER JOIN sectors s ON s.id = u.sector_id
+                WHERE u.id = %s
+            """
+            values = (user_id,)
+
+            cursor.execute(sql, values)
+            userData = cursor.fetchone()
+
+            # transforma o dict do objeto em modelo Users
+            if not userData:
+                return None
+            
+            user = User(**userData)
+
+            return user
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()

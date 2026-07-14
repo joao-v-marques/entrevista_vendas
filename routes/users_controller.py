@@ -31,3 +31,17 @@ def get_by_username(username):
         return jsonify({
             "message": str(e)
         }), 500
+    
+@bp_users.route("/users/<int:user_id>", methods=['GET'])
+def get_by_id(user_id):
+    try:
+        user = UserService.get_by_id(user_id)
+
+        if not user:
+            return jsonify({"message": "Nenhum usuário encontrado com esse ID"}), 404
+        
+        return jsonify(user.to_dict())
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
