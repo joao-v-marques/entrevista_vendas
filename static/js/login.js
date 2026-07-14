@@ -1,14 +1,14 @@
 const form = document.getElementById("loginForm");
-const loginError = document.getElementById("loginError");
+const messageLogin = document.getElementById("messageLogin");
 
 // ! ========== Mostrar/ocultar senha ==========
-const senhaInput = document.getElementById("login_senha");
+const passwordInput = document.getElementById("password_id");
 const btnToggleSenha = document.getElementById("btnToggleSenha");
 
 btnToggleSenha.addEventListener("click", () => {
-    const isVisible = senhaInput.type === "text";
+    const isVisible = passwordInput.type === "text";
 
-    senhaInput.type = isVisible ? "password" : "text";
+    passwordInput.type = isVisible ? "password" : "text";
     btnToggleSenha.setAttribute("aria-pressed", String(!isVisible));
     btnToggleSenha.setAttribute("aria-label", isVisible ? "Mostrar senha" : "Ocultar senha");
 });
@@ -16,15 +16,59 @@ btnToggleSenha.addEventListener("click", () => {
 form.addEventListener("submit", async (event) => {
     event.preventDefault(); // impede o envio padrão do form
 
-    loginError.classList.remove("visible");
+    messageLogin.textContent = "";
+    messageLogin.className = "";
 
     // pega os dados do formulario
     const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+    let data = Object.fromEntries(formData.entries());
 
-    // transforma em json
-    const jsonData = JSON.stringify(data);
+    // validação para remover todos os espaços em branco dos campos antes de enviar para o backend
+    for (let key in data) {
+        if (typeof data[key] === "string") {
+            data[key] = data[key].trim();
+        }
+    }
 
-    // ! endpoint de autenticação ainda não existe no backend, lógica a ser implementada futuramente
-    console.log(jsonData);
+    try {
+        const response = await fetch("/entrevista-adesao/login", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            let errorMessage = "Houve um erro ao tentar fazer login";
+
+            try {
+                const errorJSON = await response.json();
+
+                if (errorJSON?.message) {
+                    errorMessage = errorJSON.message;
+                }
+
+                throw new Error(errorMessage);
+            } catch (error) {
+                if (error instanceof SyntaxError) {
+                    // resposta não é JSON, tenta ler como texto
+                    errorMessage = `Erro ${response.status}: Falha ao fazer login`;
+                } else {
+                    errorMessage = error.message;
+                }
+            }
+
+            throw new Error(errorMessage);
+        }
+
+        const tokenData = await response.json();
+        localStorage.setItem("token", tokenData.token || "");
+        window.location.href = "/entrevista-adesao/home";
+        notyf.success("Login realizado com sucesso");
+    } catch (error) {
+        messageLogin.textContent = error.message || error;
+        messageLogin.className = "error";
+    }
 });

@@ -121,6 +121,26 @@ body {
   margin-top: 0.25rem;
 }
 
+/* ---------- Validações ---------- */
+.success {
+    color: var(--green-700);
+    background: var(--green-50);
+    border: 1px solid var(--green-200);
+    padding: 12px;
+    border-radius: var(--radius-lg);
+    font-size: 13.5px;
+}
+
+.error {
+    color: var(--red-700);
+    background: var(--red-50);
+    border: 1px solid var(--red-100);
+    padding: 12px;
+    border-radius: var(--radius-lg);
+    align-self: center;
+    font-size: 13.5px;
+}
+
 @media (max-width: 460px) {
   .login-card {
     padding: 1.75rem 1.4rem 2rem;

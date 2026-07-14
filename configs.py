@@ -7,6 +7,7 @@ from routes.render_pages.bp_render_credit_inquiry import bp_render_credit_inquir
 from routes.render_pages.bp_render_login import bp_render_login
 
 from routes.users_controller import bp_users
+from routes.auth_controller import bp_auth
 
 prefix = "/entrevista-adesao"
 
@@ -25,3 +26,4 @@ def config_bps(app):
 
     # registro de endpoints
     app.register_blueprint(bp_users, url_prefix=prefix)
+    app.register_blueprint(bp_auth, url_prefix=prefix)
