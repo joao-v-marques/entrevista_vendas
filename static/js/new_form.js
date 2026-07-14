@@ -162,6 +162,10 @@ form.addEventListener("submit", async (event) => {
 
     responsavelInclusaoFields.forEach((field) => formData.delete(`${field}[]`));
 
+    // arquivos não podem ser serializados em JSON, então são extraídos separadamente
+    const documentosAnexos = formData.getAll("documentos_anexos").filter((file) => file.size > 0);
+    formData.delete("documentos_anexos");
+
     // transforma o restante em um objeto
     const data = Object.fromEntries(formData.entries());
     data.responsaveis_inclusao = responsaveis_inclusao;
@@ -170,4 +174,5 @@ form.addEventListener("submit", async (event) => {
     const jsonData = JSON.stringify(data);
 
     console.log(jsonData);
+    console.log("Documentos anexados:", documentosAnexos);
 });

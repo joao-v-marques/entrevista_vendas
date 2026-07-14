@@ -543,6 +543,18 @@
                             </div>
                         </div>
 
+                    <!-- ! ========== Anexo de documentos ========== -->
+                    <div class="form-section">
+                        <div class="form-section-title">Documentos anexos</div>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="documentos_anexos" class="form-label">Anexar documentos (RG, Comprovante de Residência, etc.)</label>
+                                <input id="documentos_anexos" class="input" name="documentos_anexos" type="file" multiple
+                                    accept=".pdf,.jpg,.jpeg,.png">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-actions">
                         <a href="{{ url_for('bp_render_new_form.render_nova_ficha') }}" class="btn btn--outline">Cancelar</a>
                         <button class="btn btn--primary" type="submit">Enviar ficha</button>
