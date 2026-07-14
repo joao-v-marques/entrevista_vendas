@@ -174,16 +174,11 @@
                     <div class="form-section">
                         <div class="form-section-title">Dados do formulário</div>
                         <div class="form-grid">
-                            <!-- Selecionar o consultor -->
+                            <!-- Consultor: sempre o usuário logado, sem opção de edição -->
                             <div class="form-group">
-                                <label for="consultor" class="form-label">Selecione o consultor</label>
-                                <select id="consultor" class="select" name="consultor" required>
-                                    <option value="">Selecione o consultor</option>
-                                    <option value="Cleber Prates Braghini">Cleber Prates Braghini</option>
-                                    <option value="Erlane Izidoro">Erlane Izidoro</option>
-                                    <option value="Josimar Domingues Resende">Josimar Domingues Resende</option>
-                                    <option value="João Melles">João Melles</option>
-                                </select>
+                                <label for="consultor_display" class="form-label">Consultor</label>
+                                <input id="consultor_display" class="input" type="text" value="Carregando..." disabled readonly>
+                                <input type="hidden" id="consultant_id" name="consultant_id">
                             </div>
 
                             <!-- Campo de tipo de inclusão -->

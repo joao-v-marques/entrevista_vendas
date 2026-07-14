@@ -1,3 +1,27 @@
+// ! ========== Consultor: sempre o usuário logado, sem opção de edição ==========
+(function () {
+    const consultorDisplay = document.getElementById("consultor_display");
+    const consultantIdInput = document.getElementById("consultant_id");
+
+    if (!consultorDisplay || !consultantIdInput) return;
+
+    fetch("/entrevista-adesao/me", {
+        method: "GET",
+        credentials: "same-origin",
+    })
+        .then((response) => {
+            if (!response.ok) throw new Error("Não autenticado");
+            return response.json();
+        })
+        .then((user) => {
+            consultorDisplay.value = user.name || user.username || "Usuário";
+            consultantIdInput.value = user.id;
+        })
+        .catch(() => {
+            consultorDisplay.value = "Não foi possível identificar o usuário";
+        });
+})();
+
 form.addEventListener("submit", async (event) => {
     event.preventDefault(); // impede o envio padrão do form
 
