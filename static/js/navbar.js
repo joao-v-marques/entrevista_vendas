@@ -60,3 +60,38 @@
     }
   });
 })();
+
+// navbar.js — dados do usuário logado (nome e cargo)
+(function () {
+  const nameEl = document.getElementById('navbarUserName');
+  const roleEl = document.getElementById('navbarUserRole');
+
+  let roleName = "INDEFINIDO"
+
+  if (!nameEl || !roleEl) return;
+
+  fetch('/entrevista-adesao/me', {
+    method: 'GET',
+    credentials: 'same-origin',
+  })
+    .then(function (response) {
+      if (!response.ok) throw new Error('Não autenticado');
+      return response.json();
+    })
+    .then(function (user) {
+      if (user.role_name === "administrator") {
+        roleName = "ADMINISTRADOR";
+      } else if (user.role_name === "employee") {
+        roleName = "FUNCIONÁRIO";
+      } else {
+        roleName = "INDEFINIDO";
+      }
+
+      nameEl.textContent = user.name || user.username || 'Usuário';
+      roleEl.textContent = roleName || '—';
+    })
+    .catch(function () {
+      nameEl.textContent = 'Usuário';
+      roleEl.textContent = '—';
+    });
+})();
