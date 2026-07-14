@@ -61,13 +61,25 @@ create table application_forms (
     constraint fk_application_form_status foreign key (form_status_id) references form_status(id)
 );
 
+create table application_form_documents (
+	id int generated always as identity primary key,
+	original_filename text not null,
+	content_type text,
+	stored_path text not null,
+	size_bytes int,
+	uploaded_at timestamptz not null default now(),
+	application_form_id int not null,
+
+	constraint fk_application_form_documents foreign key (application_form_id) references application_forms(id) on delete cascade
+);
+
 create table inclusion_responsibles (
 	id int generated always as identity primary key,
 	name varchar(255),
 	cpf varchar(14),
 	marital_state varchar(35),
 	profession varchar(155),
-	application_form_id int,
+	application_form_id int not null,
 	
-	constraint fk_application_form_responsible foreign key (application_form_id) references application_forms(id)
+	constraint fk_application_form_responsible foreign key (application_form_id) references application_forms(id) on delete cascade
 );
