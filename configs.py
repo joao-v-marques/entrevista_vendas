@@ -6,6 +6,8 @@ from routes.render_pages.bp_render_approve_form import bp_render_approve_form
 from routes.render_pages.bp_render_credit_inquiry import bp_render_credit_inquiry
 from routes.render_pages.bp_render_login import bp_render_login
 
+from routes.users_controller import bp_users
+
 prefix = "/entrevista-adesao"
 
 def config_all(app):
@@ -22,3 +24,4 @@ def config_bps(app):
     app.register_blueprint(bp_render_login, url_prefix=prefix)
 
     # registro de endpoints
+    app.register_blueprint(bp_users, url_prefix=prefix)
