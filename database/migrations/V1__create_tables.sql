@@ -23,12 +23,6 @@ create table users (
 	constraint fk_user_sectors foreign key (sector_id) references sectors(id) on delete restrict	
 );
 
-
-create table consultants (
-	id int generated always as identity primary key,
-	name varchar(255)
-);
-
 create table form_status (
     id int generated always as identity primary key,
     name varchar(255),
@@ -83,8 +77,8 @@ create table application_forms (
     form_status_id int,
 	
 	-- Foreign keys
-	constraint fk_consultant_form foreign key (consultant_id) references consultants(id),
-    constraint fk_application_form_status foreign key (form_status_id) references form_status(id)
+	constraint fk_consultant_form foreign key (consultant_id) references users(id) on delete restrict,
+    constraint fk_application_form_status foreign key (form_status_id) references form_status(id) on delete restrict
 );
 
 create table application_form_documents (
