@@ -1,3 +1,21 @@
+create table roles (
+	id int generated always as identity primary key,
+	name varchar(155) not null unique,
+	description text
+);
+
+create table users (
+	id int generated always as identity primary key,
+	username varchar(100) unique not null,
+	name varchar(155),
+	password_hash varchar(255) not null,
+	email varchar(255),
+	role_id int,
+	is_active boolean not null default true,
+
+	constraint fk_user_role foreign key (role_id) references roles(id) on delete restrict
+);
+
 create table consultants (
 	id int generated always as identity primary key,
 	name varchar(255)
