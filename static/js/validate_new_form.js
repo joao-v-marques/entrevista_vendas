@@ -75,7 +75,7 @@ const observacoesPortabilidadeInput = document.getElementById("observacoes_porta
 const portabilidadeFooterGroup = document.getElementById("portabilidade_footer_group");
 
 function togglePortabilidadeFields() {
-    const realizarAnalise = analisePortabilidadeSelect.value === "SIM";
+    const realizarAnalise = analisePortabilidadeSelect.value === "true";
 
     portabilidadeAceitaGroup.hidden = !realizarAnalise;
     dataAceiteGroup.hidden = !realizarAnalise;
