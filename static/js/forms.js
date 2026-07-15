@@ -1,4 +1,5 @@
-import { fetchWithAuth } from "./utils/apiHelper.js"
+import { fetchWithAuth } from "./utils/apiHelper.js";
+import { formatDateToBR } from "./utils/dateUtils.js";
 
 async function populateFormsTable() {
     try {
@@ -24,7 +25,7 @@ async function populateFormsTable() {
                 <td>${form.beneficiary_name}</td>
                 <td>${form.inclusion_type}</td>
                 <td>${form.consultant_name}</td>
-                <td>${form.inclusion_date}</td>
+                <td>${formatDateToBR(form.inclusion_date)}</td>
                 <td>${form.form_status_name}</td>
                 <td>
                     <button>Visualizar</button>
