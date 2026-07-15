@@ -122,7 +122,7 @@ class ApplicationFormModel:
                     af.especial_observations,
                     af.created_at,
                     af.form_status_id,
-                    fs.name
+                    fs.name AS form_status_name
                 FROM application_forms af
                 INNER JOIN users u ON u.id = af.consultant_id
                 INNER JOIN form_status fs ON fs.id = af.form_status_id
