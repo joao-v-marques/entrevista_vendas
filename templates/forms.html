@@ -117,13 +117,12 @@
                                 <th>Beneficiário</th>
                                 <th>Tipo</th>
                                 <th>Consultor</th>
-                                <th>Plano</th>
                                 <th>Data de inclusão</th>
                                 <th class="status-column">Status</th>
                                 <th class="actions-column">Ações</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbodyForms">
 
                         </tbody>
                     </table>
@@ -135,6 +134,6 @@
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/fichas.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/forms.js') }}"></script>
 </body>
 </html>
