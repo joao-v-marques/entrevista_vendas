@@ -79,6 +79,18 @@ button {
   --red-500: #ef4444;
   --red-700: #b91c1c;
 
+  /* Roxo — em avaliação */
+  --purple-50:  #f5f3ff;
+  --purple-100: #ede9fe;
+  --purple-500: #8b5cf6;
+  --purple-700: #6d28d9;
+
+  /* Teal — em processamento final */
+  --teal-50:  #f0fdfa;
+  --teal-100: #ccfbf1;
+  --teal-500: #14b8a6;
+  --teal-700: #0f766e;
+
   /* Neutros */
   --gray-50:  #f9fafb;
   --gray-100: #f3f4f6;
@@ -244,6 +256,24 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--red-700);
 }
 .pill--red::before { background: var(--red-500); }
+
+.pill--gray {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+.pill--gray::before { background: var(--gray-500); }
+
+.pill--purple {
+  background: var(--purple-100);
+  color: var(--purple-700);
+}
+.pill--purple::before { background: var(--purple-500); }
+
+.pill--teal {
+  background: var(--teal-100);
+  color: var(--teal-700);
+}
+.pill--teal::before { background: var(--teal-500); }
 
 /* ---------- Inputs compartilhados ---------- */
 .input,

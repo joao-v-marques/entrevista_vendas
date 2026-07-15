@@ -1,6 +1,20 @@
 import { fetchWithAuth } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
 
+// mapeia cada form_status.name pra um variant de .pill (ver static/css/global.css)
+const STATUS_PILL_CLASSES = {
+    "Aguardando aprovação financeira": "pill--gray",
+    "Aguardando Agendamento de Entrevista": "pill--blue",
+    "Aguardando Aprovação da Entrevista": "pill--purple",
+    "Aguardando Aprovação da Gerência": "pill--amber",
+    "Aguardando Cadastro no Backoffice": "pill--teal",
+    "Finalizado": "pill--green",
+};
+
+function getStatusPillClass(statusName) {
+    return STATUS_PILL_CLASSES[statusName] || "pill--gray";
+}
+
 async function populateFormsTable() {
     try {
         const response = await fetchWithAuth("/entrevista-adesao/application-forms")
@@ -26,7 +40,9 @@ async function populateFormsTable() {
                 <td>${form.inclusion_type}</td>
                 <td>${form.consultant_name}</td>
                 <td>${formatDateToBR(form.inclusion_date)}</td>
-                <td>${form.form_status_name}</td>
+                <td class="status-column">
+                    <span class="pill ${getStatusPillClass(form.form_status_name)}">${form.form_status_name}</span>
+                </td>
                 <td>
                     <button>Visualizar</button>
                     <button>Excluir</button>
