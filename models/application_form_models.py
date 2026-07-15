@@ -199,3 +199,33 @@ class ApplicationFormModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # GET apenas do nome do beneficiário, usado para montar a pasta de upload dos documentos
+    @staticmethod
+    def get_beneficiary_name(application_form_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT beneficiary_name
+                FROM application_forms
+                WHERE id = %s
+            """
+            values = (application_form_id,)
+
+            cursor.execute(sql_query, values)
+            application_form_data = cursor.fetchone()
+
+            if not application_form_data:
+                return None
+
+            return application_form_data["beneficiary_name"]
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
