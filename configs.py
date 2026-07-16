@@ -4,6 +4,8 @@ from routes.render_pages.bp_render_form import bp_render_forms
 from routes.render_pages.bp_render_dashboard import bp_render_dashboard
 from routes.render_pages.bp_render_approve_form import bp_render_approve_form
 from routes.render_pages.bp_render_credit_inquiry import bp_render_credit_inquiry
+from routes.render_pages.bp_render_schedule_interview import bp_render_schedule_interview
+from routes.render_pages.bp_render_analyze_interview import bp_render_analyze_interview
 from routes.render_pages.bp_render_login import bp_render_login
 
 from routes.users_controller import bp_users
@@ -25,6 +27,8 @@ def config_bps(app):
     app.register_blueprint(bp_render_dashboard, url_prefix=prefix)
     app.register_blueprint(bp_render_approve_form, url_prefix=prefix)
     app.register_blueprint(bp_render_credit_inquiry, url_prefix=prefix)
+    app.register_blueprint(bp_render_schedule_interview, url_prefix=prefix)
+    app.register_blueprint(bp_render_analyze_interview, url_prefix=prefix)
     app.register_blueprint(bp_render_login, url_prefix=prefix)
 
     # registro de endpoints

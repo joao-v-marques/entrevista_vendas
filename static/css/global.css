@@ -21,6 +21,8 @@ body {
   background: var(--color-bg-page);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 a {
@@ -421,6 +423,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ---------- Footer ---------- */
 .footer {
+  flex-shrink: 0;
   text-align: center;
   padding: 1.5rem;
   font-size: 12px;
