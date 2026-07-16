@@ -44,8 +44,11 @@ async function populateFormsTable() {
                     <span class="pill ${getStatusPillClass(form.form_status_name)}">${form.form_status_name}</span>
                 </td>
                 <td>
-                    <button>Visualizar</button>
-                    <button>Excluir</button>
+                    <div class="table-actions">
+                        <button class="icon-btn" title="Visualizar" aria-label="Visualizar">
+                            <svg viewBox="0 0 16 16" fill="none"><path d="M1 8s2.7-5 7-5 7 5 7 5-2.7 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="2.2" stroke="currentColor" stroke-width="1.4"/></svg>
+                        </button>
+                    </div>
                 </td>
             `;
 

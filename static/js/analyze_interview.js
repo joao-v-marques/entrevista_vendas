@@ -28,8 +28,14 @@ async function populateAnalyzeInterviewTable() {
                 <td>${form.consultant_name}</td>
                 <td>${formatDateToBR(form.inclusion_date)}</td>
                 <td>
-                    <button>Visualizar</button>
-                    <button>Analisar Entrevista</button>
+                    <div class="table-actions">
+                        <button class="icon-btn" title="Visualizar" aria-label="Visualizar">
+                            <svg viewBox="0 0 16 16" fill="none"><path d="M1 8s2.7-5 7-5 7 5 7 5-2.7 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="2.2" stroke="currentColor" stroke-width="1.4"/></svg>
+                        </button>
+                        <button class="icon-btn icon-btn--primary" title="Analisar Entrevista" aria-label="Analisar Entrevista">
+                            <svg viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 10l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                        </button>
+                    </div>
                 </td>
             `;
 

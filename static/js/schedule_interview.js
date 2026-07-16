@@ -28,8 +28,14 @@ async function populateScheduleInterviewTable() {
                 <td>${form.consultant_name}</td>
                 <td>${formatDateToBR(form.inclusion_date)}</td>
                 <td>
-                    <button>Visualizar</button>
-                    <button>Agendar Entrevista</button>
+                    <div class="table-actions">
+                        <button class="icon-btn" title="Visualizar" aria-label="Visualizar">
+                            <svg viewBox="0 0 16 16" fill="none"><path d="M1 8s2.7-5 7-5 7 5 7 5-2.7 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="2.2" stroke="currentColor" stroke-width="1.4"/></svg>
+                        </button>
+                        <button class="icon-btn icon-btn--primary" title="Agendar Entrevista" aria-label="Agendar Entrevista">
+                            <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="12" height="11" rx="1.3" stroke="currentColor" stroke-width="1.4"/><path d="M2 6h12" stroke="currentColor" stroke-width="1.4"/><path d="M5 1.5v2M11 1.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                        </button>
+                    </div>
                 </td>
             `;
 
