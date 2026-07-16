@@ -48,6 +48,9 @@ async function populateFormsTable() {
                         <button class="icon-btn" title="Visualizar" aria-label="Visualizar">
                             <svg viewBox="0 0 16 16" fill="none"><path d="M1 8s2.7-5 7-5 7 5 7 5-2.7 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="2.2" stroke="currentColor" stroke-width="1.4"/></svg>
                         </button>
+                        <button class="icon-btn" title="Baixar documentos" aria-label="Baixar documentos">
+                            <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5v8.5M8 10l-2.8-2.8M8 10l2.8-2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 12v1.3a1 1 0 001 1h9a1 1 0 001-1V12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
                     </div>
                 </td>
             `;
