@@ -9,11 +9,25 @@ class ApplicationFormService:
             return application_forms
         except Exception as e:
             raise Exception(str(e))
-        
+    
+    # GET por status
+    def get_by_status(status_id):
+        try:
+            application_forms = ApplicationFormModel.get_by_status(status_id)
+
+            return application_forms
+        except Exception as e:
+            raise Exception(str(e))
+
     # POST de um application form no sistema
     def create_form(data):
         try:
             # VALIDAÇÕES AQUI
+
+            # discount_percentage é salvo como fração (ex: 50% -> 0.50) para caber em numeric(3, 2)
+            discount_percentage = data.get("discount_percentage")
+            if discount_percentage not in (None, ""):
+                discount_percentage = float(discount_percentage) / 100
 
             new_application_form = ApplicationForm(
                 beneficiary_type=data.get("beneficiary_type"),
@@ -29,7 +43,7 @@ class ApplicationFormService:
                 is_pa_digital=data.get("is_pa_digital"),
                 is_aeromedic=data.get("is_aeromedic"),
                 is_discount=data.get("is_discount"),
-                discount_percentage=data.get("discount_percentage"),
+                discount_percentage=discount_percentage,
                 discount_observation=data.get("discount_observation"),
                 beneficiary_name=data.get("beneficiary_name"),
                 beneficiary_birth_date=data.get("beneficiary_birth_date"),

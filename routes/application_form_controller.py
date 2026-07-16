@@ -17,6 +17,27 @@ def get_all():
             "message": str(e)
         }), 500
 
+# GET de todos por status (USANDO QUERY PARAMS, VARIÁVEL É status_id)
+@bp_application_form.route("/application-forms/status", methods=['GET'])
+def get_by_status():
+    status_id = request.args.get('status_id')
+    
+    if not status_id:
+        raise ValueError("ID do status é inválido, verifique e tente novamente")
+
+    try:
+        application_forms = ApplicationFormService.get_by_status(status_id)
+
+        return jsonify([
+            application_form.to_dict()
+            for application_form in application_forms
+        ])
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+
 @bp_application_form.route("/application-forms", methods=['POST'])
 def create_form():
     try:
