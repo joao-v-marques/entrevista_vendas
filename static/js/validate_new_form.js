@@ -20,6 +20,21 @@ function toggleCnpjField() {
 tipoInclusaoSelect.addEventListener("change", toggleCnpjField);
 toggleCnpjField();
 
+// ! ========== Máscara: CNPJ no padrão 00.000.000/0000-00, sem permitir mais ou menos dígitos ==========
+function maskCnpj(digits) {
+    let masked = digits.slice(0, 2);
+    if (digits.length > 2) masked += "." + digits.slice(2, 5);
+    if (digits.length > 5) masked += "." + digits.slice(5, 8);
+    if (digits.length > 8) masked += "/" + digits.slice(8, 12);
+    if (digits.length > 12) masked += "-" + digits.slice(12, 14);
+    return masked;
+}
+
+cnpjInput.addEventListener("input", () => {
+    const digits = cnpjInput.value.replace(/\D/g, "").slice(0, 14);
+    cnpjInput.value = maskCnpj(digits);
+});
+
 // ! ========== Validação: Plano anterior só aparece para "Troca de Plano" ==========
 const planoAnteriorGroup = document.getElementById("plano_anterior_group");
 const planoAnteriorInput = document.getElementById("plano_anterior");
@@ -38,6 +53,53 @@ function togglePlanoAnteriorField() {
 
 tipoInclusaoSelect.addEventListener("change", togglePlanoAnteriorField);
 togglePlanoAnteriorField();
+
+// ! ========== Máscara: Plano anterior no padrão 00/0000, sem permitir mais ou menos dígitos ==========
+function maskPlanoAnterior(digits) {
+    let masked = digits.slice(0, 2);
+    if (digits.length > 2) masked += "/" + digits.slice(2, 6);
+    return masked;
+}
+
+planoAnteriorInput.addEventListener("input", () => {
+    const digits = planoAnteriorInput.value.replace(/\D/g, "").slice(0, 6);
+    planoAnteriorInput.value = maskPlanoAnterior(digits);
+});
+
+// ! ========== Máscara: Mod./Prop. no mesmo padrão 00/0000 ==========
+const modeloPropostaInput = document.getElementById("modelo_proposta");
+
+modeloPropostaInput.addEventListener("input", () => {
+    const digits = modeloPropostaInput.value.replace(/\D/g, "").slice(0, 6);
+    modeloPropostaInput.value = maskPlanoAnterior(digits);
+});
+
+// ! ========== Máscara: Fone / Celular no padrão (00) 00000-0000, sem permitir mais ou menos dígitos ==========
+const telefoneInput = document.getElementById("telefone");
+
+function maskTelefone(digits) {
+    let masked = "";
+
+    if (digits.length > 0) masked += "(" + digits.slice(0, 2);
+    if (digits.length > 2) masked += ") ";
+
+    if (digits.length > 10) {
+        // celular: 5 dígitos antes do hífen
+        masked += digits.slice(2, 7);
+        if (digits.length > 7) masked += "-" + digits.slice(7, 11);
+    } else if (digits.length > 2) {
+        // fixo: 4 dígitos antes do hífen
+        masked += digits.slice(2, 6);
+        if (digits.length > 6) masked += "-" + digits.slice(6, 10);
+    }
+
+    return masked;
+}
+
+telefoneInput.addEventListener("input", () => {
+    const digits = telefoneInput.value.replace(/\D/g, "").slice(0, 11);
+    telefoneInput.value = maskTelefone(digits);
+});
 
 // ! ========== Validação: Valor e observações do desconto só aparecem se "Possui desconto?" for SIM ==========
 const isDiscountSelect = document.getElementById("is_discount_id");
@@ -87,8 +149,10 @@ function togglePortabilidadeFields() {
     dataAceiteInput.disabled = !realizarAnalise;
     observacoesPortabilidadeInput.disabled = !realizarAnalise;
 
+    // sempre reabre com "NÃO" selecionado por padrão, evitando o campo em branco
+    portabilidadeAceitaSelect.value = "false";
+
     if (!realizarAnalise) {
-        portabilidadeAceitaSelect.value = "NÃO";
         dataAceiteInput.value = "";
         observacoesPortabilidadeInput.value = "";
     }
@@ -114,6 +178,15 @@ function renumberResponsaveisInclusao() {
     });
 }
 
+// ! ========== Máscara: CPF do responsável no padrão 000.000.000-00, sem permitir mais ou menos dígitos ==========
+function maskCpf(digits) {
+    let masked = digits.slice(0, 3);
+    if (digits.length > 3) masked += "." + digits.slice(3, 6);
+    if (digits.length > 6) masked += "." + digits.slice(6, 9);
+    if (digits.length > 9) masked += "-" + digits.slice(9, 11);
+    return masked;
+}
+
 function addResponsavelInclusaoCard() {
     responsavelInclusaoSeq += 1;
 
@@ -124,6 +197,12 @@ function addResponsavelInclusaoCard() {
     card.querySelectorAll("[id], label[for]").forEach((el) => {
         if (el.id) el.id = el.id.replace("__INDEX__", responsavelInclusaoSeq);
         if (el.htmlFor) el.htmlFor = el.htmlFor.replace("__INDEX__", responsavelInclusaoSeq);
+    });
+
+    const cpfInput = card.querySelector('input[name="cpf[]"]');
+    cpfInput.addEventListener("input", () => {
+        const digits = cpfInput.value.replace(/\D/g, "").slice(0, 11);
+        cpfInput.value = maskCpf(digits);
     });
 
     card.querySelector(".btn-remove-responsavel").addEventListener("click", () => {

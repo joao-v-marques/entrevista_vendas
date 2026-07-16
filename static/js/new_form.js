@@ -98,7 +98,8 @@ form.addEventListener("submit", async (event) => {
 
     const responsaveisInclusao = responsaveisValores.name.map((_, index) => ({
         name: responsaveisValores.name[index],
-        cpf: responsaveisValores.cpf[index],
+        // CPF mantém a máscara na tela, mas é enviado só com os dígitos
+        cpf: responsaveisValores.cpf[index].replace(/\D/g, ""),
         marital_state: responsaveisValores.marital_state[index],
         profession: responsaveisValores.profession[index],
     }));
@@ -111,6 +112,14 @@ form.addEventListener("submit", async (event) => {
 
     // o restante vira o payload do formulário principal
     const applicationFormData = Object.fromEntries(formData.entries());
+
+    // CNPJ e telefone mantêm a máscara na tela, mas são enviados só com os dígitos
+    if (applicationFormData.cnpj) {
+        applicationFormData.cnpj = applicationFormData.cnpj.replace(/\D/g, "");
+    }
+    if (applicationFormData.beneficiary_phone) {
+        applicationFormData.beneficiary_phone = applicationFormData.beneficiary_phone.replace(/\D/g, "");
+    }
 
     try {
         // 1. cria o formulário principal e obtém o id gerado

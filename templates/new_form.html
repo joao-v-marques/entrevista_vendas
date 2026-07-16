@@ -223,7 +223,6 @@
                             <div class="form-group">
                                 <label for="tipo_inclusao" class="form-label">Tipo de inclusão</label>
                                 <select name="inclusion_type" id="tipo_inclusao" class="select" required>
-                                    <option value="">Selecione o tipo de inclusão</option>
                                     <option value="Existente">Existente</option>
                                     <option value="Novo Contrato">Novo Contrato</option>
                                     <option value="Troca de Plano">Troca de Plano</option>
@@ -233,13 +232,13 @@
                             <!-- Campo de plano anterior: só aparece se Tipo de inclusão for Troca de Plano -->
                             <div class="form-group" id="plano_anterior_group" hidden>
                                 <label for="plano_anterior" class="form-label">Plano anterior</label>
-                                <input id="plano_anterior" class="input" name="previous_plan" type="text" placeholder="Plano anterior" disabled required>
+                                <input id="plano_anterior" class="input" name="previous_plan" type="text" placeholder="00/0000" inputmode="numeric" maxlength="7" pattern="\d{2}\/\d{4}" title="Informe o plano anterior no formato 00/0000" disabled required>
                             </div>
 
                             <!-- Caso seja novo contrator empresarial informar CNPJ -->
                             <div class="form-group" id="cnpj_empresa_group" hidden>
                                 <label for="cnpj_empresa" class="form-label">NOVO CONTRATO EMPRESARIAL INFORMAR CNPJ:</label>
-                                <input id="cnpj_empresa" class="input" name="cnpj" type="text" placeholder="00.000.000/0000-00" disabled required>
+                                <input id="cnpj_empresa" class="input" name="cnpj" type="text" placeholder="00.000.000/0000-00" inputmode="numeric" maxlength="18" pattern="\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}" title="Informe o CNPJ completo no formato 00.000.000/0000-00" disabled required>
                             </div>
 
                             <!-- Data da inclusão -->
@@ -252,7 +251,6 @@
                             <div class="form-group">
                                 <label for="contratacao_titular" class="form-label">Contratação</label>
                                 <select name="contract_type" id="contratacao_titular" class="select" required>
-                                    <option value="">Selecione a Contratação</option>
                                     <option value="Pessoa Fisica">Pessoa Física</option>
                                     <option value="Pessoa Juridica">Pessoa Júridica</option>
                                     <option value="Odonto">Odonto</option>
@@ -266,7 +264,6 @@
                             <div class="form-group">
                                 <label for="plano_dependente" class="form-label">Qual plano?</label>
                                 <select name="plan_type" id="plano_dependente" class="select" required>
-                                    <option value="">Selecione o plano</option>
                                     <option value="UNIPOP PESSOA FISICA">UNIPOP PESSOA FÍSICA</option>
                                     <option value="UNIVIDA PESSOA FISICA">UNIVIDA PESSOA FÍSICA</option>
                                     <option value="UNIMED FRANCA PF">UNIMED FRANCA PF</option>
@@ -290,14 +287,13 @@
                             <!-- Modelo/Proposta -->
                             <div class="form-group">
                                 <label for="modelo_proposta" class="form-label">Mod./Prop.</label>
-                                <input id="modelo_proposta" class="input" name="model_proposal" type="text" placeholder="Digite o modelo e proposta" required>
+                                <input id="modelo_proposta" class="input" name="model_proposal" type="text" placeholder="00/0000" inputmode="numeric" maxlength="7" pattern="\d{2}\/\d{4}" title="Informe o modelo/proposta no formato 00/0000" required>
                             </div>
 
                             <!-- Ano de vencimento -->
                             <div class="form-group">
                                 <label for="vencimento" class="form-label">Vencimento</label>
                                 <select name="expiration_month" id="vencimento" class="select" required> 
-                                    <option value="">Selecione o vencimento</option>
                                     <option value="10">10</option>
                                     <option value="15">15</option>
                                     <option value="20">20</option>
@@ -404,7 +400,7 @@
                             <!-- Telefone ou Celular -->
                             <div class="form-group">
                                 <label for="telefone" class="form-label">Fone / Celular</label>
-                                <input id="telefone" class="input" name="beneficiary_phone" type="text" placeholder="Digite o telefone ou celular" required>
+                                <input id="telefone" class="input" name="beneficiary_phone" type="text" placeholder="(00) 00000-0000" inputmode="numeric" maxlength="15" pattern="\(\d{2}\)\s\d{4,5}-\d{4}" title="Informe o telefone no formato (00) 00000-0000" required>
                             </div>
 
                             <!-- E-mail do beneficiário -->
@@ -422,7 +418,14 @@
                             <!-- Estado civil do beneficiário -->
                             <div class="form-group">
                                 <label for="estado_civil_beneficiario" class="form-label">Estado Civil</label>
-                                <input id="estado_civil_beneficiario" class="input" name="beneficiary_marital_state" type="text" placeholder="Ex: Casado(a), Solteiro(a)" required>
+                                <select id="estado_civil_beneficiario" class="select" name="beneficiary_marital_state" required>
+                                    <option value="Solteiro(a)">Solteiro(a)</option>
+                                    <option value="Casado(a)">Casado(a)</option>
+                                    <option value="Divorciado(a)">Divorciado(a)</option>
+                                    <option value="Viuvo(a)">Viúvo(a)</option>
+                                    <option value="Separado(a) Judicialmente">Separado(a) Judicialmente</option>
+                                    <option value="Uniao Estavel">União Estável</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -455,13 +458,20 @@
                                     <!-- CPF Responsavel pela inclusao -->
                                     <div class="form-group">
                                         <label for="cpf__INDEX__" class="form-label">CPF do responsável pela inclusão</label>
-                                        <input id="cpf__INDEX__" class="input" name="cpf[]" type="text" placeholder="000.000.000-00" required>
+                                        <input id="cpf__INDEX__" class="input" name="cpf[]" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" title="Informe o CPF completo no formato 000.000.000-00" required>
                                     </div>
 
                                     <!-- Estado civil do responsavel da empresa -->
                                     <div class="form-group">
                                         <label for="marital_state__INDEX__" class="form-label">Estado Civil do Responsável da Empresa</label>
-                                        <input id="marital_state__INDEX__" class="input" name="marital_state[]" type="text" placeholder="Ex: Casado(a), Solteiro(a)" required>
+                                        <select id="marital_state__INDEX__" class="select" name="marital_state[]" required>
+                                            <option value="Solteiro(a)">Solteiro(a)</option>
+                                            <option value="Casado(a)">Casado(a)</option>
+                                            <option value="Divorciado(a)">Divorciado(a)</option>
+                                            <option value="Viuvo(a)">Viúvo(a)</option>
+                                            <option value="Separado(a) Judicialmente">Separado(a) Judicialmente</option>
+                                            <option value="Uniao Estavel">União Estável</option>
+                                        </select>
                                     </div>
 
                                     <!-- Profissao do responsavel da empresa -->
@@ -522,20 +532,6 @@
                                     <textarea id="observacoes_portabilidade" class="textarea" name="portability_observation" placeholder="Detalhes adicionais sobre a análise ou o aceite da portabilidade" disabled required></textarea>
                                 </div>
                             </div>
-
-                            <!-- ! Botão para anexar o formulário de análise (lógica a ser implementada futuramente) -->
-                            <div class="form-subsection-footer" id="portabilidade_footer_group" hidden>
-                                <div class="form-subsection-footer-text">
-                                    <span class="form-subsection-footer-title">Formulário de análise</span>
-                                    <span class="form-subsection-footer-desc">Anexe o formulário utilizado na análise desta portabilidade.</span>
-                                </div>
-                                <button type="button" id="btnAddAnaliseForm" class="btn btn--outline btn--sm">
-                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                        <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                                    </svg>
-                                    Adicionar formulário de análise
-                                </button>
-                            </div>
                         </div>
                     </div>
 
@@ -586,8 +582,7 @@
                         <div class="form-grid">
                             <div class="form-group full-width">
                                 <label for="documentos_anexos" class="form-label">Anexar documentos (RG, Comprovante de Residência, etc.)</label>
-                                <input id="documentos_anexos" class="input" name="anexed_docs" type="file" multiple
-                                    accept=".pdf,.jpg,.jpeg,.png">
+                                <input id="documentos_anexos" class="input" name="anexed_docs" type="file" multiple accept=".pdf,.jpg,.jpeg,.png">
                             </div>
                         </div>
                     </div>
