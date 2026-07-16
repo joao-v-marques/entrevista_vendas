@@ -103,3 +103,20 @@ create table inclusion_responsibles (
 	
 	constraint fk_application_form_responsible foreign key (application_form_id) references application_forms(id) on delete cascade
 );
+
+create table application_form_approvals (
+	id int generated always as identity primary key,
+
+	-- Aprovação financeira
+	financial_approved boolean,
+	financial_reviewer_id int,
+	financial_reviewed_at timestamptz,
+	financial_observation text,
+
+	application_form_id int not null,
+	created_at timestamptz not null default now(),
+
+	constraint fk_approval_application_form foreign key (application_form_id) references application_forms(id) on delete cascade,
+	constraint fk_approval_financial_reviewer foreign key (financial_reviewer_id) references users(id) on delete restrict,
+	constraint uq_approval_application_form unique (application_form_id)
+);
