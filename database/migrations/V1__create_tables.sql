@@ -52,13 +52,13 @@ create table application_forms (
 	
 	-- Dados do beneficiário
 	beneficiary_name varchar(255),
+	beneficiary_cpf varchar(14),
 	beneficiary_birth_date date,
 	beneficiary_phone varchar(25),
 	beneficiary_email varchar(255),
 	beneficiary_marital_state varchar(35),
     billing_email varchar(255),
-	
-	secondary_beneficiary_cpf varchar(14),
+
 	secondary_beneficiary_primary_name varchar(255),
 	secondary_beneficiary_kinship varchar(35),
 	
