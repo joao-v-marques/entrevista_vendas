@@ -134,7 +134,6 @@ const dataAceiteGroup = document.getElementById("data_aceite_group");
 const dataAceiteInput = document.getElementById("data_aceite");
 const observacoesPortabilidadeGroup = document.getElementById("observacoes_portabilidade_group");
 const observacoesPortabilidadeInput = document.getElementById("observacoes_portabilidade");
-const portabilidadeFooterGroup = document.getElementById("portabilidade_footer_group");
 
 function togglePortabilidadeFields() {
     const realizarAnalise = analisePortabilidadeSelect.value === "true";
@@ -142,7 +141,6 @@ function togglePortabilidadeFields() {
     portabilidadeAceitaGroup.hidden = !realizarAnalise;
     dataAceiteGroup.hidden = !realizarAnalise;
     observacoesPortabilidadeGroup.hidden = !realizarAnalise;
-    portabilidadeFooterGroup.hidden = !realizarAnalise;
 
     // campo desabilitado não é incluído no FormData, então não é enviado ao backend
     portabilidadeAceitaSelect.disabled = !realizarAnalise;
@@ -178,7 +176,7 @@ function renumberResponsaveisInclusao() {
     });
 }
 
-// ! ========== Máscara: CPF do responsável no padrão 000.000.000-00, sem permitir mais ou menos dígitos ==========
+// ! ========== Máscara: CPF no padrão 000.000.000-00, sem permitir mais ou menos dígitos ==========
 function maskCpf(digits) {
     let masked = digits.slice(0, 3);
     if (digits.length > 3) masked += "." + digits.slice(3, 6);
@@ -186,6 +184,14 @@ function maskCpf(digits) {
     if (digits.length > 9) masked += "-" + digits.slice(9, 11);
     return masked;
 }
+
+// ! ========== Máscara: CPF do beneficiário (titular ou dependente, o campo é o mesmo) ==========
+document.querySelectorAll('input[name="beneficiary_cpf"]').forEach((beneficiaryCpfInput) => {
+    beneficiaryCpfInput.addEventListener("input", () => {
+        const digits = beneficiaryCpfInput.value.replace(/\D/g, "").slice(0, 11);
+        beneficiaryCpfInput.value = maskCpf(digits);
+    });
+});
 
 function addResponsavelInclusaoCard() {
     responsavelInclusaoSeq += 1;
