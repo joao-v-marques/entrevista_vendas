@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from services.application_forms_approvals import ApplicationFormApprovalService
+from services.application_form_services import ApplicationFormService
 
 bp_application_form_approval = Blueprint("bp_application_form_approval", __name__)
 
@@ -24,8 +25,11 @@ def create():
     try:
         data = request.get_json()
 
+        # realiza o cadsatro do formulário de aprovação no banco
         created_approval_form = ApplicationFormApprovalService.create(data)
-
+        # faz o update do status para o próximo (2)
+        ApplicationFormService.update_status(2, data)
+        
         return jsonify(created_approval_form.to_dict()), 201
     except Exception as e:
         return jsonify({
