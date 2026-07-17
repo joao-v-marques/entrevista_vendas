@@ -12,6 +12,7 @@ from routes.users_controller import bp_users
 from routes.application_form_controller import bp_application_form
 from routes.inclusion_responsibles_controller import bp_inclusion_responsibles
 from routes.application_form_documents_controller import bp_application_form_documents
+from routes.application_forms_approvals import bp_application_form_approval
 from routes.auth_controller import bp_auth
 
 prefix = "/entrevista-adesao"
@@ -37,3 +38,4 @@ def config_bps(app):
     app.register_blueprint(bp_application_form, url_prefix=prefix)
     app.register_blueprint(bp_inclusion_responsibles, url_prefix=prefix)
     app.register_blueprint(bp_application_form_documents, url_prefix=prefix)
+    app.register_blueprint(bp_application_form_approval, url_prefix=prefix)
