@@ -25,10 +25,14 @@ def create():
     try:
         data = request.get_json()
 
-        # realiza o cadsatro do formulário de aprovação no banco
+        # realiza o cadastro do formulário de aprovação no banco
         created_approval_form = ApplicationFormApprovalService.create(data)
-        # faz o update do status para o próximo (2)
-        ApplicationFormService.update_status(2, data)
+
+        if data['financial_approved']:
+            # faz o update do status para o próximo (2)
+            ApplicationFormService.update_status(2, data)
+        else:
+            ApplicationFormService.update_status(7, data)
         
         return jsonify(created_approval_form.to_dict()), 201
     except Exception as e:
