@@ -69,3 +69,12 @@ class ApplicationFormService:
             return created_application_form
         except Exception as e:
             raise Exception(str(e))
+        
+    # UPDATE do campo de status do formulário
+    def update_status(new_status_id, data):
+        try:
+            ApplicationFormModel.update_status(new_status_id, data['application_form_id'])
+
+            return True
+        except Exception as e:
+            raise Exception(str(e))
