@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from services.application_forms_approvals import ApplicationFormApprovalService
 
 bp_application_form_approval = Blueprint("bp_application_form_approval", __name__)
@@ -13,6 +13,20 @@ def get_all():
             approval_form.to_dict()
             for approval_form in approval_forms
         ]), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+    
+# POST de um novo formulário de aprovação
+@bp_application_form_approval.route("/application_form_approval", methods=['POST'])
+def create():
+    try:
+        data = request.get_json()
+
+        created_approval_form = ApplicationFormApprovalService.create(data)
+
+        return jsonify(created_approval_form.to_dict()), 201
     except Exception as e:
         return jsonify({
             "message": str(e)

@@ -50,3 +50,48 @@ class ApplicationFormApprovalModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # POST/Cadastro de um formulário de aprovação
+    def create(approve_form):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                INSERT INTO application_form_approvals (
+                    financial_approved,
+                    financial_reviewer_id,
+                    financial_reviewed_at,
+                    financial_observation,
+                    application_form_id
+                ) VALUES (
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s
+                )
+                RETURNING id
+            """
+            values = (
+                approve_form.financial_approved,
+                approve_form.financial_reviewer_id,
+                approve_form.financial_reviewed_at,
+                approve_form.financial_observation,
+                approve_form.application_form_id
+            )
+
+            cursor.execute(sql_query, values)
+            new_id = cursor.fetchone()["id"]
+            conn.commit()
+
+            approve_form.id = new_id
+            return approve_form
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
