@@ -144,7 +144,76 @@ class ApplicationFormModel:
                 cursor.close()
             if conn:
                 conn.close()
-    
+
+    # GET de um único pelo ID
+    @staticmethod
+    def get_by_id(form_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT 
+                    af.id,
+                    af.beneficiary_type,
+                    af.consultant_id,
+                    u.name AS consultant_name,
+                    af.inclusion_type,
+                    af.cnpj,
+                    af.previous_plan,
+                    af.inclusion_date,
+                    af.contract_type,
+                    af.plan_type,
+                    af.model_proposal,
+                    af.expiration_month,
+                    af.is_pa_digital,
+                    af.is_aeromedic,
+                    af.is_discount,
+                    af.discount_percentage,
+                    af.discount_observation,
+                    af.beneficiary_name,
+                    af.beneficiary_cpf,
+                    af.beneficiary_birth_date,
+                    af.beneficiary_phone,
+                    af.beneficiary_email,
+                    af.beneficiary_marital_state,
+                    af.billing_email,
+                    af.secondary_beneficiary_primary_name,
+                    af.secondary_beneficiary_kinship,
+                    af.is_portability,
+                    af.portability_accepted,
+                    af.portability_accepted_date,
+                    af.portability_observation,
+                    af.grace_option,
+                    af.especial_observations,
+                    af.created_at,
+                    af.form_status_id,
+                    fs.name AS form_status_name
+                FROM application_forms af
+                INNER JOIN users u ON u.id = af.consultant_id
+                INNER JOIN form_status fs ON fs.id = af.form_status_id
+                WHERE af.id = %s
+            """
+            values = (form_id,)
+
+            cursor.execute(sql_query, values)
+            application_forms_data = cursor.fetchall()
+
+            application_forms = [
+                ApplicationForm(**application_form)
+                for application_form in application_forms_data
+            ]
+
+            return application_forms
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     # GET de todos os forms cadastrados no sistema pelo status
     @staticmethod
     def get_by_status(status_id):
@@ -300,6 +369,7 @@ class ApplicationFormModel:
                 conn.close()
 
     # UPDATE do campo de status do formulário
+    @staticmethod
     def update_status(new_status_id, application_form_id):
         conn = None
         cursor = None
@@ -312,6 +382,100 @@ class ApplicationFormModel:
                 WHERE id = %s
             """
             values = (new_status_id, application_form_id)
+
+            cursor.execute(sql_query, values)
+            conn.commit()
+
+            return True
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    # GET de um form pelo id, usado para validar o status atual antes de reanalisar/encerrar
+    @staticmethod
+    def get_by_id(application_form_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT
+                    af.id,
+                    af.beneficiary_type,
+                    af.consultant_id,
+                    u.name AS consultant_name,
+                    af.inclusion_type,
+                    af.cnpj,
+                    af.previous_plan,
+                    af.inclusion_date,
+                    af.contract_type,
+                    af.plan_type,
+                    af.model_proposal,
+                    af.expiration_month,
+                    af.is_pa_digital,
+                    af.is_aeromedic,
+                    af.is_discount,
+                    af.discount_percentage,
+                    af.discount_observation,
+                    af.beneficiary_name,
+                    af.beneficiary_cpf,
+                    af.beneficiary_birth_date,
+                    af.beneficiary_phone,
+                    af.beneficiary_email,
+                    af.beneficiary_marital_state,
+                    af.billing_email,
+                    af.secondary_beneficiary_primary_name,
+                    af.secondary_beneficiary_kinship,
+                    af.is_portability,
+                    af.portability_accepted,
+                    af.portability_accepted_date,
+                    af.portability_observation,
+                    af.grace_option,
+                    af.especial_observations,
+                    af.created_at,
+                    af.form_status_id,
+                    fs.name AS form_status_name
+                FROM application_forms af
+                INNER JOIN users u ON u.id = af.consultant_id
+                INNER JOIN form_status fs ON fs.id = af.form_status_id
+                WHERE af.id = %s
+            """
+            values = (application_form_id,)
+
+            cursor.execute(sql_query, values)
+            application_form_data = cursor.fetchone()
+
+            if not application_form_data:
+                return None
+
+            return ApplicationForm(**application_form_data)
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    # UPDATE que encerra a negociação de uma ficha reprovada pelo financeiro (soft delete)
+    @staticmethod
+    def close_negotiation(application_form_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                UPDATE application_forms
+                SET form_status_id = 8
+                WHERE id = %s
+            """
+            values = (application_form_id,)
 
             cursor.execute(sql_query, values)
             conn.commit()

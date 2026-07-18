@@ -78,3 +78,37 @@ class ApplicationFormService:
             return True
         except Exception as e:
             raise Exception(str(e))
+
+    # Solicita reanálise financeira de uma ficha reprovada (volta o status para 1)
+    def request_reanalysis(application_form_id):
+        try:
+            application_form = ApplicationFormModel.get_by_id(application_form_id)
+
+            if not application_form:
+                raise ValueError("Ficha não encontrada")
+
+            if application_form.form_status_id != 7:
+                raise ValueError("Só é possível solicitar reanálise de fichas reprovadas pelo financeiro")
+
+            ApplicationFormModel.update_status(1, application_form_id)
+
+            return True
+        except Exception as e:
+            raise Exception(str(e))
+
+    # Encerra a negociação de uma ficha reprovada pelo financeiro (soft delete, status 8)
+    def close_negotiation(application_form_id):
+        try:
+            application_form = ApplicationFormModel.get_by_id(application_form_id)
+
+            if not application_form:
+                raise ValueError("Ficha não encontrada")
+
+            if application_form.form_status_id != 7:
+                raise ValueError("Só é possível encerrar a negociação de fichas reprovadas pelo financeiro")
+
+            ApplicationFormModel.close_negotiation(application_form_id)
+
+            return True
+        except Exception as e:
+            raise Exception(str(e))

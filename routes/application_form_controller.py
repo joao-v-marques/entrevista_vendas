@@ -50,3 +50,27 @@ def create_form():
         return jsonify({
             "message": str(e)
         }), 500
+
+# POST para solicitar reanálise financeira de uma ficha reprovada
+@bp_application_form.route("/application-forms/<int:application_form_id>/request-reanalysis", methods=['POST'])
+def request_reanalysis(application_form_id):
+    try:
+        ApplicationFormService.request_reanalysis(application_form_id)
+
+        return jsonify({"message": "Reanálise solicitada com sucesso"}), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+# POST para encerrar a negociação de uma ficha reprovada pelo financeiro
+@bp_application_form.route("/application-forms/<int:application_form_id>/close-negotiation", methods=['POST'])
+def close_negotiation(application_form_id):
+    try:
+        ApplicationFormService.close_negotiation(application_form_id)
+
+        return jsonify({"message": "Negociação encerrada com sucesso"}), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
