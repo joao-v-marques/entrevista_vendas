@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unimed SSParaíso — Aprovar ficha</title>
+    <title>Unimed SSParaíso — Fichas Reprovadas</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -109,7 +109,7 @@
                     <ul class="nav-dropdown-menu" data-dropdown-menu>
                         <li>
                             <a href="{{ url_for('bp_render_approve_form.render_aprovar_ficha') }}"
-                                class="nav-dropdown-link active" data-page="aprovar-ficha">
+                                class="nav-dropdown-link" data-page="aprovar-ficha">
                                 <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
                                     <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6"
                                         stroke-linecap="round" stroke-linejoin="round" />
@@ -119,7 +119,7 @@
                         </li>
                         <li>
                             <a href="{{ url_for('bp_render_rejected_forms.render_fichas_reprovadas') }}"
-                                class="nav-dropdown-link" data-page="fichas-reprovadas">
+                                class="nav-dropdown-link active" data-page="fichas-reprovadas">
                                 <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
                                     <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
                                         stroke-linecap="round" />
@@ -204,8 +204,8 @@
         <section class="section">
             <div class="form-card">
                 <div class="form-card-header">
-                    <h2 class="form-card-title">Formulários Pendentes de Aprovação Financeira</h2>
-                    <p class="form-card-description">Lista de fichas de adesão aguardando aprovação financeira.</p>
+                    <h2 class="form-card-title">Fichas Reprovadas pelo Financeiro</h2>
+                    <p class="form-card-description">Solicite uma reanálise financeira ou encerre a negociação das fichas reprovadas.</p>
                 </div>
 
                 <!-- Lista de Fichas -->
@@ -221,7 +221,7 @@
                                 <th class="actions-column">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyPendingApproval">
+                        <tbody id="tbodyRejectedForms">
 
                         </tbody>
                     </table>
@@ -235,83 +235,10 @@
         <span>© 2026 Unimed SS Paraíso — Sistema de Fichas de Adesão</span>
     </footer>
 
-    <!-- ===== MODAL: ANÁLISE FINANCEIRA ===== -->
-    <div class="modal-overlay" id="analyzeModalOverlay" hidden>
-        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="analyzeModalTitle">
-            <div class="modal-header">
-                <h2 class="modal-title" id="analyzeModalTitle">Análise da Ficha #<span id="analyzeModalFormId"></span>
-                </h2>
-                <button type="button" class="modal-close" id="analyzeModalClose" aria-label="Fechar">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
-                            stroke-linecap="round" />
-                    </svg>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <!-- Seção 1: Informações do beneficiário (somente leitura) -->
-                <section class="modal-section">
-                    <h3 class="form-section-title">Informações do Beneficiário</h3>
-                    <div class="info-grid" id="beneficiaryInfoGrid"></div>
-                </section>
-
-                <!-- Seção 2: Aprovação financeira -->
-                <section class="modal-section">
-                    <h3 class="form-section-title">Aprovação Financeira</h3>
-
-                    <div class="approval-status" id="approvalStatusBanner"></div>
-
-                    <form id="financialApprovalForm" class="form-grid">
-                        <!-- ID do application_forms (formulário principal) que estamos enviando -->
-                        <input type="hidden" id="application_form_id" name="application_form_id">
-                        <!-- ID do usuário que está logado, ou seja, quem está realizando a aprovação/reprova -->
-                        <input type="hidden" id="reviewer_id" name="financial_reviewer_id">
-
-                        <div class="form-group full-width">
-                            <label class="form-label">Decisão</label>
-                            <div class="decision-group">
-
-                                <label class="decision-option decision-option--approve">
-                                    <input type="radio" name="financial_approved" value="true" id="approvalApproveRadio">
-                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-                                        <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Aprovar</span>
-                                </label>
-
-                                <label class="decision-option decision-option--reject">
-                                    <input type="radio" name="financial_approved" value="false" id="approvalRejectRadio">
-                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-                                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                                    </svg>
-                                    <span>Reprovar</span>
-                                </label>
-
-                            </div>
-                        </div>
-
-                        <div class="form-group full-width">
-                            
-                            <label class="form-label" for="financialObservation">Observações</label>
-                            <textarea class="textarea" id="financialObservation" name="financial_observation" placeholder="Observações da análise financeira..." required></textarea>
-                        </div>
-                    </form>
-                </section>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn--ghost" id="analyzeModalCancel">Fechar</button>
-                <button form="financialApprovalForm" type="submit" class="btn btn--primary" id="analyzeModalSubmit">Enviar Análise</button>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/approveModals/analyzeFormModal.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/approve_form.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/rejected_forms.js') }}"></script>
 </body>
 
 </html>

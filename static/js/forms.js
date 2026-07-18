@@ -9,6 +9,8 @@ const STATUS_PILL_CLASSES = {
     "Aguardando Aprovação da Gerência": "pill--amber",
     "Aguardando Cadastro no Backoffice": "pill--teal",
     "Finalizado": "pill--green",
+    "Reprovado Pelo Financeiro": "pill--red",
+    "Negociação Encerrada Financeiro": "pill--gray",
 };
 
 function getStatusPillClass(statusName) {

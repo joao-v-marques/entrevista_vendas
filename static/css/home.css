@@ -357,6 +357,16 @@
   color: #fff;
 }
 
+.icon-btn--danger {
+  color: var(--red-500);
+}
+
+.icon-btn--danger:hover {
+  background: var(--red-50);
+  color: var(--red-700);
+  border-color: var(--red-100);
+}
+
 /* ---------- Quick access cards ---------- */
 .quick-grid {
   display: grid;
