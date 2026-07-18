@@ -117,6 +117,5 @@ create table application_form_approvals (
 	created_at timestamptz not null default now(),
 
 	constraint fk_approval_application_form foreign key (application_form_id) references application_forms(id) on delete cascade,
-	constraint fk_approval_financial_reviewer foreign key (financial_reviewer_id) references users(id) on delete restrict,
-	constraint uq_approval_application_form unique (application_form_id)
+	constraint fk_approval_financial_reviewer foreign key (financial_reviewer_id) references users(id) on delete restrict
 );
