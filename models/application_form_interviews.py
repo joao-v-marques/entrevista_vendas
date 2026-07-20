@@ -67,20 +67,33 @@ class ApplicationFormInterviewModel:
         try:
             conn, cursor = get_db_connection()
 
-            sql_query = """
+            # 1) Realiza a inserção do agendamento no banco de dados
+            insert_query = """
                 INSERT INTO application_form_interviews (interview_date, schedule_observation, application_form_id)
                 VALUES (%s, %s, %s)
                 RETURNING id
             """
-            values = (form_interview.interview_date, form_interview.schedule_observation, form_interview.application_form_id)
-
-            cursor.execute(sql_query, values)
+            values_insert = (form_interview.interview_date, form_interview.schedule_observation, form_interview.application_form_id)
+            cursor.execute(insert_query, values_insert)
             new_id = cursor.fetchone()["id"]
+            
+            # 2) move o status da fichha para 3
+            update_query = """
+                UPDATE application_forms
+                SET form_status_id = %s
+                WHERE id = %s
+            """
+            values_update = (3, form_interview.application_form_id)
+            cursor.execute(update_query, values_update)
+            
+            # único commit para as duas querys
             conn.commit()
             
             form_interview.id = new_id
             return form_interview
         except Exception as e:
+            if conn:
+                conn.rollback() # desfaz o INSERT se o UPDATE (ou qualquer outra coisa) falhar
             raise Exception(str(e))
         finally:
             if cursor:
