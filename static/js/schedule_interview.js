@@ -1,5 +1,9 @@
 import { fetchWithAuth } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
+import { openScheduleInterviewModal } from "./scheduleModals/scheduleInterviewModal.js";
+
+// guarda os dados completos de cada ficha aguardando agendamento, pra abrir o modal sem precisar de uma nova requisição
+const pendingFormsById = new Map();
 
 // função para preencher tabela de formulários aguardando agendamento de entrevista
 async function populateScheduleInterviewTable() {
@@ -13,12 +17,16 @@ async function populateScheduleInterviewTable() {
 
         const pendingForms = await response.json();
 
+        pendingFormsById.clear();
+
         const tbodyScheduleInterview = document.getElementById("tbodyScheduleInterview");
         tbodyScheduleInterview.innerHTML = ``;
 
         const formPendingFragment = document.createDocumentFragment();
 
         pendingForms.forEach(form => {
+            pendingFormsById.set(form.id, form);
+
             const trPendingForm = document.createElement("tr");
 
             trPendingForm.innerHTML = `
@@ -32,7 +40,7 @@ async function populateScheduleInterviewTable() {
                         <button class="icon-btn" title="Visualizar" aria-label="Visualizar">
                             <svg viewBox="0 0 16 16" fill="none"><path d="M1 8s2.7-5 7-5 7 5 7 5-2.7 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="2.2" stroke="currentColor" stroke-width="1.4"/></svg>
                         </button>
-                        <button class="icon-btn icon-btn--primary" title="Agendar Entrevista" aria-label="Agendar Entrevista">
+                        <button class="icon-btn icon-btn--primary" title="Agendar Entrevista" aria-label="Agendar Entrevista" data-form-id="${form.id}">
                             <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="12" height="11" rx="1.3" stroke="currentColor" stroke-width="1.4"/><path d="M2 6h12" stroke="currentColor" stroke-width="1.4"/><path d="M5 1.5v2M11 1.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
                         </button>
                     </div>
@@ -50,4 +58,14 @@ async function populateScheduleInterviewTable() {
 
 document.addEventListener("DOMContentLoaded", () => {
     populateScheduleInterviewTable();
+
+    document.getElementById("tbodyScheduleInterview").addEventListener("click", (event) => {
+        const scheduleButton = event.target.closest(".icon-btn--primary[data-form-id]");
+        if (!scheduleButton) return;
+
+        const applicationForm = pendingFormsById.get(Number(scheduleButton.dataset.formId));
+        if (!applicationForm) return;
+
+        openScheduleInterviewModal(applicationForm);
+    });
 })
