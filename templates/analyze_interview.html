@@ -267,6 +267,74 @@
         </div>
     </div>
 
+    <!-- ===== MODAL: ANALISAR ENTREVISTA ===== -->
+    <div class="modal-overlay" id="analyzeInterviewModalOverlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="analyzeInterviewModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="analyzeInterviewModalTitle">Análise da Entrevista da Ficha #<span id="analyzeInterviewModalFormId"></span></h2>
+                <button type="button" class="modal-close" id="analyzeInterviewModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Seção 1: Informações do beneficiário (somente leitura) -->
+                <section class="modal-section">
+                    <h3 class="form-section-title">Informações do Beneficiário</h3>
+                    <div class="info-grid" id="analyzeInterviewBeneficiaryInfoGrid"></div>
+                </section>
+
+                <!-- Seção 2: Análise da entrevista -->
+                <section class="modal-section">
+                    <h3 class="form-section-title">Análise da Entrevista</h3>
+
+                    <form id="interviewAnalysisForm" class="form-grid">
+                        <!-- ID do application_forms (ficha) que estamos analisando -->
+                        <input type="hidden" id="analyze_interview_application_form_id" name="application_form_id">
+                        <!-- ID do usuário logado, ou seja, quem está realizando a análise -->
+                        <input type="hidden" id="analyze_interview_interviewer_id" name="interviewer_id">
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Entrevista aprovada?</label>
+                            <div class="decision-group">
+
+                                <label class="decision-option decision-option--approve">
+                                    <input type="radio" name="interview_approved" value="true" id="interviewApproveRadio">
+                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                                        <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <span>Sim</span>
+                                </label>
+
+                                <label class="decision-option decision-option--reject">
+                                    <input type="radio" name="interview_approved" value="false" id="interviewRejectRadio">
+                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                                    </svg>
+                                    <span>Não</span>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="interviewObservation">Observações</label>
+                            <textarea class="textarea" id="interviewObservation" name="interview_observation" placeholder="Observações da análise da entrevista..." required></textarea>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" id="analyzeInterviewModalCancel">Fechar</button>
+                <button type="submit" form="interviewAnalysisForm" class="btn btn--primary" id="analyzeInterviewModalSubmit">Enviar Análise</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>

@@ -101,3 +101,115 @@
   border-top: 1px solid var(--color-border-light);
   background: var(--color-bg-secondary);
 }
+
+/* ---------- Modal de análise da entrevista ---------- */
+/* o modal de análise é largo (grid de infos); o de reagendamento continua com 480px */
+#analyzeInterviewModalOverlay .modal {
+  max-width: 1080px;
+}
+
+#analyzeInterviewModalOverlay .modal-body {
+  gap: 1.75rem;
+}
+
+.modal-section .form-section-title {
+  margin-bottom: 1rem;
+}
+
+/* ---------- Informações do beneficiário (somente leitura) ---------- */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.info-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-500);
+}
+
+.info-value {
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+/* ---------- Decisão (aprovada / reprovada) ---------- */
+.decision-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+.decision-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--gray-50);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), color var(--transition), box-shadow var(--transition);
+}
+
+.decision-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.decision-option svg {
+  flex-shrink: 0;
+}
+
+.decision-option--approve:hover {
+  border-color: var(--green-400);
+  background: #fff;
+}
+
+.decision-option--reject:hover {
+  border-color: var(--red-500);
+  background: #fff;
+}
+
+.decision-option--approve:has(input:checked) {
+  border-color: var(--green-500);
+  background: var(--green-50);
+  color: var(--green-700);
+  box-shadow: 0 0 0 3px rgba(34, 160, 78, 0.12);
+}
+
+.decision-option--reject:has(input:checked) {
+  border-color: var(--red-500);
+  background: var(--red-50);
+  color: var(--red-700);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+@media (max-width: 860px) {
+  .info-grid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .decision-group {
+    grid-template-columns: 1fr;
+  }
+}

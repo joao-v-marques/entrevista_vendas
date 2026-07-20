@@ -1,6 +1,7 @@
 import { fetchWithAuth } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
 import { openRescheduleInterviewModal } from "./scheduleModals/rescheduleInterviewModal.js";
+import { openAnalyzeInterviewModal } from "./analyzeInterviewModals/analyzeInterviewModal.js";
 
 // guarda os dados completos de cada ficha aguardando análise, pra abrir o modal sem precisar de uma nova requisição
 const pendingFormsById = new Map();
@@ -40,7 +41,7 @@ export async function populateAnalyzeInterviewTable() {
                         <button class="icon-btn" title="Reagendar Entrevista" aria-label="Reagendar Entrevista" data-reschedule-form-id="${form.id}">
                             <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="12" height="11" rx="1.3" stroke="currentColor" stroke-width="1.4"/><path d="M2 6h12" stroke="currentColor" stroke-width="1.4"/><path d="M5 1.5v2M11 1.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M8 8.3a2 2 0 1 0 1.9 1.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9.7 8.2v1.5H8.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </button>
-                        <button class="icon-btn icon-btn--primary" title="Analisar Entrevista" aria-label="Analisar Entrevista">
+                        <button class="icon-btn icon-btn--primary" title="Analisar Entrevista" aria-label="Analisar Entrevista" data-analyze-form-id="${form.id}">
                             <svg viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 10l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
                         </button>
                     </div>
@@ -61,11 +62,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("tbodyAnalyzeInterview").addEventListener("click", (event) => {
         const rescheduleButton = event.target.closest(".icon-btn[data-reschedule-form-id]");
-        if (!rescheduleButton) return;
+        if (rescheduleButton) {
+            const applicationForm = pendingFormsById.get(Number(rescheduleButton.dataset.rescheduleFormId));
+            if (applicationForm) openRescheduleInterviewModal(applicationForm);
+            return;
+        }
 
-        const applicationForm = pendingFormsById.get(Number(rescheduleButton.dataset.rescheduleFormId));
-        if (!applicationForm) return;
-
-        openRescheduleInterviewModal(applicationForm);
+        const analyzeButton = event.target.closest(".icon-btn--primary[data-analyze-form-id]");
+        if (analyzeButton) {
+            const applicationForm = pendingFormsById.get(Number(analyzeButton.dataset.analyzeFormId));
+            if (applicationForm) openAnalyzeInterviewModal(applicationForm);
+            return;
+        }
     });
 })
