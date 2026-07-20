@@ -1,14 +1,17 @@
+-- Tabela de roles/cargos no sistema
 create table roles (
 	id int generated always as identity primary key,
 	name varchar(155) not null unique,
 	description text
 );
 
+-- Tabela de setores do sistema
 create table sectors (
 	id int generated always as identity primary key,
 	name varchar(155) not null unique
 );
 
+-- Tabela de usuários do sistema
 create table users (
 	id int generated always as identity primary key,
 	username varchar(100) unique not null,
@@ -23,12 +26,14 @@ create table users (
 	constraint fk_user_sectors foreign key (sector_id) references sectors(id) on delete restrict	
 );
 
+-- Tabela de status do formulário, temos uma migration mostrando cada status
 create table form_status (
     id int generated always as identity primary key,
     name varchar(255),
     description text
 );
 
+-- Tabela principal do formulário de adesão
 create table application_forms (
 	id int generated always as identity primary key,
 	
@@ -81,6 +86,7 @@ create table application_forms (
     constraint fk_application_form_status foreign key (form_status_id) references form_status(id) on delete restrict
 );
 
+-- Tabela de documentos do form, considerando também que pode ser muitos, cada doc tem um registro nessa tabela
 create table application_form_documents (
 	id int generated always as identity primary key,
 	original_filename text not null,
@@ -93,6 +99,7 @@ create table application_form_documents (
 	constraint fk_application_form_documents foreign key (application_form_id) references application_forms(id) on delete cascade
 );
 
+-- Tabela de responsáveis pela inclusão, considerando que podem ser muitos
 create table inclusion_responsibles (
 	id int generated always as identity primary key,
 	name varchar(255),
@@ -104,6 +111,7 @@ create table inclusion_responsibles (
 	constraint fk_application_form_responsible foreign key (application_form_id) references application_forms(id) on delete cascade
 );
 
+-- Parte de aprovação financeira do formulário
 create table application_form_approvals (
 	id int generated always as identity primary key,
 
@@ -118,4 +126,26 @@ create table application_form_approvals (
 
 	constraint fk_approval_application_form foreign key (application_form_id) references application_forms(id) on delete cascade,
 	constraint fk_approval_financial_reviewer foreign key (financial_reviewer_id) references users(id) on delete restrict
+);
+
+-- Parte de entrevista no sistema (caso a triagem seja aprovada, agendar a entrevista)
+create table application_form_interviews (
+	id int generated always as identity primary key,
+
+	-- Informações da entrevista
+	-- Etapa 1: agendamento feito pelo vendedor
+	interview_date date,
+	schedule_observation text,
+
+	-- Etapa 2: análise da entrevista realizada pela Thaís
+	interviewer_id int, -- FK do usuário logado no sistema
+	interview_approved boolean,
+	interview_observation text,
+	interview_reviewed_at timestamptz,
+
+	application_form_id int not null,
+	created_at timestamptz not null default now(),
+	
+	constraint fk_form_interview foreign key (application_form_id) references application_forms(id) on delete cascade,
+	constraint fk_form_interviewer foreign key (interviewer_id) references users(id) on delete restrict
 );

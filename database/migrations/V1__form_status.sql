@@ -13,3 +13,7 @@
 7	Reprovado Pelo Financeiro	O formulário foi reprovado pelo financeiro, disponibilizado a opção de reanálise ou encerramento da negociação
 
 8	Negociação Encerrada Financeiro	A negociação foi encerrada pelo consultor após a reprovação do formulário pelo financeiro.
+
+9	Reprovado na Entrevista	A entrevista foi reprovada pelo médico, é disponibilizado a opção de reanálise ou encerramento da negociação
+
+10	Negociação Encerrada Entrevista	A negociação foi encerrada pelo consultor após a reprovação da entrevista
