@@ -157,6 +157,31 @@
     <span>© 2026 Unimed SS Paraíso — Sistema de Fichas de Adesão</span>
   </footer>
 
+  <!-- ===== MODAL: REAGENDAR ENTREVISTA (confirmação) ===== -->
+  <div class="modal-overlay" id="rescheduleInterviewModalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rescheduleModalTitle">
+      <div class="modal-header">
+        <h2 class="modal-title" id="rescheduleModalTitle">Reagendar Entrevista</h2>
+        <button type="button" class="modal-close" id="rescheduleModalClose" aria-label="Fechar">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-confirm-text">Tem certeza que deseja solicitar o reagendamento dessa entrevista?</p>
+        <div class="modal-confirm-info">
+          <span>ID da entrevista: <strong id="rescheduleModalInterviewId"></strong></span>
+          <span>Beneficiário: <strong id="rescheduleModalBeneficiaryName"></strong></span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn--ghost" id="rescheduleModalCancel">Cancelar</button>
+        <button type="button" class="btn btn--primary" id="rescheduleModalConfirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
   <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
