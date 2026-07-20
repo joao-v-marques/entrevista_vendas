@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from services.application_form_interviews import ApplicationFormInterviewService
 
 bp_form_interviews = Blueprint("bp_form_interviews", __name__)
@@ -12,6 +12,19 @@ def get_all():
             form_interview.to_dict()
             for form_interview in form_interviews
         ]), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+    
+@bp_form_interviews.route("/application-form-interviews", methods=['POST'])
+def schedule_interview():
+    try:
+        data = request.get_json()
+
+        created_form_interview = ApplicationFormInterviewService.schedule_interview(data)
+
+        return jsonify(created_form_interview.to_dict()), 201
     except Exception as e:
         return jsonify({
             "message": str(e)

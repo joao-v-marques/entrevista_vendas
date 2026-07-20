@@ -1,7 +1,7 @@
 from database.connect_db import get_db_connection
 
 class ApplicationFormInterview:
-    def __init__(self, interview_date, schedule_observation, interviewer_id, interview_approved, interview_observation, interview_reviewed_at, application_form_id, interviewer_name=None, id=None, created_at=None):
+    def __init__(self, application_form_id, interview_date=None, schedule_observation=None, interviewer_id=None, interview_approved=None, interview_observation=None, interview_reviewed_at=None, interviewer_name=None, id=None, created_at=None):
         self.interview_date = interview_date
         self.schedule_observation = schedule_observation
         self.interviewer_id = interviewer_id
@@ -51,6 +51,35 @@ class ApplicationFormInterviewModel:
             ]
 
             return form_interviews
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    # função para realizar agendamento (PRIMEIRO POST)
+    @staticmethod
+    def schedule_interview(form_interview):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                INSERT INTO application_form_interviews (interview_date, schedule_observation, application_form_id)
+                VALUES (%s, %s, %s)
+                RETURNING id
+            """
+            values = (form_interview.interview_date, form_interview.schedule_observation, form_interview.application_form_id)
+
+            cursor.execute(sql_query, values)
+            new_id = cursor.fetchone()["id"]
+            conn.commit()
+            
+            form_interview.id = new_id
+            return form_interview
         except Exception as e:
             raise Exception(str(e))
         finally:
