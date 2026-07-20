@@ -39,7 +39,7 @@ class ApplicationFormInterviewModel:
             sql_query = """
                 SELECT ai.id, ai.interview_date, ai.schedule_observation, ai.interviewer_id, u.name AS interviewer_name, ai.interview_approved, ai.interview_observation, ai.interview_reviewed_at, ai.application_form_id, ai.created_at
                 FROM application_form_interviews ai
-                INNER JOIN users u ON u.id = ai.interviewer_id
+                LEFT JOIN users u ON u.id = ai.interviewer_id
             """
             cursor.execute(sql_query)
 
