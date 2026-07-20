@@ -134,7 +134,7 @@ create table application_form_interviews (
 
 	-- Informações da entrevista
 	-- Etapa 1: agendamento feito pelo vendedor
-	interview_date date,
+	interview_date timestamptz,
 	schedule_observation text,
 
 	-- Etapa 2: análise da entrevista realizada pela Thaís
