@@ -6,7 +6,7 @@ import { openScheduleInterviewModal } from "./scheduleModals/scheduleInterviewMo
 const pendingFormsById = new Map();
 
 // função para preencher tabela de formulários aguardando agendamento de entrevista
-async function populateScheduleInterviewTable() {
+export async function populateScheduleInterviewTable() {
     try {
         const response = await fetchWithAuth(`/entrevista-adesao/application-forms/status?status_id=2`);
 

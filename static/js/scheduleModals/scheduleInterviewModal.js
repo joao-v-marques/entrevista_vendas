@@ -1,5 +1,6 @@
 import { renderBeneficiaryInfo } from "../approveModals/beneficiaryInfoView.js";
 import { fetchWithAuth } from "../utils/apiHelper.js";
+import { populateScheduleInterviewTable } from "../schedule_interview.js";
 
 const overlay = document.getElementById("scheduleInterviewModalOverlay");
 const formIdLabel = document.getElementById("scheduleModalFormId");
@@ -79,6 +80,7 @@ function submitForm() {
 
             closeModal();
             notyf.success("Entrevista agendada com sucesso!");
+            await populateScheduleInterviewTable();
 
         } catch (error) {
             notyf.error(error.message)
