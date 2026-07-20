@@ -6,7 +6,7 @@ import { openRescheduleInterviewModal } from "./scheduleModals/rescheduleIntervi
 const pendingFormsById = new Map();
 
 // função para preencher tabela de formulários aguardando aprovação da entrevista
-async function populateAnalyzeInterviewTable() {
+export async function populateAnalyzeInterviewTable() {
     try {
         const response = await fetchWithAuth(`/entrevista-adesao/application-forms/status?status_id=3`);
 

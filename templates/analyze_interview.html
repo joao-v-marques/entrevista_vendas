@@ -255,14 +255,14 @@
                     <span>ID da entrevista: <strong id="rescheduleModalInterviewId"></strong></span>
                     <span>Beneficiário: <strong id="rescheduleModalBeneficiaryName"></strong></span>
                 </div>
-                <form id="">
-                    <input type="hidden" id="" name="application_form_id">
+                <form id="rescheduleInterviewForm">
+                    <input type="hidden" id="reschedule_application_form_id" name="application_form_id">
                 </form>
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn--ghost" id="rescheduleModalCancel">Cancelar</button>
-                <button type="button" class="btn btn--primary" id="rescheduleModalConfirm">Confirmar</button>
+                <button type="submit" form="rescheduleInterviewForm" class="btn btn--primary" id="rescheduleModalConfirm">Confirmar</button>
             </div>
         </div>
     </div>
