@@ -1,4 +1,5 @@
 import { renderBeneficiaryInfo } from "../approveModals/beneficiaryInfoView.js";
+import { fetchWithAuth } from "../utils/apiHelper.js";
 
 const overlay = document.getElementById("scheduleInterviewModalOverlay");
 const formIdLabel = document.getElementById("scheduleModalFormId");
@@ -24,10 +25,64 @@ export function openScheduleInterviewModal(applicationForm) {
 }
 
 function submitForm() {
-    scheduleInterviewForm.addEventListener("submit", (e) => {
+    scheduleInterviewForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        // TODO: enviar o agendamento pro backend (POST ainda não implementado)
+        // pega os dados do formulário
+        const formData = new FormData(scheduleInterviewForm);
+
+        // validação para remover espaços no inicio e final da string
+        for (let [key, value] of formData.entries()) {
+            if (typeof value === "string") {
+                formData.set(key, value.trim());
+            }
+        }
+
+        // monta o payload
+        const data = Object.fromEntries(formData.entries());
+
+        // COLOCAR VALIDAÇÕES DE REQUIRED FIELDS NO FUTURO
+
+        try {
+            const response = await fetchWithAuth("/entrevista-adesao/application-form-interviews", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                let errorMessage = "Houve um erro ao tentar agendar a entrevista";
+
+                try {
+                    const errorJSON = await response.json();
+
+                    if (errorJSON?.message) {
+                        errorMessage = errorJSON.message;
+                    }
+
+                    throw new Error(errorMessage);
+                } catch (error) {
+                    if (error instanceof SyntaxError) {
+                        // resposta não é JSON, tenta ler como texto
+                        errorMessage = `Erro ${response.status}: Falha ao agendar a entrevista`;
+                    } else {
+                        errorMessage = error.message;
+                    }
+                }
+
+                throw new Error(errorMessage);
+            }
+
+            scheduleInterviewForm.reset();
+
+            closeModal();
+            notyf.success("Entrevista agendada com sucesso!");
+
+        } catch (error) {
+            notyf.error(error.message)
+        }
     });
 }
 
