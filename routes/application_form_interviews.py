@@ -46,3 +46,18 @@ def reschedule_interview():
         return jsonify({
             "message": str(e)
         }), 500
+    
+@bp_form_interviews.route("/application-form-interviews", methods=['PUT'])
+def analyze_interview():
+    try:
+        data = request.get_json()
+
+        ApplicationFormInterviewService.analyze_interview(data)
+    
+        return jsonify({
+            "message": "Entrevista análisada com sucesso!"
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500

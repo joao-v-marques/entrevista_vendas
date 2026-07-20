@@ -1,5 +1,6 @@
 import { renderBeneficiaryInfo } from "../approveModals/beneficiaryInfoView.js";
 import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js";
+import { populateAnalyzeInterviewTable } from "../analyze_interview.js";
 
 const overlay = document.getElementById("analyzeInterviewModalOverlay");
 const formIdLabel = document.getElementById("analyzeInterviewModalFormId");
@@ -50,8 +51,26 @@ function submitForm() {
         data.interview_approved = data.interview_approved === "true";
         data.interview_reviewed_at = new Date().toISOString();
 
-        // TODO: enviar `data` para o backend (lógica de update da análise ainda não implementada)
-        console.log("Payload da análise da entrevista:", data);
+        try {
+            const response = await fetchWithAuth("/entrevista-adesao/application-form-interviews", {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                const errorJSON = await response.json().catch(() => null);
+                throw new Error(errorJSON?.message || `Erro ${response.status} ao enviar a análise`);
+            }
+
+            closeModal();
+            notyf.success("Análise da entrevista enviada com sucesso!");
+            await populateAnalyzeInterviewTable();
+        } catch (error) {
+            notyf.error(error.message || "Houve um erro ao enviar a análise");
+        }
     });
 }
 

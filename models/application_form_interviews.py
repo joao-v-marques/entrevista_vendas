@@ -5,7 +5,7 @@ class ApplicationFormInterview:
         self.interview_date = interview_date
         self.schedule_observation = schedule_observation
         self.interviewer_id = interviewer_id
-        self.interviewer_approved = interview_approved
+        self.interview_approved = interview_approved
         self.interview_observation = interview_observation
         self.interview_reviewed_at = interview_reviewed_at
         self.application_form_id = application_form_id
@@ -19,7 +19,7 @@ class ApplicationFormInterview:
             "interview_date": self.interview_date,
             "schedule_observation": self.schedule_observation,
             "interviewer_id": self.interviewer_id,
-            "interviewer_approved": self.interviewer_approved,
+            "interview_approved": self.interview_approved,
             "interview_observation": self.interview_observation,
             "interview_reviewed_at": self.interview_reviewed_at,
             "application_form_id": self.application_form_id,
@@ -139,3 +139,53 @@ class ApplicationFormInterviewModel:
             if conn:
                 conn.close()
 
+    # função para realizar a análise da entrevista (reprovado/aprovado)
+    @staticmethod
+    def analyze_interview(form_interview):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            # 1) fazer o update no agendamento
+            update_interview_query = """
+                UPDATE application_form_interviews
+                SET interviewer_id = %s,
+                    interview_approved = %s,
+                    interview_observation = %s,
+                    interview_reviewed_at = %s
+                WHERE application_form_id = %s
+            """
+            values_interview_update = (form_interview.interviewer_id, form_interview.interview_approved, form_interview.interview_observation, form_interview.interview_reviewed_at, form_interview.application_form_id)
+            cursor.execute(update_interview_query, values_interview_update)
+
+            # 2) fazer a atualização do status para o 4. Aguardando Aprovação da Gerência caso seja aprovado e 9. Reprovado na Entrevista
+            if form_interview.interview_approved:
+                update_query = """
+                    UPDATE application_forms
+                    SET form_status_id = %s
+                    WHERE id = %s
+                """
+                values_update = (4, form_interview.application_form_id)
+                cursor.execute(update_query, values_update)
+            else:
+                update_query = """
+                    UPDATE application_forms
+                    SET form_status_id = %s
+                    WHERE id = %s
+                """
+                values_update = (9, form_interview.application_form_id)
+                cursor.execute(update_query, values_update)
+
+            conn.commit()
+
+            return True
+        except Exception as e:
+            if conn:
+                conn.rollback() # se o UPDATE (ou qualquer coisa falhar), o DELETE também é desfeito
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
