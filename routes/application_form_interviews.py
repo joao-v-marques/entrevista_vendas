@@ -31,3 +31,18 @@ def schedule_interview():
         return jsonify({
             "message": str(e)
         }), 500
+    
+@bp_form_interviews.route("/application-form-interviews", methods=['DELETE'])
+def reschedule_interview():
+    try:
+        application_form_id = request.args.get("application-form-id")
+
+        ApplicationFormInterviewService.reschedule_interview(application_form_id)
+
+        return jsonify({
+            "message": "Solicitado reagendamento da entrevista"
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500

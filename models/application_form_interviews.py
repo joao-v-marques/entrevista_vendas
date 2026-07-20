@@ -100,3 +100,42 @@ class ApplicationFormInterviewModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # função para reagendar uma entrevista (excluir o registro e voltar o status)
+    @staticmethod
+    def reschedule_interview(application_form_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            # 1) apaga o registro da entrevista do formulário
+            delete_query = """
+                DELETE FROM application_form_interviews
+                WHERE application_form_id = %s
+            """
+            values_delete = (application_form_id,)
+            cursor.execute(delete_query, values_delete)
+
+            # 2) volta o status da ficha para  o 2. Aguardando Agendamento da Entrevista
+            update_query = """
+                UPDATE application_forms
+                SET form_status_id = %s
+                WHERE id = %s
+            """
+            values_update = (2, application_form_id)
+            cursor.execute(update_query, values_update)
+            
+            conn.commit()
+
+            return True
+        except Exception as e:
+            if conn:
+                conn.rollback() # se o UPDATE (ou qualquer coisa falhar), o DELETE também é desfeito
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
