@@ -1,5 +1,6 @@
 import { renderBeneficiaryInfo } from "./beneficiaryInfoView.js";
 import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js"
+import { populateFormsApproveTable } from "../approve_form.js";
 
 const overlay = document.getElementById("analyzeModalOverlay");
 const formIdLabel = document.getElementById("analyzeModalFormId");
@@ -76,8 +77,9 @@ function submitForm() {
                 throw new Error(errorJSON?.message || `Erro ${response.status} ao enviar análise`);
             }
 
-            notyf.success("Análise enviada com sucesso");
             closeModal();
+            notyf.success("Análise enviada com sucesso");
+            await populateFormsApproveTable();
         } catch (error) {
             notyf.error(error.message || "Houve um erro ao enviar a análise");
         }

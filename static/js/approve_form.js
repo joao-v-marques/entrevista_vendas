@@ -6,7 +6,7 @@ import { openAnalyzeFormModal } from "./approveModals/analyzeFormModal.js";
 const pendingFormsById = new Map();
 
 // função para preencher tabela de formulários aguardando aprovação financeira
-async function populateFormsApproveTable() {
+export async function populateFormsApproveTable() {
     try {
         const response = await fetchWithAuth(`/entrevista-adesao/application-forms/status?status_id=1`);
 
