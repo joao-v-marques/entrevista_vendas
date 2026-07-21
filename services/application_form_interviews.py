@@ -66,4 +66,37 @@ class ApplicationFormInterviewService:
             return True
         except Exception as e:
             raise Exception(str(e))
-        
+
+    # Solicita reanálise de uma ficha reprovada na entrevista (apaga a entrevista e volta o status para 2)
+    def request_reanalysis(application_form_id):
+        try:
+            application_form = ApplicationFormModel.get_by_id(application_form_id)
+
+            if not application_form:
+                raise ValueError("Ficha não encontrada")
+
+            if application_form.form_status_id != 9:
+                raise ValueError("Só é possível solicitar reanálise de fichas reprovadas na entrevista")
+
+            ApplicationFormInterviewModel.reschedule_interview(application_form_id)
+
+            return True
+        except Exception as e:
+            raise Exception(str(e))
+
+    # Encerra a negociação de uma ficha reprovada na entrevista (soft delete, status 10)
+    def close_negotiation(application_form_id):
+        try:
+            application_form = ApplicationFormModel.get_by_id(application_form_id)
+
+            if not application_form:
+                raise ValueError("Ficha não encontrada")
+
+            if application_form.form_status_id != 9:
+                raise ValueError("Só é possível encerrar a negociação de fichas reprovadas na entrevista")
+
+            ApplicationFormModel.close_interview_negotiation(application_form_id)
+
+            return True
+        except Exception as e:
+            raise Exception(str(e))

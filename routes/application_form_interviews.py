@@ -53,10 +53,34 @@ def analyze_interview():
         data = request.get_json()
 
         ApplicationFormInterviewService.analyze_interview(data)
-    
+
         return jsonify({
             "message": "Entrevista análisada com sucesso!"
         }), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+# POST para solicitar reanálise de uma ficha reprovada na entrevista
+@bp_form_interviews.route("/application-form-interviews/<int:application_form_id>/request-reanalysis", methods=['POST'])
+def request_reanalysis(application_form_id):
+    try:
+        ApplicationFormInterviewService.request_reanalysis(application_form_id)
+
+        return jsonify({"message": "Reanálise solicitada com sucesso"}), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+# POST para encerrar a negociação de uma ficha reprovada na entrevista
+@bp_form_interviews.route("/application-form-interviews/<int:application_form_id>/close-negotiation", methods=['POST'])
+def close_negotiation(application_form_id):
+    try:
+        ApplicationFormInterviewService.close_negotiation(application_form_id)
+
+        return jsonify({"message": "Negociação encerrada com sucesso"}), 200
     except Exception as e:
         return jsonify({
             "message": str(e)

@@ -488,3 +488,30 @@ class ApplicationFormModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # UPDATE que encerra a negociação de uma ficha reprovada na entrevista (soft delete)
+    @staticmethod
+    def close_interview_negotiation(application_form_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                UPDATE application_forms
+                SET form_status_id = 10
+                WHERE id = %s
+            """
+            values = (application_form_id,)
+
+            cursor.execute(sql_query, values)
+            conn.commit()
+
+            return True
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
