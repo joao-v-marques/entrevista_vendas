@@ -6,7 +6,7 @@ import { openAnalyzeManagementModal } from "./managementModals/analyzeManagement
 const pendingFormsById = new Map();
 
 // função para preencher tabela de formulários aguardando aprovação da gerência
-async function populateManagementApproveTable() {
+export async function populateManagementApproveTable() {
     try {
         const response = await fetchWithAuth(`/entrevista-adesao/application-forms/status?status_id=4`);
 

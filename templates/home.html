@@ -77,14 +77,7 @@
                         <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                         Fichas Reprovadas
                     </a>
-                </li>
-                <li>
-                    <a href="{{ url_for('bp_render_credit_inquiry.render_consulta_credito') }}" class="nav-dropdown-link" data-page="consulta-credito">
-                        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="4" width="13" height="9" rx="1.3" stroke="currentColor" stroke-width="1.4"/><path d="M1.5 6.5h13" stroke="currentColor" stroke-width="1.4"/><circle cx="11" cy="10.3" r="1" fill="currentColor"/></svg>
-                        Consulta de crédito
-                    </a>
-                </li>
-            </ul>
+                </li>            </ul>
         </li>
         <li class="nav-dropdown" data-dropdown>
             <button type="button" class="nav-link nav-dropdown-toggle" data-dropdown-toggle aria-haspopup="true" aria-expanded="false">
@@ -151,8 +144,8 @@
   <section class="hero" id="hero">
     <div class="hero-content">
       <p class="hero-eyebrow">Sistema de cadastro</p>
-      <h1 class="hero-title">Fichas de Adesão<br/><em>Unimed SS Paraíso</em></h1>
-      <p class="hero-desc">Gerencie as fichas de beneficiários de forma ágil,<br/>do preenchimento ao envio final.</p>
+      <h1 class="hero-title">Formulários de Adesão<br/><em>Unimed São Sebastião do Paraíso</em></h1>
+      <p class="hero-desc">Gerencie as formulários de beneficiários de forma ágil,<br/>do preenchimento ao envio final.</p>
       <div class="hero-actions">
         <a href="{{ url_for('bp_render_new_form.render_nova_ficha') }}" class="btn btn--primary">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -174,7 +167,7 @@
   <div class="stats-bar">
     <div class="stat-item">
       <span class="stat-value" id="statTotal">—</span>
-      <span class="stat-label">Fichas este mês</span>
+      <span class="stat-label">Formulários este mês</span>
     </div>
     <div class="stat-divider"></div>
     <div class="stat-item">
@@ -183,8 +176,8 @@
     </div>
     <div class="stat-divider"></div>
     <div class="stat-item">
-      <span class="stat-value stat-value--green" id="statEnviadas">—</span>
-      <span class="stat-label">Enviadas</span>
+      <span class="stat-value stat-value--green" id="statFinalizadas">—</span>
+      <span class="stat-label">Finalizadas</span>
     </div>
   </div>
 
@@ -207,58 +200,28 @@
           <span class="quick-card-tag">Novo cadastro</span>
         </a>
 
-        <a href="fichas-pendentes.html" class="quick-card quick-card--amber">
+        <a href="{{ url_for('bp_render_forms.render_fichas') }}" class="quick-card quick-card--amber">
           <div class="quick-card-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.8"/><path d="M11 7v4.5l3 1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 4h14M4 9h14M4 14h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           </div>
           <div class="quick-card-body">
-            <h3 class="quick-card-title">Fichas pendentes</h3>
-            <p class="quick-card-desc">Fichas salvas localmente que ainda não foram enviadas ao sistema</p>
+            <h3 class="quick-card-title">Todas as fichas</h3>
+            <p class="quick-card-desc">Acompanhe o andamento e o status de todas as fichas cadastradas</p>
           </div>
-          <span class="quick-card-tag" id="tagPendentes">Carregando...</span>
+          <span class="quick-card-tag">Acompanhar</span>
         </a>
 
-        <a href="fichas-enviadas.html" class="quick-card quick-card--blue">
+        <a href="{{ url_for('bp_render_dashboard.render_dashboard') }}" class="quick-card quick-card--blue">
           <div class="quick-card-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 6h16M3 11h16M3 16h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.3" stroke="currentColor" stroke-width="1.8"/><rect x="12" y="3" width="7" height="7" rx="1.3" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="12" width="7" height="7" rx="1.3" stroke="currentColor" stroke-width="1.8"/><rect x="12" y="12" width="7" height="7" rx="1.3" stroke="currentColor" stroke-width="1.8"/></svg>
           </div>
           <div class="quick-card-body">
-            <h3 class="quick-card-title">Fichas enviadas</h3>
-            <p class="quick-card-desc">Consulte o histórico completo de adesões já submetidas</p>
+            <h3 class="quick-card-title">Dashboard</h3>
+            <p class="quick-card-desc">Visualize métricas e indicadores das adesões em um só lugar</p>
           </div>
-          <span class="quick-card-tag" id="tagEnviadas">Carregando...</span>
+          <span class="quick-card-tag">Métricas</span>
         </a>
 
-      </div>
-    </section>
-
-    <!-- Recent fichas -->
-    <section class="section">
-      <h2 class="section-label">Fichas recentes</h2>
-      <div class="table-card">
-        <div class="table-card-header">
-          <span class="table-card-title">Últimas fichas inseridas</span>
-          <a href="fichas-enviadas.html" class="table-card-link">Ver todas →</a>
-        </div>
-        <div class="table-wrapper">
-          <table id="tabelaRecentes">
-            <thead>
-              <tr>
-                <th>Beneficiário</th>
-                <th>Plano</th>
-                <th>Consultor</th>
-                <th>Data</th>
-                <th>Status</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="tbodyRecentes">
-              <tr class="table-empty-row">
-                <td colspan="6">Nenhuma ficha encontrada.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
       </div>
     </section>
 
@@ -272,6 +235,6 @@
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
   <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/home.js') }}"></script>
 </body>
 </html>

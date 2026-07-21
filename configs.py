@@ -4,7 +4,6 @@ from routes.render_pages.bp_render_form import bp_render_forms
 from routes.render_pages.bp_render_dashboard import bp_render_dashboard
 from routes.render_pages.bp_render_approve_form import bp_render_approve_form
 from routes.render_pages.bp_render_rejected_forms import bp_render_rejected_forms
-from routes.render_pages.bp_render_credit_inquiry import bp_render_credit_inquiry
 from routes.render_pages.bp_render_schedule_interview import bp_render_schedule_interview
 from routes.render_pages.bp_render_analyze_interview import bp_render_analyze_interview
 from routes.render_pages.bp_render_rejected_interview_forms import bp_render_rejected_interview_forms
@@ -34,7 +33,6 @@ def config_bps(app):
     app.register_blueprint(bp_render_dashboard, url_prefix=prefix)
     app.register_blueprint(bp_render_approve_form, url_prefix=prefix)
     app.register_blueprint(bp_render_rejected_forms, url_prefix=prefix)
-    app.register_blueprint(bp_render_credit_inquiry, url_prefix=prefix)
     app.register_blueprint(bp_render_schedule_interview, url_prefix=prefix)
     app.register_blueprint(bp_render_analyze_interview, url_prefix=prefix)
     app.register_blueprint(bp_render_rejected_interview_forms, url_prefix=prefix)

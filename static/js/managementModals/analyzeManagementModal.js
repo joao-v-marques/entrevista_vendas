@@ -1,5 +1,6 @@
 import { renderBeneficiaryInfo } from "../approveModals/beneficiaryInfoView.js";
 import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js"
+import { populateManagementApproveTable } from "../management_approval.js";
 
 const overlay = document.getElementById("analyzeManagementModalOverlay");
 const formIdLabel = document.getElementById("analyzeManagementModalFormId");
@@ -74,8 +75,9 @@ function submitForm() {
                 throw new Error(errorJSON?.message || `Erro ${response.status} ao enviar análise`);
             }
 
-            notyf.success("Análise enviada com sucesso");
             closeModal();
+            notyf.success("Análise enviada com sucesso");
+            await populateManagementApproveTable();
         } catch (error) {
             notyf.error(error.message || "Houve um erro ao enviar a análise");
         }
