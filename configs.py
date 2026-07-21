@@ -8,6 +8,8 @@ from routes.render_pages.bp_render_credit_inquiry import bp_render_credit_inquir
 from routes.render_pages.bp_render_schedule_interview import bp_render_schedule_interview
 from routes.render_pages.bp_render_analyze_interview import bp_render_analyze_interview
 from routes.render_pages.bp_render_rejected_interview_forms import bp_render_rejected_interview_forms
+from routes.render_pages.bp_render_management_approval import bp_render_management_approval
+from routes.render_pages.bp_render_rejected_management_forms import bp_render_rejected_management_forms
 from routes.render_pages.bp_render_login import bp_render_login
 
 from routes.users_controller import bp_users
@@ -17,6 +19,7 @@ from routes.application_form_documents_controller import bp_application_form_doc
 from routes.application_forms_approvals import bp_application_form_approval
 from routes.auth_controller import bp_auth
 from routes.application_form_interviews import bp_form_interviews
+from routes.application_form_management import bp_application_form_management
 
 prefix = "/entrevista-adesao"
 
@@ -35,6 +38,8 @@ def config_bps(app):
     app.register_blueprint(bp_render_schedule_interview, url_prefix=prefix)
     app.register_blueprint(bp_render_analyze_interview, url_prefix=prefix)
     app.register_blueprint(bp_render_rejected_interview_forms, url_prefix=prefix)
+    app.register_blueprint(bp_render_management_approval, url_prefix=prefix)
+    app.register_blueprint(bp_render_rejected_management_forms, url_prefix=prefix)
     app.register_blueprint(bp_render_login, url_prefix=prefix)
 
     # registro de endpoints
@@ -45,3 +50,4 @@ def config_bps(app):
     app.register_blueprint(bp_application_form_documents, url_prefix=prefix)
     app.register_blueprint(bp_application_form_approval, url_prefix=prefix)
     app.register_blueprint(bp_form_interviews, url_prefix=prefix)
+    app.register_blueprint(bp_application_form_management, url_prefix=prefix)

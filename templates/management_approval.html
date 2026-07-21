@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unimed SSParaíso — Fichas Reprovadas na Entrevista</title>
+    <title>Unimed SSParaíso — Aprovar gerência</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -181,7 +181,7 @@
                         </li>
                         <li>
                             <a href="{{ url_for('bp_render_rejected_interview_forms.render_fichas_reprovadas_entrevista') }}"
-                                class="nav-dropdown-link active" data-page="fichas-reprovadas-entrevista">
+                                class="nav-dropdown-link" data-page="fichas-reprovadas-entrevista">
                                 <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
                                     <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
                                         stroke-linecap="round" />
@@ -207,7 +207,7 @@
                     <ul class="nav-dropdown-menu" data-dropdown-menu>
                         <li>
                             <a href="{{ url_for('bp_render_management_approval.render_aprovar_gerencia') }}"
-                                class="nav-dropdown-link" data-page="aprovar-gerencia">
+                                class="nav-dropdown-link active" data-page="aprovar-gerencia">
                                 <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
                                     <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6"
                                         stroke-linecap="round" stroke-linejoin="round" />
@@ -250,8 +250,8 @@
         <section class="section">
             <div class="form-card">
                 <div class="form-card-header">
-                    <h2 class="form-card-title">Fichas Reprovadas na Entrevista</h2>
-                    <p class="form-card-description">Solicite uma reanálise da entrevista ou encerre a negociação das fichas reprovadas.</p>
+                    <h2 class="form-card-title">Fichas Aguardando Aprovação da Gerência</h2>
+                    <p class="form-card-description">Lista de fichas aprovadas na entrevista, aguardando validação final da gerência.</p>
                 </div>
 
                 <!-- Lista de Fichas -->
@@ -267,7 +267,7 @@
                                 <th class="actions-column">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyRejectedInterviewForms">
+                        <tbody id="tbodyPendingManagementApproval">
 
                         </tbody>
                     </table>
@@ -281,10 +281,83 @@
         <span>© 2026 Unimed SS Paraíso — Sistema de Fichas de Adesão</span>
     </footer>
 
+    <!-- ===== MODAL: ANÁLISE DA GERÊNCIA ===== -->
+    <div class="modal-overlay" id="analyzeManagementModalOverlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="analyzeManagementModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="analyzeManagementModalTitle">Análise da Gerência da Ficha #<span id="analyzeManagementModalFormId"></span>
+                </h2>
+                <button type="button" class="modal-close" id="analyzeManagementModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Seção 1: Informações do beneficiário (somente leitura) -->
+                <section class="modal-section">
+                    <h3 class="form-section-title">Informações do Beneficiário</h3>
+                    <div class="info-grid" id="managementBeneficiaryInfoGrid"></div>
+                </section>
+
+                <!-- Seção 2: Aprovação da gerência -->
+                <section class="modal-section">
+                    <h3 class="form-section-title">Aprovação da Gerência</h3>
+
+                    <div class="approval-status" id="managementApprovalStatusBanner"></div>
+
+                    <form id="managementApprovalForm" class="form-grid">
+                        <!-- ID do application_forms (formulário principal) que estamos enviando -->
+                        <input type="hidden" id="management_application_form_id" name="application_form_id">
+                        <!-- ID do usuário que está logado, ou seja, quem está realizando a aprovação/reprova -->
+                        <input type="hidden" id="manager_id_input" name="manager_id">
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Decisão</label>
+                            <div class="decision-group">
+
+                                <label class="decision-option decision-option--approve">
+                                    <input type="radio" name="management_approved" value="true" id="managementApproveRadio">
+                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                                        <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <span>Aprovar</span>
+                                </label>
+
+                                <label class="decision-option decision-option--reject">
+                                    <input type="radio" name="management_approved" value="false" id="managementRejectRadio">
+                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                                    </svg>
+                                    <span>Reprovar</span>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+
+                            <label class="form-label" for="managementObservation">Observações</label>
+                            <textarea class="textarea" id="managementObservation" name="management_observation" placeholder="Observações da análise da gerência..." required></textarea>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" id="analyzeManagementModalCancel">Fechar</button>
+                <button form="managementApprovalForm" type="submit" class="btn btn--primary" id="analyzeManagementModalSubmit">Enviar Análise</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
-    <script type="module" src="{{ url_for('static', filename='js/rejected_interview_forms.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/managementModals/analyzeManagementModal.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/management_approval.js') }}"></script>
 </body>
 
 </html>

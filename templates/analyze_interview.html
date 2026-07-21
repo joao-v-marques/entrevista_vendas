@@ -191,6 +191,42 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-dropdown" data-dropdown>
+                    <button type="button" class="nav-link nav-dropdown-toggle" data-dropdown-toggle aria-haspopup="true"
+                        aria-expanded="false">
+                        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1.5l5.5 2v3.8c0 3.2-2.3 5.9-5.5 6.7-3.2-.8-5.5-3.5-5.5-6.7V3.5l5.5-2z"
+                                stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+                        </svg>
+                        Gerência
+                        <svg class="nav-dropdown-caret" width="10" height="10" viewBox="0 0 10 10" fill="none">
+                            <path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <ul class="nav-dropdown-menu" data-dropdown-menu>
+                        <li>
+                            <a href="{{ url_for('bp_render_management_approval.render_aprovar_gerencia') }}"
+                                class="nav-dropdown-link" data-page="aprovar-gerencia">
+                                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                    <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                Aprovar ficha
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('bp_render_rejected_management_forms.render_fichas_reprovadas_gerencia') }}"
+                                class="nav-dropdown-link" data-page="fichas-reprovadas-gerencia">
+                                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                                    <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
+                                        stroke-linecap="round" />
+                                </svg>
+                                Fichas Reprovadas
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
 
             <div class="navbar-user" id="navbarUser">

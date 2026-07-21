@@ -17,3 +17,7 @@
 9	Reprovado na Entrevista	A entrevista foi reprovada pelo médico, é disponibilizado a opção de reanálise ou encerramento da negociação
 
 10	Negociação Encerrada Entrevista	A negociação foi encerrada pelo consultor após a reprovação da entrevista
+
+11	Reprovado pela Gerência	O formulário foi reprovado pela gerência, disponibilizado a opção de reanálise ou encerramento da negociação
+
+12	Negociação Encerrada Gerência	A negociação foi encerrada pelo consultor após a reprovação do formulário pela gerência.

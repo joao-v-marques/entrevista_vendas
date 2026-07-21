@@ -149,3 +149,20 @@ create table application_form_interviews (
 	constraint fk_form_interview foreign key (application_form_id) references application_forms(id) on delete cascade,
 	constraint fk_form_interviewer foreign key (interviewer_id) references users(id) on delete restrict
 );
+
+-- Parte de aprovação pela gerencia, caso seja necessário no futuro podemos passar para apenas o cleber usar
+create table application_form_management (
+	id int generated always as identity primary key,
+
+	-- Informações da aprovação/reprova pela gerencia
+	manager_id int,
+	management_approved boolean,
+	management_observation text,
+	management_reviewed_at timestamptz,
+
+	application_form_id int not null,
+	created_at timestamptz not null default now(),
+
+	constraint fk_management_application_form foreign key (application_form_id) references application_forms(id) on delete cascade,
+	constraint fk_management_manager foreign key (manager_id) references users(id) on delete restrict
+);
