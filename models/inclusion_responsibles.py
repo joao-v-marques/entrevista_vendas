@@ -83,6 +83,31 @@ class InclusionResponsiblesModel:
             if conn:
                 conn.close()
 
+    # Executa apenas o INSERT usando um cursor externo, sem commit/close.
+    # Permite que o cadastro participe de uma transação maior (cadastro atômico).
+    @staticmethod
+    def insert(cursor, inclusion_responsible):
+        sql_query = """
+            INSERT INTO inclusion_responsibles (
+                name, cpf, marital_state, profession, application_form_id
+            ) VALUES (
+                %s, %s, %s, %s, %s
+            )
+            RETURNING id
+        """
+        values = (
+            inclusion_responsible.name,
+            inclusion_responsible.cpf,
+            inclusion_responsible.marital_state,
+            inclusion_responsible.profession,
+            inclusion_responsible.application_form_id,
+        )
+
+        cursor.execute(sql_query, values)
+        inclusion_responsible.id = cursor.fetchone()["id"]
+
+        return inclusion_responsible
+
     # POST de um responsável pela inclusão no sistema
     @staticmethod
     def create(inclusion_responsible):
@@ -91,27 +116,9 @@ class InclusionResponsiblesModel:
         try:
             conn, cursor = get_db_connection()
 
-            sql_query = """
-                INSERT INTO inclusion_responsibles (
-                    name, cpf, marital_state, profession, application_form_id
-                ) VALUES (
-                    %s, %s, %s, %s, %s
-                )
-                RETURNING id
-            """
-            values = (
-                inclusion_responsible.name,
-                inclusion_responsible.cpf,
-                inclusion_responsible.marital_state,
-                inclusion_responsible.profession,
-                inclusion_responsible.application_form_id,
-            )
-
-            cursor.execute(sql_query, values)
-            new_id = cursor.fetchone()["id"]
+            InclusionResponsiblesModel.insert(cursor, inclusion_responsible)
             conn.commit()
 
-            inclusion_responsible.id = new_id
             return inclusion_responsible
         except Exception as e:
             raise Exception(str(e))

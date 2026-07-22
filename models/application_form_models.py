@@ -1,4 +1,5 @@
 from database.connect_db import get_db_connection
+from models.inclusion_responsibles import InclusionResponsiblesModel
 
 class ApplicationForm:
     def __init__(self, beneficiary_type, inclusion_type, inclusion_date, contract_type, plan_type, model_proposal, expiration_month, is_pa_digital, is_aeromedic, is_discount, beneficiary_name, beneficiary_birth_date, beneficiary_phone, beneficiary_email, beneficiary_marital_state, billing_email, is_portability, especial_observations, form_status_id, form_status_name, created_at=None, portability_accepted=None, portability_accepted_date=None, portability_observation=None, grace_option=None, beneficiary_cpf=None, secondary_beneficiary_primary_name=None, secondary_beneficiary_kinship=None,  discount_percentage=None, discount_observation=None, consultant_id=None, consultant_name=None, id=None, cnpj=None, previous_plan=None):
@@ -284,6 +285,48 @@ class ApplicationFormModel:
                 conn.close()
 
     # POST de um form no sistema
+    # Executa apenas o INSERT usando um cursor externo, sem commit/close.
+    # Permite que o cadastro participe de uma transação maior (cadastro atômico).
+    @staticmethod
+    def insert_form(cursor, application_form):
+        sql_query = """
+            INSERT INTO application_forms (
+                beneficiary_type, consultant_id, inclusion_type, cnpj, previous_plan,
+                inclusion_date, contract_type, plan_type, model_proposal, expiration_month,
+                is_pa_digital, is_aeromedic, is_discount, discount_percentage, discount_observation,
+                beneficiary_name, beneficiary_cpf, beneficiary_birth_date, beneficiary_phone, beneficiary_email,
+                beneficiary_marital_state, billing_email,
+                secondary_beneficiary_primary_name, secondary_beneficiary_kinship,
+                is_portability, portability_accepted, portability_accepted_date, portability_observation,
+                grace_option, especial_observations, form_status_id
+            ) VALUES (
+                %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s,
+                %s, %s,
+                %s, %s,
+                %s, %s, %s, %s,
+                %s, %s, %s
+            )
+            RETURNING id
+        """
+        values = (
+            application_form.beneficiary_type, application_form.consultant_id, application_form.inclusion_type, application_form.cnpj, application_form.previous_plan,
+            application_form.inclusion_date, application_form.contract_type, application_form.plan_type, application_form.model_proposal, application_form.expiration_month,
+            application_form.is_pa_digital, application_form.is_aeromedic, application_form.is_discount, application_form.discount_percentage, application_form.discount_observation,
+            application_form.beneficiary_name, application_form.beneficiary_cpf, application_form.beneficiary_birth_date, application_form.beneficiary_phone, application_form.beneficiary_email,
+            application_form.beneficiary_marital_state, application_form.billing_email,
+            application_form.secondary_beneficiary_primary_name, application_form.secondary_beneficiary_kinship,
+            application_form.is_portability, application_form.portability_accepted, application_form.portability_accepted_date, application_form.portability_observation,
+            application_form.grace_option, application_form.especial_observations, application_form.form_status_id,
+        )
+
+        cursor.execute(sql_query, values)
+        application_form.id = cursor.fetchone()["id"]
+
+        return application_form
+
     @staticmethod
     def create_form(application_form):
         conn = None
@@ -291,46 +334,40 @@ class ApplicationFormModel:
         try:
             conn, cursor = get_db_connection()
 
-            sql_query = """
-                INSERT INTO application_forms (
-                    beneficiary_type, consultant_id, inclusion_type, cnpj, previous_plan,
-                    inclusion_date, contract_type, plan_type, model_proposal, expiration_month,
-                    is_pa_digital, is_aeromedic, is_discount, discount_percentage, discount_observation,
-                    beneficiary_name, beneficiary_cpf, beneficiary_birth_date, beneficiary_phone, beneficiary_email,
-                    beneficiary_marital_state, billing_email,
-                    secondary_beneficiary_primary_name, secondary_beneficiary_kinship,
-                    is_portability, portability_accepted, portability_accepted_date, portability_observation,
-                    grace_option, especial_observations, form_status_id
-                ) VALUES (
-                    %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s,
-                    %s, %s,
-                    %s, %s,
-                    %s, %s, %s, %s,
-                    %s, %s, %s
-                )
-                RETURNING id
-            """
-            values = (
-                application_form.beneficiary_type, application_form.consultant_id, application_form.inclusion_type, application_form.cnpj, application_form.previous_plan,
-                application_form.inclusion_date, application_form.contract_type, application_form.plan_type, application_form.model_proposal, application_form.expiration_month,
-                application_form.is_pa_digital, application_form.is_aeromedic, application_form.is_discount, application_form.discount_percentage, application_form.discount_observation,
-                application_form.beneficiary_name, application_form.beneficiary_cpf, application_form.beneficiary_birth_date, application_form.beneficiary_phone, application_form.beneficiary_email,
-                application_form.beneficiary_marital_state, application_form.billing_email,
-                application_form.secondary_beneficiary_primary_name, application_form.secondary_beneficiary_kinship,
-                application_form.is_portability, application_form.portability_accepted, application_form.portability_accepted_date, application_form.portability_observation,
-                application_form.grace_option, application_form.especial_observations, application_form.form_status_id,
-            )
-
-            cursor.execute(sql_query, values)
-            new_id = cursor.fetchone()["id"]
+            ApplicationFormModel.insert_form(cursor, application_form)
             conn.commit()
 
-            application_form.id = new_id
             return application_form
         except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    # Cadastro ATÔMICO: cria o formulário e todos os responsáveis pela inclusão em
+    # uma única transação. Se qualquer insert falhar, é feito rollback de tudo, evitando
+    # formulários órfãos (form sem responsáveis, ou responsáveis sem form).
+    @staticmethod
+    def create_form_with_responsibles(application_form, responsibles):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            ApplicationFormModel.insert_form(cursor, application_form)
+
+            for responsible in responsibles:
+                responsible.application_form_id = application_form.id
+                InclusionResponsiblesModel.insert(cursor, responsible)
+
+            conn.commit()
+
+            return application_form, responsibles
+        except Exception as e:
+            if conn:
+                conn.rollback()
             raise Exception(str(e))
         finally:
             if cursor:

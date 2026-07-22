@@ -68,6 +68,28 @@ def create_form():
             "message": str(e)
         }), 500
 
+# POST ATÔMICO: cria o formulário e seus responsáveis pela inclusão em uma única
+# transação, evitando o cadastro de um registro sem os demais obrigatórios.
+@bp_application_form.route("/application-forms/complete", methods=['POST'])
+def create_form_complete():
+    try:
+        data = request.get_json()
+
+        application_form, responsibles = ApplicationFormService.create_form_with_responsibles(data)
+
+        return jsonify({
+            "form": application_form.to_dict(),
+            "responsibles": [responsible.to_dict() for responsible in responsibles],
+        }), 201
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
 # POST para solicitar reanálise financeira de uma ficha reprovada
 @bp_application_form.route("/application-forms/<int:application_form_id>/request-reanalysis", methods=['POST'])
 def request_reanalysis(application_form_id):
