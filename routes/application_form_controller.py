@@ -38,6 +38,23 @@ def get_by_status():
         }), 500
 
 
+# GET agregado com TODOS os dados de um formulário (usado pela tela de visualização)
+@bp_application_form.route("/application-forms/<int:application_form_id>/details", methods=['GET'])
+def get_full_details(application_form_id):
+    try:
+        details = ApplicationFormService.get_full_details(application_form_id)
+
+        return jsonify(details), 200
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+
 @bp_application_form.route("/application-forms", methods=['POST'])
 def create_form():
     try:
@@ -70,6 +87,22 @@ def close_negotiation(application_form_id):
         ApplicationFormService.close_negotiation(application_form_id)
 
         return jsonify({"message": "Negociação encerrada com sucesso"}), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+# POST para finalizar o cadastro (status 5 -> 6. Finalizado)
+@bp_application_form.route("/application-forms/<int:application_form_id>/finalize", methods=['POST'])
+def finalize_registration(application_form_id):
+    try:
+        ApplicationFormService.finalize_registration(application_form_id)
+
+        return jsonify({"message": "Cadastro finalizado com sucesso"}), 200
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except Exception as e:
         return jsonify({
             "message": str(e)

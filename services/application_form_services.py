@@ -1,4 +1,9 @@
 from models.application_form_models import ApplicationFormModel, ApplicationForm
+from models.inclusion_responsibles import InclusionResponsiblesModel
+from models.application_forms_approvals import ApplicationFormApprovalModel
+from models.application_form_interviews import ApplicationFormInterviewModel
+from models.application_form_management import ApplicationFormManagementModel
+from models.application_form_documents import ApplicationFormDocumentModel
 
 class ApplicationFormService:
     # GET de todos cadastrados no sistema
@@ -7,6 +12,35 @@ class ApplicationFormService:
             application_forms = ApplicationFormModel.get_all()
 
             return application_forms
+        except Exception as e:
+            raise Exception(str(e))
+
+    # GET agregado com TODOS os dados de um formulário: dados principais, responsáveis
+    # pela inclusão, aprovação financeira, entrevista, aprovação da gerência e documentos.
+    # Usado pela tela de visualização (modal), servindo de base para o cadastro no outro sistema.
+    def get_full_details(application_form_id):
+        try:
+            application_form = ApplicationFormModel.get_by_id(application_form_id)
+
+            if not application_form:
+                raise ValueError("Formulário não encontrado")
+
+            responsibles = InclusionResponsiblesModel.get_by_application_form_id(application_form_id)
+            approval = ApplicationFormApprovalModel.get_by_application_form_id(application_form_id)
+            interview = ApplicationFormInterviewModel.get_by_application_form_id(application_form_id)
+            management = ApplicationFormManagementModel.get_by_application_form_id(application_form_id)
+            documents = ApplicationFormDocumentModel.get_by_application_form_id(application_form_id)
+
+            return {
+                "form": application_form.to_dict(),
+                "responsibles": [responsible.to_dict() for responsible in responsibles],
+                "approval": approval.to_dict() if approval else None,
+                "interview": interview.to_dict() if interview else None,
+                "management": management.to_dict() if management else None,
+                "documents": [document.to_dict() for document in documents],
+            }
+        except ValueError:
+            raise
         except Exception as e:
             raise Exception(str(e))
     
@@ -110,5 +144,25 @@ class ApplicationFormService:
             ApplicationFormModel.close_negotiation(application_form_id)
 
             return True
+        except Exception as e:
+            raise Exception(str(e))
+
+    # Finaliza o cadastro de um formulário que está aguardando cadastro no Backoffice
+    # (status 5), movendo-o para o status 6. Finalizado
+    def finalize_registration(application_form_id):
+        try:
+            application_form = ApplicationFormModel.get_by_id(application_form_id)
+
+            if not application_form:
+                raise ValueError("Formulário não encontrado")
+
+            if application_form.form_status_id != 5:
+                raise ValueError("Só é possível finalizar o cadastro de formulários aguardando cadastro no Backoffice")
+
+            ApplicationFormModel.update_status(6, application_form_id)
+
+            return True
+        except ValueError:
+            raise
         except Exception as e:
             raise Exception(str(e))
