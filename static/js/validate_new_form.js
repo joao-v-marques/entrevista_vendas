@@ -245,6 +245,34 @@ function bindUpperNoAccent(input) {
 // Nome do beneficiário (titular ou dependente, o campo é o mesmo)
 document.querySelectorAll('input[name="beneficiary_name"]').forEach(bindUpperNoAccent);
 
+// ! ========== Regra: "Existente" dispensa Estado civil e Profissão do responsável ==========
+// Quando o Tipo de inclusão é "Existente", esses campos não precisam ser preenchidos:
+// ficam ocultos e desabilitados (campo desabilitado não é incluído no FormData).
+function applyExistenteRuleToCard(card) {
+    const isExistente = tipoInclusaoSelect.value === "Existente";
+
+    const maritalSelect = card.querySelector('select[name="marital_state[]"]');
+    const professionInput = card.querySelector('input[name="profession[]"]');
+
+    [maritalSelect, professionInput].forEach((field) => {
+        field.closest(".form-group").hidden = isExistente;
+        field.disabled = isExistente;
+        field.required = !isExistente;
+    });
+
+    if (isExistente) {
+        professionInput.value = "";
+    }
+}
+
+function applyExistenteRuleToAllCards() {
+    responsaveisInclusaoContainer
+        .querySelectorAll(".responsavel-inclusao-card")
+        .forEach(applyExistenteRuleToCard);
+}
+
+tipoInclusaoSelect.addEventListener("change", applyExistenteRuleToAllCards);
+
 function addResponsavelInclusaoCard() {
     responsavelInclusaoSeq += 1;
 
@@ -274,6 +302,9 @@ function addResponsavelInclusaoCard() {
 
     responsaveisInclusaoContainer.appendChild(fragment);
     renumberResponsaveisInclusao();
+
+    // aplica a regra de "Existente" (Estado civil/Profissão) também aos cards recém-adicionados
+    applyExistenteRuleToCard(card);
 }
 
 btnAddResponsavelInclusao.addEventListener("click", addResponsavelInclusaoCard);
