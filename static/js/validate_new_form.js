@@ -1,5 +1,30 @@
 const form = document.getElementById("newMainForm");
 
+// ! ========== Aviso de campos obrigatórios não preenchidos ==========
+// O evento "invalid" dispara em cada campo obrigatório vazio ao tentar enviar. Como ele não
+// borbulha, capturamos no form. Exibimos um único toast por tentativa e rolamos até o primeiro
+// campo em falta (o balão nativo do navegador continua aparecendo no próprio campo).
+let invalidNoticeShown = false;
+
+form.addEventListener(
+    "invalid",
+    (event) => {
+        if (invalidNoticeShown) return;
+        invalidNoticeShown = true;
+
+        notyf.error("Preencha todos os campos obrigatórios antes de enviar.");
+
+        const firstInvalidField = event.target;
+        firstInvalidField.scrollIntoView({ behavior: "smooth", block: "center" });
+
+        // libera o aviso para a próxima tentativa de envio
+        setTimeout(() => {
+            invalidNoticeShown = false;
+        }, 0);
+    },
+    true // captura, pois o evento "invalid" não borbulha
+);
+
 // ! ========== Validação: CNPJ só aparece para "Novo Contrato" ==========
 const tipoInclusaoSelect = document.getElementById("tipo_inclusao");
 const cnpjGroup = document.getElementById("cnpj_empresa_group");
