@@ -59,6 +59,40 @@ class ApplicationFormInterviewModel:
             if conn:
                 conn.close()
 
+    # GET da entrevista de um formulário específico (com nome do entrevistador)
+    @staticmethod
+    def get_by_application_form_id(application_form_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT ai.id, ai.interview_date, ai.schedule_observation, ai.interviewer_id, u.name AS interviewer_name,
+                       ai.interview_approved, ai.interview_observation, ai.interview_reviewed_at, ai.application_form_id, ai.created_at
+                FROM application_form_interviews ai
+                LEFT JOIN users u ON u.id = ai.interviewer_id
+                WHERE ai.application_form_id = %s
+                ORDER BY ai.id DESC
+                LIMIT 1
+            """
+            values = (application_form_id,)
+
+            cursor.execute(sql_query, values)
+            form_interview_data = cursor.fetchone()
+
+            if not form_interview_data:
+                return None
+
+            return ApplicationFormInterview(**form_interview_data)
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     # função para realizar agendamento (PRIMEIRO POST)
     @staticmethod
     def schedule_interview(form_interview):

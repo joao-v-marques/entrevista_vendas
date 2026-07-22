@@ -1,9 +1,10 @@
 from database.connect_db import get_db_connection
 
 class ApplicationFormApproval:
-    def __init__(self, financial_approved, financial_reviewer_id, financial_reviewed_at, financial_observation, application_form_id, created_at=None, id=None):
+    def __init__(self, financial_approved, financial_reviewer_id, financial_reviewed_at, financial_observation, application_form_id, financial_reviewer_name=None, created_at=None, id=None):
         self.financial_approved = financial_approved
         self.financial_reviewer_id = financial_reviewer_id
+        self.financial_reviewer_name = financial_reviewer_name
         self.financial_reviewed_at = financial_reviewed_at
         self.financial_observation = financial_observation
         self.application_form_id = application_form_id
@@ -15,6 +16,7 @@ class ApplicationFormApproval:
             "id": self.id,
             "financial_approved": self.financial_approved,
             "financial_reviewer_id": self.financial_reviewer_id,
+            "financial_reviewer_name": self.financial_reviewer_name,
             "financial_reviewed_at": self.financial_reviewed_at,
             "financial_observation": self.financial_observation,
             "application_form_id": self.application_form_id,
@@ -43,6 +45,40 @@ class ApplicationFormApprovalModel:
             ]
 
             return approve_forms
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    # GET da aprovação financeira de um formulário específico (com nome do revisor)
+    @staticmethod
+    def get_by_application_form_id(application_form_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT fa.id, fa.financial_approved, fa.financial_reviewer_id, u.name AS financial_reviewer_name,
+                       fa.financial_reviewed_at, fa.financial_observation, fa.application_form_id, fa.created_at
+                FROM application_form_approvals fa
+                LEFT JOIN users u ON u.id = fa.financial_reviewer_id
+                WHERE fa.application_form_id = %s
+                ORDER BY fa.id DESC
+                LIMIT 1
+            """
+            values = (application_form_id,)
+
+            cursor.execute(sql_query, values)
+            approve_form_data = cursor.fetchone()
+
+            if not approve_form_data:
+                return None
+
+            return ApplicationFormApproval(**approve_form_data)
         except Exception as e:
             raise Exception(str(e))
         finally:

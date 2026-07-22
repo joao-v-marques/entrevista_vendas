@@ -50,6 +50,39 @@ class InclusionResponsiblesModel:
             if conn:
                 conn.close()
 
+    # GET de todos os responsáveis pela inclusão de um formulário específico
+    @staticmethod
+    def get_by_application_form_id(application_form_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT id, name, cpf, marital_state, profession, application_form_id
+                FROM inclusion_responsibles
+                WHERE application_form_id = %s
+                ORDER BY id
+            """
+            values = (application_form_id,)
+
+            cursor.execute(sql_query, values)
+            inclusion_responsibles_data = cursor.fetchall()
+
+            inclusion_responsibles = [
+                InclusionResponsibles(**inclusion_responsible)
+                for inclusion_responsible in inclusion_responsibles_data
+            ]
+
+            return inclusion_responsibles
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     # POST de um responsável pela inclusão no sistema
     @staticmethod
     def create(inclusion_responsible):
