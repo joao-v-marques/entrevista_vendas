@@ -28,6 +28,10 @@ if (consultorDisplay && consultantIdInput) {
 // generosa para conexões lentas; o objetivo é só cancelar requisições realmente travadas.
 const SUBMIT_TIMEOUT_MS = 60000;
 
+// Limite total dos documentos (20 MB). Deve ficar abaixo do MAX_CONTENT_LENGTH do
+// backend (21 MB), que ainda conta os demais campos do form + overhead do multipart.
+const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
+
 async function postForm(url, formData, timeoutMs = SUBMIT_TIMEOUT_MS) {
     // fetch não tem timeout nativo: se o servidor aceita a conexão mas nunca responde,
     // a Promise fica pendente para sempre (nem resolve, nem rejeita, nem cai no catch).
@@ -149,6 +153,16 @@ form.addEventListener("submit", async (event) => {
     // documento é obrigatório (mínimo 1); barra o envio antes de chamar o backend
     if (anexedDocs.length === 0) {
         notyf.error("Anexe ao menos um documento para cadastrar a ficha.");
+        setSubmitting(false);
+        return;
+    }
+
+    // barra uploads acima do limite já no navegador, evitando subir arquivos à toa
+    // só para o servidor recusar com 413 (o limite aqui casa com o MAX_CONTENT_LENGTH do backend)
+    const totalDocsBytes = anexedDocs.reduce((total, file) => total + file.size, 0);
+    if (totalDocsBytes > MAX_UPLOAD_BYTES) {
+        const totalMb = (totalDocsBytes / (1024 * 1024)).toFixed(1);
+        notyf.error(`Os documentos somam ${totalMb} MB e excedem o limite de 20 MB. Reduza os arquivos e tente novamente.`);
         setSubmitting(false);
         return;
     }
