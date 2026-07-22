@@ -12,6 +12,33 @@ body {
   margin: 0 auto;
 }
 
+/* ---------- Botão de envio: estado "enviando" ---------- */
+/* enquanto o formulário está sendo enviado, o botão é desabilitado e exibe um spinner */
+#btnSubmitForm:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+#btnSubmitForm.is-loading {
+  pointer-events: none;
+}
+
+.btn-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .btn-back {
   margin-bottom: 1.25rem;
   text-decoration: none;

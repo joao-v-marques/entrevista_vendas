@@ -82,9 +82,28 @@ function resetNewForm() {
     }
 }
 
+// ! ========== Estado "enviando" do botão de envio ==========
+const btnSubmitForm = document.getElementById("btnSubmitForm");
+// guarda o conteúdo original do botão para restaurar depois do envio
+const btnSubmitFormOriginalHTML = btnSubmitForm.innerHTML;
+
+function setSubmitting(isSubmitting) {
+    btnSubmitForm.disabled = isSubmitting;
+    btnSubmitForm.classList.toggle("is-loading", isSubmitting);
+
+    if (isSubmitting) {
+        btnSubmitForm.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span>Enviando...`;
+    } else {
+        btnSubmitForm.innerHTML = btnSubmitFormOriginalHTML;
+    }
+}
+
 // ! ========== Envio do formulário principal ==========
 form.addEventListener("submit", async (event) => {
     event.preventDefault(); // impede o envio padrão do form
+
+    // indica visualmente que o envio começou e evita cliques/envios duplicados
+    setSubmitting(true);
 
     // pega os dados do formulario
     const formData = new FormData(form);
@@ -125,20 +144,27 @@ form.addEventListener("submit", async (event) => {
     }
 
     try {
-        // 1. cria o formulário principal e obtém o id gerado
-        const createdApplicationForm = await postJSON("/entrevista-adesao/application-forms", applicationFormData);
-        const applicationFormId = createdApplicationForm.id;
+        // 1. cadastro ATÔMICO: ficha + responsáveis pela inclusão numa única transação.
+        // Se qualquer parte falhar, o backend faz rollback e nada é gravado, evitando
+        // ficha sem responsáveis (ou vice-versa).
+        const created = await postJSON("/entrevista-adesao/application-forms/complete", {
+            form: applicationFormData,
+            responsibles: responsaveisInclusao,
+        });
+        const applicationFormId = created.form.id;
 
-        // 2. cria cada responsável pela inclusão e os documentos, em paralelo
-        await Promise.all([
-            ...responsaveisInclusao.map((responsavel) =>
-                postJSON("/entrevista-adesao/inclusion-responsibles", {
-                    ...responsavel,
-                    application_form_id: applicationFormId,
-                })
-            ),
-            anexedDocs.length > 0 ? postDocuments(applicationFormId, anexedDocs) : Promise.resolve(),
-        ]);
+        // 2. documentos são opcionais e enviados após o cadastro principal já garantido.
+        // Uma falha aqui não invalida a ficha, então avisamos de forma específica.
+        if (anexedDocs.length > 0) {
+            try {
+                await postDocuments(applicationFormId, anexedDocs);
+            } catch (docError) {
+                notyf.error("Ficha cadastrada, mas não foi possível anexar os documentos. Tente anexá-los novamente pela tela de consulta.");
+                console.log(docError);
+                resetNewForm();
+                return;
+            }
+        }
 
         notyf.success("Ficha cadastrada com sucesso");
         resetNewForm();
@@ -146,5 +172,8 @@ form.addEventListener("submit", async (event) => {
         notyf.error(error.message || "Houve um erro ao cadastrar a ficha");
         console.log(error.message || "Houve um erro ao cadastrar a ficha");
         console.log(error);
+    } finally {
+        // restaura o botão ao estado normal, tanto no sucesso quanto no erro
+        setSubmitting(false);
     }
 });
