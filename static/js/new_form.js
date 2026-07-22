@@ -144,5 +144,7 @@ form.addEventListener("submit", async (event) => {
         resetNewForm();
     } catch (error) {
         notyf.error(error.message || "Houve um erro ao cadastrar a ficha");
+        console.log(error.message || "Houve um erro ao cadastrar a ficha");
+        console.log(error);
     }
 });
