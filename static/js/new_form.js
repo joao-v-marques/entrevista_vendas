@@ -24,20 +24,44 @@ if (consultorDisplay && consultantIdInput) {
 }
 
 // ! ========== Helper de envio: um POST multipart (form + responsáveis + documentos) ==========
-async function postForm(url, formData) {
-    const response = await fetch(url, {
-        method: "POST",
-        credentials: "same-origin",
-        // sem header Content-Type: o browser define o boundary do multipart automaticamente
-        body: formData,
-    });
+// Timeout do envio. Como o cadastro inclui upload de documentos, damos uma folga
+// generosa para conexões lentas; o objetivo é só cancelar requisições realmente travadas.
+const SUBMIT_TIMEOUT_MS = 60000;
 
-    if (!response.ok) {
-        const errorJSON = await response.json().catch(() => null);
-        throw new Error(errorJSON?.message || `Erro ${response.status} ao enviar dados`);
+async function postForm(url, formData, timeoutMs = SUBMIT_TIMEOUT_MS) {
+    // fetch não tem timeout nativo: se o servidor aceita a conexão mas nunca responde,
+    // a Promise fica pendente para sempre (nem resolve, nem rejeita, nem cai no catch).
+    // O AbortController + setTimeout cancelam o fetch nesse caso, transformando o
+    // "trava e não lança" em um erro tratável.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            credentials: "same-origin",
+            // sem header Content-Type: o browser define o boundary do multipart automaticamente
+            body: formData,
+            signal: controller.signal,
+        });
+
+        if (!response.ok) {
+            const errorJSON = await response.json().catch(() => null);
+            throw new Error(errorJSON?.message || `Erro ${response.status} ao enviar dados`);
+        }
+
+        // await para que o timeout também cubra a leitura do corpo da resposta
+        return await response.json();
+    } catch (error) {
+        // quando o abort dispara por timeout, o fetch rejeita com AbortError
+        if (error.name === "AbortError") {
+            throw new Error("A conexão demorou demais e o envio foi cancelado. Verifique sua internet e tente novamente.");
+        }
+        throw error;
+    } finally {
+        // sempre limpa o timer, evitando um abort tardio numa requisição futura
+        clearTimeout(timeoutId);
     }
-
-    return response.json();
 }
 
 // ! ========== Reset completo do formulário após o cadastro, evitando duplicidade ==========
