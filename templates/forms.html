@@ -150,6 +150,31 @@
                     <p class="form-card-description">Lista de todas as fichas do sistema.</p>
                 </div>
 
+                <!-- Filtros -->
+                <div class="forms-filters">
+                    <div class="forms-filter-field forms-filter-field--grow">
+                        <label for="filterBeneficiary">Beneficiário</label>
+                        <input type="text" id="filterBeneficiary" class="input" placeholder="Buscar por nome..." autocomplete="off" />
+                    </div>
+                    <div class="forms-filter-field">
+                        <label for="filterStatus">Status</label>
+                        <select id="filterStatus" class="select">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="forms-filter-field">
+                        <label for="filterConsultant">Consultor</label>
+                        <select id="filterConsultant" class="select">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="forms-filter-field">
+                        <label for="filterDate">Data de inclusão</label>
+                        <input type="date" id="filterDate" class="input" />
+                    </div>
+                    <button type="button" class="btn btn--ghost forms-filter-clear" id="filterClear">Limpar</button>
+                </div>
+
                 <!-- Lista de Fichas -->
                 <div class="fichas-list">
                     <table class="fichas-table">

@@ -6,6 +6,67 @@
   max-width: 1320px;
 }
 
+/* ---------- Barra de filtros ---------- */
+.forms-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+  padding: 1.1rem 1.2rem;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.forms-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 170px;
+}
+
+.forms-filter-field--grow {
+  flex: 1 1 240px;
+}
+
+.forms-filter-field label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--color-text-muted);
+}
+
+.forms-filter-field .input,
+.forms-filter-field .select {
+  padding: 8px 11px;
+  font-size: 13px;
+}
+
+.forms-filter-clear {
+  padding: 9px 18px;
+  font-size: 13px;
+}
+
+/* linha exibida quando nenhum formulário corresponde aos filtros */
+.forms-empty-row td {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 1.75rem 0;
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .forms-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .forms-filter-field {
+    min-width: 0;
+  }
+}
+
 /* ---------- Modal de visualização (somente leitura) ---------- */
 /* título de seção (forms.html não carrega new_form.css, então definimos aqui) */
 .form-section-title {
