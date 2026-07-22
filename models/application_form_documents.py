@@ -52,6 +52,39 @@ class ApplicationFormDocumentModel:
             if conn:
                 conn.close()
 
+    # GET de todos os documentos anexados a um form específico
+    @staticmethod
+    def get_by_application_form_id(application_form_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT id, original_filename, content_type, stored_path, size_bytes, uploaded_at, application_form_id
+                FROM application_form_documents
+                WHERE application_form_id = %s
+                ORDER BY id
+            """
+            values = (application_form_id,)
+
+            cursor.execute(sql_query, values)
+            application_form_documents_data = cursor.fetchall()
+
+            application_form_documents = [
+                ApplicationFormDocument(**application_form_document)
+                for application_form_document in application_form_documents_data
+            ]
+
+            return application_form_documents
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     # POST de um ou mais documentos anexados a um form
     @staticmethod
     def create(application_form_documents):

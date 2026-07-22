@@ -1,5 +1,7 @@
+import io
 import os
 import re
+import zipfile
 import unicodedata
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -19,6 +21,66 @@ class ApplicationFormDocumentService:
             return application_form_documents
         except Exception as e:
             raise Exception(str(e))
+
+    # Monta um .zip em memória com todos os documentos anexados a um form.
+    # Retorna (zip_bytes, zip_filename) para o controller enviar como download.
+    def build_documents_zip(application_form_id):
+        try:
+            documents = ApplicationFormDocumentModel.get_by_application_form_id(application_form_id)
+
+            if not documents:
+                raise ValueError("Nenhum documento anexado foi encontrado para este formulário")
+
+            zip_buffer = io.BytesIO()
+            used_names = {}
+
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                for document in documents:
+                    absolute_path = os.path.join(PROJECT_ROOT, document.stored_path)
+
+                    # ignora silenciosamente registros cujo arquivo físico não existe mais
+                    if not os.path.isfile(absolute_path):
+                        continue
+
+                    arcname = ApplicationFormDocumentService._build_unique_arcname(
+                        document.original_filename, used_names
+                    )
+                    zip_file.write(absolute_path, arcname)
+
+            if not zip_buffer.getbuffer().nbytes or not used_names:
+                raise ValueError("Os arquivos deste formulário não foram encontrados no servidor")
+
+            zip_buffer.seek(0)
+
+            beneficiary_name = ApplicationFormModel.get_beneficiary_name(application_form_id)
+            zip_filename = ApplicationFormDocumentService._build_zip_filename(beneficiary_name, application_form_id)
+
+            return zip_buffer.getvalue(), zip_filename
+        except ValueError:
+            raise
+        except Exception as e:
+            raise Exception(str(e))
+
+    # garante que nomes de arquivos repetidos não sobrescrevam uns aos outros dentro do zip
+    @staticmethod
+    def _build_unique_arcname(original_filename, used_names):
+        name = original_filename or "documento"
+        base, extension = os.path.splitext(name)
+
+        if name not in used_names:
+            used_names[name] = 0
+            return name
+
+        used_names[name] += 1
+        return f"{base}_{used_names[name]}{extension}"
+
+    # monta o nome do arquivo zip: documentos_nome_do_beneficiario_id.zip
+    @staticmethod
+    def _build_zip_filename(beneficiary_name, application_form_id):
+        normalized_name = unicodedata.normalize("NFKD", beneficiary_name or "sem_nome").encode("ascii", "ignore").decode("ascii")
+        safe_name = re.sub(r"[^a-zA-Z0-9]+", "_", normalized_name).strip("_").lower()
+
+        return f"documentos_{safe_name}_{application_form_id}.zip"
 
     # POST de um ou mais documentos anexados a um form
     def create(application_form_id, files):
