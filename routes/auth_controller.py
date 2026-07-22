@@ -21,7 +21,7 @@ def user_login():
             httponly=True,
             samesite='Lax',
             secure=False,
-            max_age=2 * 60 * 60
+            max_age=8 * 60 * 60
         )
 
         return response, 200
