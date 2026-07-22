@@ -85,6 +85,32 @@ class ApplicationFormDocumentModel:
             if conn:
                 conn.close()
 
+    # Executa apenas o INSERT usando um cursor externo, sem commit/close.
+    # Permite que o cadastro participe de uma transação maior (cadastro atômico).
+    @staticmethod
+    def insert(cursor, document):
+        sql_query = """
+            INSERT INTO application_form_documents (
+                original_filename, content_type, stored_path, size_bytes, uploaded_at, application_form_id
+            ) VALUES (
+                %s, %s, %s, %s, %s, %s
+            )
+            RETURNING id
+        """
+        values = (
+            document.original_filename,
+            document.content_type,
+            document.stored_path,
+            document.size_bytes,
+            document.uploaded_at,
+            document.application_form_id,
+        )
+
+        cursor.execute(sql_query, values)
+        document.id = cursor.fetchone()["id"]
+
+        return document
+
     # POST de um ou mais documentos anexados a um form
     @staticmethod
     def create(application_form_documents):
@@ -93,27 +119,8 @@ class ApplicationFormDocumentModel:
         try:
             conn, cursor = get_db_connection()
 
-            sql_query = """
-                INSERT INTO application_form_documents (
-                    original_filename, content_type, stored_path, size_bytes, uploaded_at, application_form_id
-                ) VALUES (
-                    %s, %s, %s, %s, %s, %s
-                )
-                RETURNING id
-            """
-
             for document in application_form_documents:
-                values = (
-                    document.original_filename,
-                    document.content_type,
-                    document.stored_path,
-                    document.size_bytes,
-                    document.uploaded_at,
-                    document.application_form_id,
-                )
-
-                cursor.execute(sql_query, values)
-                document.id = cursor.fetchone()["id"]
+                ApplicationFormDocumentModel.insert(cursor, document)
 
             conn.commit()
 

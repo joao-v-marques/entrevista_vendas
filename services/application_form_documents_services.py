@@ -82,39 +82,63 @@ class ApplicationFormDocumentService:
 
         return f"documentos_{safe_name}_{application_form_id}.zip"
 
+    # Salva os arquivos em disco e devolve (documentos, caminhos_salvos), SEM gravar no banco.
+    # Os caminhos salvos permitem desfazer os arquivos caso a transação do banco falhe.
+    @staticmethod
+    def save_files(application_form_id, beneficiary_name, files):
+        uploaded_at = datetime.now()
+
+        folder_name = ApplicationFormDocumentService._build_folder_name(beneficiary_name, application_form_id, uploaded_at)
+        folder_path = os.path.join(UPLOAD_ROOT, folder_name)
+        os.makedirs(folder_path, exist_ok=True)
+
+        documents = []
+        saved_paths = []
+        for file in files:
+            safe_filename = secure_filename(file.filename)
+
+            file.stream.seek(0, os.SEEK_END)
+            size_bytes = file.stream.tell()
+            file.stream.seek(0)
+
+            absolute_path = os.path.join(folder_path, safe_filename)
+            file.save(absolute_path)
+            saved_paths.append(absolute_path)
+
+            stored_path = os.path.join("upload_docs", folder_name, safe_filename)
+
+            documents.append(ApplicationFormDocument(
+                original_filename=file.filename,
+                content_type=file.mimetype,
+                stored_path=stored_path,
+                size_bytes=size_bytes,
+                uploaded_at=uploaded_at,
+                application_form_id=application_form_id,
+            ))
+
+        return documents, saved_paths
+
+    # Remove do disco arquivos já salvos. Usado para desfazer o upload quando a
+    # transação do banco falha (mantém disco e banco consistentes).
+    @staticmethod
+    def delete_files(saved_paths):
+        for path in saved_paths:
+            try:
+                if os.path.isfile(path):
+                    os.remove(path)
+            except OSError:
+                pass
+
     # POST de um ou mais documentos anexados a um form
     def create(application_form_id, files):
         try:
             # VALIDAÇÕES AQUI
 
             beneficiary_name = ApplicationFormModel.get_beneficiary_name(application_form_id)
-            uploaded_at = datetime.now()
 
-            folder_name = ApplicationFormDocumentService._build_folder_name(beneficiary_name, application_form_id, uploaded_at)
-            folder_path = os.path.join(UPLOAD_ROOT, folder_name)
-            os.makedirs(folder_path, exist_ok=True)
-
-            new_application_form_documents = []
-            for file in files:
-                safe_filename = secure_filename(file.filename)
-
-                file.stream.seek(0, os.SEEK_END)
-                size_bytes = file.stream.tell()
-                file.stream.seek(0)
-
-                absolute_path = os.path.join(folder_path, safe_filename)
-                file.save(absolute_path)
-
-                stored_path = os.path.join("upload_docs", folder_name, safe_filename)
-
-                new_application_form_documents.append(ApplicationFormDocument(
-                    original_filename=file.filename,
-                    content_type=file.mimetype,
-                    stored_path=stored_path,
-                    size_bytes=size_bytes,
-                    uploaded_at=uploaded_at,
-                    application_form_id=application_form_id,
-                ))
+            new_application_form_documents, _ = ApplicationFormDocumentService.save_files(
+                application_form_id, beneficiary_name, files
+            )
 
             created_application_form_documents = ApplicationFormDocumentModel.create(new_application_form_documents)
 

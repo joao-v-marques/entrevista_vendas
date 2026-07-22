@@ -1,9 +1,11 @@
+from database.connect_db import get_db_connection
 from models.application_form_models import ApplicationFormModel, ApplicationForm
 from models.inclusion_responsibles import InclusionResponsiblesModel, InclusionResponsibles
 from models.application_forms_approvals import ApplicationFormApprovalModel
 from models.application_form_interviews import ApplicationFormInterviewModel
 from models.application_form_management import ApplicationFormManagementModel
 from models.application_form_documents import ApplicationFormDocumentModel
+from services.application_form_documents_services import ApplicationFormDocumentService
 
 class ApplicationFormService:
     # GET de todos cadastrados no sistema
@@ -104,15 +106,23 @@ class ApplicationFormService:
         except Exception as e:
             raise Exception(str(e))
 
-    # POST ATÔMICO: cria o formulário e seus responsáveis pela inclusão numa única
-    # transação (tudo ou nada), evitando o cadastro de um registro sem os demais.
-    def create_form_with_responsibles(data):
+    # POST ATÔMICO: cria o formulário, seus responsáveis pela inclusão e os documentos
+    # anexados numa única transação (tudo ou nada). Os arquivos são gravados em disco e,
+    # se qualquer insert falhar, é feito rollback do banco E os arquivos salvos são removidos,
+    # evitando o cadastro de um registro sem os demais obrigatórios.
+    def create_complete(form_data, responsibles_data, files):
+        conn = None
+        cursor = None
+        saved_paths = []
         try:
-            form_data = data.get("form") or {}
-            responsibles_data = data.get("responsibles") or []
+            responsibles_data = responsibles_data or []
+            files = files or []
 
             if not responsibles_data:
                 raise ValueError("É necessário informar ao menos um responsável pela inclusão")
+
+            if not files:
+                raise ValueError("É necessário anexar ao menos um documento")
 
             # discount_percentage é salvo como fração (ex: 50% -> 0.50) para caber em numeric(3, 2)
             discount_percentage = form_data.get("discount_percentage")
@@ -165,15 +175,41 @@ class ApplicationFormService:
                 for responsible in responsibles_data
             ]
 
-            created_application_form, created_responsibles = ApplicationFormModel.create_form_with_responsibles(
-                new_application_form, new_responsibles
-            )
+            conn, cursor = get_db_connection()
 
-            return created_application_form, created_responsibles
+            # 1. ficha (gera o id usado pelos demais registros)
+            ApplicationFormModel.insert_form(cursor, new_application_form)
+
+            # 2. responsáveis pela inclusão
+            for responsible in new_responsibles:
+                responsible.application_form_id = new_application_form.id
+                InclusionResponsiblesModel.insert(cursor, responsible)
+
+            # 3. documentos: grava os arquivos em disco e insere os registros na mesma transação
+            new_documents, saved_paths = ApplicationFormDocumentService.save_files(
+                new_application_form.id, new_application_form.beneficiary_name, files
+            )
+            for document in new_documents:
+                ApplicationFormDocumentModel.insert(cursor, document)
+
+            conn.commit()
+
+            return new_application_form, new_responsibles, new_documents
         except ValueError:
+            if conn:
+                conn.rollback()
+            ApplicationFormDocumentService.delete_files(saved_paths)
             raise
         except Exception as e:
+            if conn:
+                conn.rollback()
+            ApplicationFormDocumentService.delete_files(saved_paths)
             raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
 
     # UPDATE do campo de status do formulário
     def update_status(new_status_id, data):

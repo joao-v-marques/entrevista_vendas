@@ -1,3 +1,5 @@
+import json
+
 from flask import Blueprint, request, jsonify
 from services.application_form_services import ApplicationFormService
 
@@ -68,18 +70,24 @@ def create_form():
             "message": str(e)
         }), 500
 
-# POST ATÔMICO: cria o formulário e seus responsáveis pela inclusão em uma única
-# transação, evitando o cadastro de um registro sem os demais obrigatórios.
+# POST ATÔMICO: cria o formulário, seus responsáveis pela inclusão e os documentos
+# anexados em uma única transação, evitando o cadastro de um registro sem os demais
+# obrigatórios. Recebe multipart/form-data: "form" (JSON), "responsibles" (JSON) e os arquivos.
 @bp_application_form.route("/application-forms/complete", methods=['POST'])
 def create_form_complete():
     try:
-        data = request.get_json()
+        form_data = json.loads(request.form.get("form") or "{}")
+        responsibles_data = json.loads(request.form.get("responsibles") or "[]")
+        files = request.files.getlist("anexed_docs")
 
-        application_form, responsibles = ApplicationFormService.create_form_with_responsibles(data)
+        application_form, responsibles, documents = ApplicationFormService.create_complete(
+            form_data, responsibles_data, files
+        )
 
         return jsonify({
             "form": application_form.to_dict(),
             "responsibles": [responsible.to_dict() for responsible in responsibles],
+            "documents": [document.to_dict() for document in documents],
         }), 201
     except ValueError as e:
         return jsonify({

@@ -1,5 +1,4 @@
 from database.connect_db import get_db_connection
-from models.inclusion_responsibles import InclusionResponsiblesModel
 
 class ApplicationForm:
     def __init__(self, beneficiary_type, inclusion_type, inclusion_date, contract_type, plan_type, model_proposal, expiration_month, is_pa_digital, is_aeromedic, is_discount, beneficiary_name, beneficiary_birth_date, beneficiary_phone, beneficiary_email, beneficiary_marital_state, billing_email, is_portability, especial_observations, form_status_id, form_status_name, created_at=None, portability_accepted=None, portability_accepted_date=None, portability_observation=None, grace_option=None, beneficiary_cpf=None, secondary_beneficiary_primary_name=None, secondary_beneficiary_kinship=None,  discount_percentage=None, discount_observation=None, consultant_id=None, consultant_name=None, id=None, cnpj=None, previous_plan=None):
@@ -339,35 +338,6 @@ class ApplicationFormModel:
 
             return application_form
         except Exception as e:
-            raise Exception(str(e))
-        finally:
-            if cursor:
-                cursor.close()
-            if conn:
-                conn.close()
-
-    # Cadastro ATÔMICO: cria o formulário e todos os responsáveis pela inclusão em
-    # uma única transação. Se qualquer insert falhar, é feito rollback de tudo, evitando
-    # formulários órfãos (form sem responsáveis, ou responsáveis sem form).
-    @staticmethod
-    def create_form_with_responsibles(application_form, responsibles):
-        conn = None
-        cursor = None
-        try:
-            conn, cursor = get_db_connection()
-
-            ApplicationFormModel.insert_form(cursor, application_form)
-
-            for responsible in responsibles:
-                responsible.application_form_id = application_form.id
-                InclusionResponsiblesModel.insert(cursor, responsible)
-
-            conn.commit()
-
-            return application_form, responsibles
-        except Exception as e:
-            if conn:
-                conn.rollback()
             raise Exception(str(e))
         finally:
             if cursor:

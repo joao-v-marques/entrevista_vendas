@@ -23,39 +23,18 @@ if (consultorDisplay && consultantIdInput) {
         });
 }
 
-// ! ========== Helpers de envio: um POST JSON e um POST multipart (documentos) ==========
-async function postJSON(url, payload) {
+// ! ========== Helper de envio: um POST multipart (form + responsáveis + documentos) ==========
+async function postForm(url, formData) {
     const response = await fetch(url, {
         method: "POST",
         credentials: "same-origin",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+        // sem header Content-Type: o browser define o boundary do multipart automaticamente
+        body: formData,
     });
 
     if (!response.ok) {
         const errorJSON = await response.json().catch(() => null);
         throw new Error(errorJSON?.message || `Erro ${response.status} ao enviar dados`);
-    }
-
-    return response.json();
-}
-
-async function postDocuments(applicationFormId, files) {
-    const documentsFormData = new FormData();
-    documentsFormData.append("application_form_id", applicationFormId);
-    files.forEach((file) => documentsFormData.append("anexed_docs", file));
-
-    const response = await fetch("/entrevista-adesao/application-form-documents", {
-        method: "POST",
-        credentials: "same-origin",
-        body: documentsFormData,
-    });
-
-    if (!response.ok) {
-        const errorJSON = await response.json().catch(() => null);
-        throw new Error(errorJSON?.message || `Erro ${response.status} ao enviar documentos`);
     }
 
     return response.json();
@@ -143,28 +122,23 @@ form.addEventListener("submit", async (event) => {
         applicationFormData.beneficiary_cpf = applicationFormData.beneficiary_cpf.replace(/\D/g, "");
     }
 
-    try {
-        // 1. cadastro ATÔMICO: ficha + responsáveis pela inclusão numa única transação.
-        // Se qualquer parte falhar, o backend faz rollback e nada é gravado, evitando
-        // ficha sem responsáveis (ou vice-versa).
-        const created = await postJSON("/entrevista-adesao/application-forms/complete", {
-            form: applicationFormData,
-            responsibles: responsaveisInclusao,
-        });
-        const applicationFormId = created.form.id;
+    // documento é obrigatório (mínimo 1); barra o envio antes de chamar o backend
+    if (anexedDocs.length === 0) {
+        notyf.error("Anexe ao menos um documento para cadastrar a ficha.");
+        setSubmitting(false);
+        return;
+    }
 
-        // 2. documentos são opcionais e enviados após o cadastro principal já garantido.
-        // Uma falha aqui não invalida a ficha, então avisamos de forma específica.
-        if (anexedDocs.length > 0) {
-            try {
-                await postDocuments(applicationFormId, anexedDocs);
-            } catch (docError) {
-                notyf.error("Ficha cadastrada, mas não foi possível anexar os documentos. Tente anexá-los novamente pela tela de consulta.");
-                console.log(docError);
-                resetNewForm();
-                return;
-            }
-        }
+    try {
+        // cadastro ATÔMICO em uma única requisição: ficha + responsáveis + documentos.
+        // Se qualquer parte falhar, o backend faz rollback do banco e remove os arquivos
+        // já gravados, evitando o cadastro de um registro sem os demais obrigatórios.
+        const payload = new FormData();
+        payload.append("form", JSON.stringify(applicationFormData));
+        payload.append("responsibles", JSON.stringify(responsaveisInclusao));
+        anexedDocs.forEach((file) => payload.append("anexed_docs", file));
+
+        await postForm("/entrevista-adesao/application-forms/complete", payload);
 
         notyf.success("Ficha cadastrada com sucesso");
         resetNewForm();
