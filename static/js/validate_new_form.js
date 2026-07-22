@@ -126,6 +126,41 @@ function toggleDiscountField() {
 isDiscountSelect.addEventListener("change", toggleDiscountField);
 toggleDiscountField();
 
+// ! ========== Regra: "Existente" não possui desconto, então trava "Possui desconto?" em NÃO ==========
+// Um select desabilitado não é incluído no FormData, então usamos um input hidden com o mesmo
+// name para continuar enviando is_discount=false enquanto o select fica travado.
+let isDiscountHiddenInput = null;
+
+function toggleDiscountLock() {
+    const isExistente = tipoInclusaoSelect.value === "Existente";
+
+    if (isExistente) {
+        // força NÃO e reflete nos campos dependentes de desconto
+        isDiscountSelect.value = "false";
+        toggleDiscountField();
+
+        // trava o select e garante o envio do valor via input hidden
+        isDiscountSelect.disabled = true;
+        if (!isDiscountHiddenInput) {
+            isDiscountHiddenInput = document.createElement("input");
+            isDiscountHiddenInput.type = "hidden";
+            isDiscountHiddenInput.name = "is_discount";
+            isDiscountSelect.insertAdjacentElement("afterend", isDiscountHiddenInput);
+        }
+        isDiscountHiddenInput.value = "false";
+    } else {
+        // reabilita a escolha do desconto
+        isDiscountSelect.disabled = false;
+        if (isDiscountHiddenInput) {
+            isDiscountHiddenInput.remove();
+            isDiscountHiddenInput = null;
+        }
+    }
+}
+
+tipoInclusaoSelect.addEventListener("change", toggleDiscountLock);
+toggleDiscountLock();
+
 // ! ========== Validação: campos de portabilidade só aparecem se "Realizar análise de portabilidade" for SIM ==========
 const analisePortabilidadeSelect = document.getElementById("analise_portabilidade");
 const portabilidadeAceitaGroup = document.getElementById("portabilidade_aceita_group");
@@ -193,6 +228,23 @@ document.querySelectorAll('input[name="beneficiary_cpf"]').forEach((beneficiaryC
     });
 });
 
+// ! ========== Transformação: sempre em MAIÚSCULO e sem acento ==========
+function toUpperNoAccent(value) {
+    return value
+        .normalize("NFD") // separa letras dos acentos
+        .replace(/[̀-ͯ]/g, "") // remove os acentos
+        .toUpperCase();
+}
+
+function bindUpperNoAccent(input) {
+    input.addEventListener("input", () => {
+        input.value = toUpperNoAccent(input.value);
+    });
+}
+
+// Nome do beneficiário (titular ou dependente, o campo é o mesmo)
+document.querySelectorAll('input[name="beneficiary_name"]').forEach(bindUpperNoAccent);
+
 function addResponsavelInclusaoCard() {
     responsavelInclusaoSeq += 1;
 
@@ -210,6 +262,10 @@ function addResponsavelInclusaoCard() {
         const digits = cpfInput.value.replace(/\D/g, "").slice(0, 11);
         cpfInput.value = maskCpf(digits);
     });
+
+    // Responsável pela inclusão e Profissão do responsável: sempre MAIÚSCULO e sem acento
+    bindUpperNoAccent(card.querySelector('input[name="name[]"]'));
+    bindUpperNoAccent(card.querySelector('input[name="profession[]"]'));
 
     card.querySelector(".btn-remove-responsavel").addEventListener("click", () => {
         card.remove();
