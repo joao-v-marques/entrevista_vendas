@@ -35,6 +35,11 @@ class UserService:
         try:
             password_hash = hash_password(data['password'])
 
+            existing_user = UserModel.get_by_username(data['username'])
+
+            if existing_user:
+                raise ValueError(f"O usuário {data['username']} já está cadastrado")
+
             user = User(
                 username=data['username'],
                 name=data['name'],
