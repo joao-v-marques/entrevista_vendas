@@ -9,6 +9,7 @@ from routes.render_pages.bp_render_analyze_interview import bp_render_analyze_in
 from routes.render_pages.bp_render_rejected_interview_forms import bp_render_rejected_interview_forms
 from routes.render_pages.bp_render_management_approval import bp_render_management_approval
 from routes.render_pages.bp_render_rejected_management_forms import bp_render_rejected_management_forms
+from routes.render_pages.bp_render_users import bp_render_users
 from routes.render_pages.bp_render_login import bp_render_login
 
 from routes.users_controller import bp_users
@@ -38,6 +39,7 @@ def config_bps(app):
     app.register_blueprint(bp_render_rejected_interview_forms, url_prefix=prefix)
     app.register_blueprint(bp_render_management_approval, url_prefix=prefix)
     app.register_blueprint(bp_render_rejected_management_forms, url_prefix=prefix)
+    app.register_blueprint(bp_render_users, url_prefix=prefix)
     app.register_blueprint(bp_render_login, url_prefix=prefix)
 
     # registro de endpoints

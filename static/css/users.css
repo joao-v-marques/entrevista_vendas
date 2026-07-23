@@ -1,0 +1,68 @@
+/* =============================================
+   users.css — Página de administração de usuários
+   ============================================= */
+
+.main-content {
+  max-width: 1320px;
+}
+
+/* ---------- Formulário de cadastro / edição ---------- */
+.user-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1rem 1.3rem;
+}
+
+.user-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--color-border-light);
+}
+
+/* ---------- Modal com formulário ---------- */
+.modal--form {
+  max-width: 720px;
+}
+
+.modal--form .user-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.modal--confirm {
+  max-width: 460px;
+}
+
+.modal--confirm .modal-body {
+  gap: 0;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+/* ---------- Coluna de e-mail (evita quebra estranha) ---------- */
+.fichas-table .user-email {
+  color: var(--color-text-muted);
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 900px) {
+  .user-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .user-form-grid,
+  .modal--form .user-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .user-form-actions {
+    flex-direction: column-reverse;
+  }
+  .user-form-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
