@@ -1,4 +1,5 @@
-from models.users_models import UserModel
+from models.users_models import UserModel, User
+from utils.security import hash_password
 
 class UserService:
     @staticmethod
@@ -25,5 +26,26 @@ class UserService:
             user = UserModel.get_by_id(user_id)
 
             return user
+        except Exception as e:
+            raise Exception(str(e))
+
+    # POST user
+    @staticmethod
+    def create(data):
+        try:
+            password_hash = hash_password(data['password'])
+
+            user = User(
+                username=data['username'],
+                name=data['name'],
+                password_hash=password_hash,
+                email=data['email'],
+                role_id=data['role_id'],
+                sector_id=data['sector_id']
+            )
+
+            created_user = UserModel.create(user)
+
+            return created_user
         except Exception as e:
             raise Exception(str(e))

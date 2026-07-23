@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from services.users_services import UserService
 
 bp_users = Blueprint("bp_users", __name__)
@@ -41,6 +41,20 @@ def get_by_id(user_id):
             return jsonify({"message": "Nenhum usuário encontrado com esse ID"}), 404
         
         return jsonify(user.to_dict())
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+# create novo user
+@bp_users.route("/users", methods=['POST'])
+def create():
+    try:
+        data = request.get_json()
+
+        created_user = UserService.create(data)
+
+        return jsonify(created_user.to_dict()), 201
     except Exception as e:
         return jsonify({
             "message": str(e)

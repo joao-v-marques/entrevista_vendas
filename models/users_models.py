@@ -128,3 +128,33 @@ class UserModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # POST para criar novo usuário
+    @staticmethod
+    def create(user):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                INSERT INTO users (username, name, password_hash, email, role_id, sector_id)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING id
+            """
+            values = (user.username, user.name, user.password_hash, user.email, user.role_id, user.sector_id)
+
+            cursor.execute(sql_query, values)
+            new_id = cursor.fetchone()["id"]
+            conn.commit()
+
+            user.id = new_id
+            user.is_active = True
+            return user
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
