@@ -174,38 +174,31 @@
                     <div class="user-form-grid">
                         <div class="form-group">
                             <label class="form-label required" for="createName">Nome completo</label>
-                            <input type="text" id="createName" name="name" class="input" placeholder="Ex.: Maria Silva" autocomplete="off" />
+                            <input type="text" id="createName" name="name" class="input" placeholder="Ex.: João Victor" autocomplete="off" required/>
                         </div>
                         <div class="form-group">
                             <label class="form-label required" for="createUsername">Usuário</label>
-                            <input type="text" id="createUsername" name="username" class="input" placeholder="Ex.: maria.silva" autocomplete="off" />
+                            <input type="text" id="createUsername" name="username" class="input" placeholder="Ex.: joaovictor" autocomplete="off" required/>
                         </div>
                         <div class="form-group">
-                            <label class="form-label required" for="createEmail">E-mail</label>
-                            <input type="email" id="createEmail" name="email" class="input" placeholder="Ex.: maria@unimed.com.br" autocomplete="off" />
+                            <label class="form-label" for="createEmail">E-mail</label>
+                            <input type="email" id="createEmail" name="email" class="input" placeholder="Ex.: joaovictor@unimedssp.coop.br" autocomplete="off" />
                         </div>
                         <div class="form-group">
                             <label class="form-label required" for="createRole">Cargo</label>
-                            <select id="createRole" name="role_id" class="select">
+                            <select id="createRole" name="role_id" class="select" required>
                                 <!-- Preenchido pelo JS -->
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label required" for="createSector">Setor</label>
+                            <label class="form-label" for="createSector">Setor</label>
                             <select id="createSector" name="sector_id" class="select">
                                 <!-- Preenchido pelo JS -->
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="createStatus">Status</label>
-                            <select id="createStatus" name="is_active" class="select">
-                                <option value="1">Ativo</option>
-                                <option value="0">Inativo</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
                             <label class="form-label required" for="createPassword">Senha</label>
-                            <input type="password" id="createPassword" name="password" class="input" placeholder="Mínimo de 6 caracteres" autocomplete="new-password" />
+                            <input type="password" id="createPassword" name="password" class="input" placeholder="Insira a senha do usuário" autocomplete="new-password" />
                         </div>
                         <div class="form-group">
                             <label class="form-label required" for="createPasswordConfirm">Confirmar senha</label>

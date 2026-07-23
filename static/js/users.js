@@ -261,9 +261,72 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ---------- Formulário de cadastro (lógica de backend pendente) ----------
     const createForm = document.getElementById("createUserForm");
-    createForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        notyf.success("Interface pronta — a criação do usuário será integrada ao backend posteriormente.");
+    createForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        try {
+            const formData = new FormData(createForm);
+
+            // validação remover espaços no inicio e final da string
+            for (let [key, value] of formData.entries()) {
+                if (typeof value === "string") {
+                    formData.set(key, value.trim());
+                }
+            }
+
+            const data = Object.fromEntries(formData.entries());
+
+            const required_fields = [
+                "username",
+                "name",
+                "password",
+                "password_confirm",
+                "role_id"
+            ]
+
+            for (let field of required_fields) {
+                const value = formData.get(field);
+
+                if (!value || value === "") {
+                    notyf.error(`O campo ${field} não pode estar vazio`);
+                    return;
+                }
+            }
+
+            if (data.password !== data.password_confirm) {
+                notyf.error("As senhas inseridas não são iguais.")
+                return;
+            }
+
+            const response = await fetchWithAuth("/entrevista-adesao/users", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                let errorMessage = "Houve um erro ao tentar cadastrar o usuário";
+
+                try {
+                    const errorJSON = await response.json();
+
+                    if (errorJSON?.message) {
+                        errorMessage = errorJSON.message;
+                    }
+                } catch (parseError) {
+                    errorMessage = await response.text();
+                }
+
+                throw new Error(errorMessage);
+            }
+
+            createForm.reset();
+            notyf.success("Usuário cadastrado com sucesso");
+        } catch (error) {
+            notyf.error(error.message);
+        }
     });
 
     // ---------- Modal de edição ----------
