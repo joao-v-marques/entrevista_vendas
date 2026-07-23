@@ -33,6 +33,59 @@ function escapeHtml(value) {
 // guarda a lista completa carregada; os filtros atuam sobre ela sem novo request
 let allUsers = [];
 
+// guardam roles e sectors vindos do backend para reutilizar nos selects
+let allRoles = [];
+let allSectors = [];
+
+// preenche um <select> com options a partir de uma lista, escapando os valores
+function fillSelectOptions(select, items, getValue, getLabel) {
+    if (!select) return;
+    const previous = select.value;
+
+    select.innerHTML = items
+        .map(item => `<option value="${escapeHtml(getValue(item))}">${escapeHtml(getLabel(item))}</option>`)
+        .join("");
+
+    // mantém a seleção anterior caso o valor ainda exista
+    if (items.some(item => String(getValue(item)) === previous)) select.value = previous;
+}
+
+// carrega os cargos do backend e preenche os selects de cargo (cadastro e edição)
+async function loadRoles() {
+    const response = await fetchWithAuth("/entrevista-adesao/roles");
+
+    if (!response.ok) {
+        const errorJSON = await response.json().catch(() => null);
+        throw new Error(errorJSON?.message || "Erro ao carregar os cargos");
+    }
+
+    allRoles = await response.json();
+
+    const getValue = role => role.id;
+    const getLabel = role => getRoleLabel(role.name);
+
+    fillSelectOptions(document.getElementById("createRole"), allRoles, getValue, getLabel);
+    fillSelectOptions(document.getElementById("editRole"), allRoles, getValue, getLabel);
+}
+
+// carrega os setores do backend e preenche os selects de setor (cadastro e edição)
+async function loadSectors() {
+    const response = await fetchWithAuth("/entrevista-adesao/sectors");
+
+    if (!response.ok) {
+        const errorJSON = await response.json().catch(() => null);
+        throw new Error(errorJSON?.message || "Erro ao carregar os setores");
+    }
+
+    allSectors = await response.json();
+
+    const getValue = sector => sector.id;
+    const getLabel = sector => sector.name;
+
+    fillSelectOptions(document.getElementById("createSector"), allSectors, getValue, getLabel);
+    fillSelectOptions(document.getElementById("editSector"), allSectors, getValue, getLabel);
+}
+
 // preenche o select de cargo do filtro com os valores presentes nos dados carregados
 function populateRoleFilter(users) {
     const roleSelect = document.getElementById("filterRole");
@@ -161,6 +214,16 @@ function closeDeleteModal() {
 
 document.addEventListener("DOMContentLoaded", () => {
     populateUsersTable();
+
+    // carrega cargos e setores do backend para preencher os selects
+    loadRoles().catch(error => {
+        console.log(error);
+        notyf.error("Não foi possível carregar os cargos.");
+    });
+    loadSectors().catch(error => {
+        console.log(error);
+        notyf.error("Não foi possível carregar os setores.");
+    });
 
     // ---------- Filtros ----------
     const filterUser = document.getElementById("filterUser");
