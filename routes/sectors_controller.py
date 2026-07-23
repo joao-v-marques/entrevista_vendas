@@ -12,8 +12,8 @@ def get_all():
         return jsonify([
             sector.to_dict()
             for sector in sectors
-        ])
+        ]), 200
     except Exception as e:
         return jsonify({
             "message": str(e)
-        })
+        }), 500
