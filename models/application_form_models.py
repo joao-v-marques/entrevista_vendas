@@ -1,7 +1,7 @@
 from database.connect_db import get_db_connection
 
 class ApplicationForm:
-    def __init__(self, beneficiary_type, inclusion_type, inclusion_date, contract_type, plan_type, model_proposal, expiration_month, is_pa_digital, is_aeromedic, is_discount, beneficiary_name, beneficiary_birth_date, beneficiary_phone, beneficiary_email, beneficiary_marital_state, billing_email, is_portability, especial_observations, form_status_id, form_status_name, created_at=None, portability_accepted=None, portability_accepted_date=None, portability_observation=None, grace_option=None, beneficiary_cpf=None, secondary_beneficiary_primary_name=None, secondary_beneficiary_kinship=None,  discount_percentage=None, discount_observation=None, consultant_id=None, consultant_name=None, id=None, cnpj=None, previous_plan=None):
+    def __init__(self, beneficiary_type, inclusion_type, inclusion_date, contract_type, plan_type, model_proposal, expiration_month, is_pa_digital, is_aeromedic, is_discount, beneficiary_name, beneficiary_birth_date, beneficiary_phone, beneficiary_email, beneficiary_marital_state, billing_email, is_portability, especial_observations, form_status_id, form_status_name, created_at=None, portability_accepted=None, portability_accepted_date=None, portability_observation=None, grace_option=None, beneficiary_cpf=None, secondary_beneficiary_primary_name=None, secondary_beneficiary_kinship=None,  discount_percentage=None, discount_observation=None, consultant_id=None, consultant_name=None, id=None, cnpj=None, previous_plan=None, interview_date=None, schedule_observation=None):
         self.beneficiary_type = beneficiary_type
         self.inclusion_type = inclusion_type
         self.inclusion_date = inclusion_date
@@ -37,6 +37,8 @@ class ApplicationForm:
         self.cnpj = cnpj
         self.previous_plan = previous_plan
         self.form_status_name = form_status_name
+        self.interview_date = interview_date
+        self.schedule_observation = schedule_observation
 
     def to_dict(self):
         return {
@@ -75,6 +77,8 @@ class ApplicationForm:
             "created_at": self.created_at,
             "form_status_id": self.form_status_id,
             "form_status_name": self.form_status_name,
+            "interview_date": self.interview_date,
+            "schedule_observation": self.schedule_observation,
         }
     
 class ApplicationFormModel:
@@ -258,10 +262,13 @@ class ApplicationFormModel:
                     af.especial_observations,
                     af.created_at,
                     af.form_status_id,
-                    fs.name AS form_status_name
+                    fs.name AS form_status_name,
+                    ai.interview_date,
+                    ai.schedule_observation
                 FROM application_forms af
                 INNER JOIN users u ON u.id = af.consultant_id
                 INNER JOIN form_status fs ON fs.id = af.form_status_id
+                LEFT JOIN application_form_interviews ai ON ai.application_form_id = af.id
                 WHERE af.form_status_id = %s
             """
             values = (status_id,)
