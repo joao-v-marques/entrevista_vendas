@@ -12,3 +12,20 @@ export function formatDateToBR(dateString) {
 
     return `${day}/${month}/${year}`;
 }
+
+// converte uma data/hora no padrão do Flask/werkzeug para "01/01/2001 14:30"
+export function formatDateTimeToBR(dateString) {
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+
+    // usa getters UTC pelo mesmo motivo do formatDateToBR: manter a data/hora
+    // exatamente como foi cadastrada, sem deslocamento de fuso horário
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const year = date.getUTCFullYear();
+    const hours = String(date.getUTCHours()).padStart(2, "0");
+    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+}

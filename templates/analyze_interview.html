@@ -247,6 +247,29 @@
                         aprovação.</p>
                 </div>
 
+                <!-- Filtros -->
+                <div class="forms-filters">
+                    <div class="forms-filter-field">
+                        <label for="filterId">ID</label>
+                        <input type="text" id="filterId" class="input" placeholder="Buscar por ID..." autocomplete="off" inputmode="numeric" />
+                    </div>
+                    <div class="forms-filter-field forms-filter-field--grow">
+                        <label for="filterBeneficiary">Beneficiário</label>
+                        <input type="text" id="filterBeneficiary" class="input" placeholder="Buscar por nome..." autocomplete="off" />
+                    </div>
+                    <div class="forms-filter-field">
+                        <label for="filterConsultant">Consultor</label>
+                        <select id="filterConsultant" class="select">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="forms-filter-field">
+                        <label for="filterDate">Data da entrevista</label>
+                        <input type="date" id="filterDate" class="input" />
+                    </div>
+                    <button type="button" class="btn btn--ghost forms-filter-clear" id="filterClear">Limpar</button>
+                </div>
+
                 <!-- Lista de Fichas -->
                 <div class="fichas-list">
                     <table class="fichas-table">
@@ -323,6 +346,11 @@
                 <section class="modal-section">
                     <h3 class="form-section-title">Informações do Beneficiário</h3>
                     <div class="info-grid" id="analyzeInterviewBeneficiaryInfoGrid"></div>
+                </section>
+
+                <section class="modal-section">
+                    <h3 class="form-section-title">Informações do agendamento da entrevista</h3>
+                    <div class="info-grid" id="analyzeInterviewScheduleObservations"></div>
                 </section>
 
                 <!-- Seção 2: Análise da entrevista -->

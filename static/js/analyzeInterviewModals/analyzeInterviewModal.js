@@ -1,10 +1,12 @@
 import { renderBeneficiaryInfo } from "../approveModals/beneficiaryInfoView.js";
 import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js";
+import { formatDateTimeToBR } from "../utils/dateUtils.js";
 import { populateAnalyzeInterviewTable } from "../analyze_interview.js";
 
 const overlay = document.getElementById("analyzeInterviewModalOverlay");
 const formIdLabel = document.getElementById("analyzeInterviewModalFormId");
 const beneficiaryInfoGrid = document.getElementById("analyzeInterviewBeneficiaryInfoGrid");
+const scheduleInfoGrid = document.getElementById("analyzeInterviewScheduleObservations");
 const interviewAnalysisForm = document.getElementById("interviewAnalysisForm");
 const closeButton = document.getElementById("analyzeInterviewModalClose");
 const cancelButton = document.getElementById("analyzeInterviewModalCancel");
@@ -15,9 +17,29 @@ function closeModal() {
     overlay.hidden = true;
 }
 
+// renderiza a data agendada e a observação do agendamento da entrevista
+function renderScheduleInfo(container, applicationForm) {
+    const interviewDate = applicationForm.interview_date
+        ? formatDateTimeToBR(applicationForm.interview_date)
+        : "—";
+    const scheduleObservation = applicationForm.schedule_observation || "—";
+
+    container.innerHTML = `
+        <div class="info-item">
+            <span class="info-label">Data do agendamento da entrevista</span>
+            <span class="info-value">${interviewDate}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Observação do agendamento</span>
+            <span class="info-value">${scheduleObservation}</span>
+        </div>
+    `;
+}
+
 export function openAnalyzeInterviewModal(applicationForm) {
     formIdLabel.textContent = applicationForm.id;
     renderBeneficiaryInfo(beneficiaryInfoGrid, applicationForm);
+    renderScheduleInfo(scheduleInfoGrid, applicationForm);
     interviewAnalysisForm.reset();
 
     // preenche os campos ocultos que vão junto no envio pro backend
