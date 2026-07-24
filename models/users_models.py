@@ -159,6 +159,33 @@ class UserModel:
             if conn:
                 conn.close()
 
+    # UPDATE dos dados de um usuário (não altera a senha)
+    @staticmethod
+    def update(user):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                UPDATE users
+                SET username = %s, name = %s, email = %s, role_id = %s, sector_id = %s, is_active = %s
+                WHERE id = %s
+            """
+            values = (user.username, user.name, user.email, user.role_id, user.sector_id, user.is_active, user.id)
+
+            cursor.execute(sql_query, values)
+            conn.commit()
+
+            return user
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     # DELETE de um usuário
     @staticmethod
     def delete(user_id):

@@ -60,6 +60,20 @@ def create():
             "message": str(e)
         }), 500
 
+# update do usuário
+@bp_users.route("/users/<int:id>", methods=['PUT'])
+def update(id):
+    try:
+        data = request.get_json()
+
+        updated_user = UserService.update(id, data)
+
+        return jsonify(updated_user.to_dict()), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
 # delete do usuário
 @bp_users.route("/users/<int:id>", methods=['DELETE'])
 def delete(id):
