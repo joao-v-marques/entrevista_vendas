@@ -11,6 +11,17 @@ const ROLE_PILL_CLASSES = {
     employee: "pill--gray",
 };
 
+// HELPER PARA PEGAR AS MENSAGENS DE ERRO (Tratamento de Exceptions)
+async function getErrorMessage(response, fallback) {
+    const rawBody = await response.text();
+    try {
+        const json = JSON.parse(rawBody);
+        return json?.message || fallback;
+    } catch {
+        return rawBody || fallback;
+    }
+}
+
 function getRoleLabel(roleName) {
     return ROLE_LABELS[roleName] || (roleName || "—");
 }
@@ -338,12 +349,32 @@ document.addEventListener("DOMContentLoaded", () => {
         closeEditModal();
     });
 
-    // ---------- Modal de exclusão ----------
+    // ========== Modal de exclusão ==========
     document.getElementById("deleteUserModalClose").addEventListener("click", closeDeleteModal);
+    
     document.getElementById("deleteUserCancel").addEventListener("click", closeDeleteModal);
-    document.getElementById("deleteUserConfirm").addEventListener("click", () => {
-        notyf.success("Interface pronta — a exclusão do usuário será integrada ao backend posteriormente.");
-        closeDeleteModal();
+    
+    document.getElementById("deleteUserConfirm").addEventListener("click", async () => {
+        try {
+            if (!userToDelete) {
+                notyf.error("Não foi encontrado nenhum id para excluir");
+                return;
+            }
+
+            const response = await fetchWithAuth(`/entrevista-adesao/users/${userToDelete.id}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                throw new Error(await getErrorMessage(response, "Houve um erroao tentar excluir o usuário"));
+            }
+        
+            closeDeleteModal();
+            notyf.success("Usuário deletado com sucesso");
+            populateUsersTable(); // Atualiza a tabela após realiar a exclusão
+        } catch (error) {
+            notyf.error(error.message);
+        }
     });
 
     // fecha os modais ao clicar fora do conteúdo ou pressionar Esc
@@ -352,6 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (event.target === overlay) overlay.hidden = true;
         });
     });
+
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
             closeEditModal();
