@@ -343,10 +343,59 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---------- Modal de edição ----------
     document.getElementById("editUserModalClose").addEventListener("click", closeEditModal);
     document.getElementById("editUserCancel").addEventListener("click", closeEditModal);
-    document.getElementById("editUserForm").addEventListener("submit", (event) => {
+    const editForm = document.getElementById("editUserForm");
+    editForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-        notyf.success("Interface pronta — a edição do usuário será integrada ao backend posteriormente.");
-        closeEditModal();
+
+        try {
+            const formData = new FormData(editForm);
+
+            // validação remover espaços no inicio e final da string
+            for (let [key, value] of formData.entries()) {
+                if (typeof value === "string") {
+                    formData.set(key, value.trim());
+                }
+            }
+
+            const data = Object.fromEntries(formData.entries());
+
+            const required_fields = [
+                "username",
+                "name",
+                "role_id",
+                "sector_id"
+            ]
+
+            for (let field of required_fields) {
+                const value = formData.get(field);
+
+                if (!value || value === "") {
+                    notyf.error(`O campo ${field} não pode estar vazio`);
+                    return;
+                }
+            }
+
+            // o select de status envia "1"/"0"; o backend espera um booleano
+            data.is_active = data.is_active === "1";
+
+            const response = await fetchWithAuth(`/entrevista-adesao/users/${data.id}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error(await getErrorMessage(response, "Houve um erro ao tentar atualizar o usuário"));
+            }
+
+            closeEditModal();
+            notyf.success("Usuário atualizado com sucesso");
+            populateUsersTable(); // atualiza a tabela após a edição
+        } catch (error) {
+            notyf.error(error.message);
+        }
     });
 
     // ========== Modal de exclusão ==========
