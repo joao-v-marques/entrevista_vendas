@@ -158,3 +158,29 @@ class UserModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # DELETE de um usuário
+    @staticmethod
+    def delete(user_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                DELETE FROM users
+                WHERE id = %s
+            """
+            values = (user_id,)
+
+            cursor.execute(sql_query, values)
+            conn.commit()
+
+            return True
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()

@@ -54,3 +54,17 @@ class UserService:
             return created_user
         except Exception as e:
             raise Exception(str(e))
+
+    # DELETE de um usuário
+    def delete(user_id):
+        try:
+            user = UserModel.get_by_id(user_id)
+
+            if not user:
+                return ValueError("Não existe nenhum usuário com o ID informado")
+
+            UserModel.delete(user_id)
+
+            return True
+        except Exception as e:
+            raise Exception(str(e))
