@@ -14,6 +14,7 @@ const applicationFormIdInput = document.getElementById("management_application_f
 const managerIdInput = document.getElementById("manager_id_input");
 const reanalysisSection = document.getElementById("managementReanalysisSection");
 const reanalysisContent = document.getElementById("managementReanalysisContent");
+const interviewContent = document.getElementById("managementInterviewContent");
 
 function closeModal() {
     overlay.hidden = true;
@@ -54,6 +55,61 @@ function renderMedicalReports(documents) {
     `).join("");
 
     return `<div class="documents-list">${items}</div>`;
+}
+
+// destaca um texto longo em um bloco próprio, mais legível do que espremido em um item da grade
+function renderObservationCallout(label, text, isHighlighted = false) {
+    const trimmedText = (text || "").trim();
+
+    const body = trimmedText
+        ? `<p class="observation-callout-text">${escapeHtml(trimmedText)}</p>`
+        : `<p class="observation-callout-text observation-callout-text--empty">Nenhuma observação registrada.</p>`;
+
+    return `
+        <div class="observation-callout${isHighlighted ? " observation-callout--highlight" : ""}">
+            <span class="observation-callout-label">${label}</span>
+            ${body}
+        </div>
+    `;
+}
+
+// Mostra à gerência o resultado da entrevista e, principalmente, o que o entrevistador anotou,
+// para a decisão ser tomada com o mesmo contexto de quem conversou com o beneficiário.
+function renderInterviewSection(details) {
+    const interview = details.interview;
+
+    if (!interview) {
+        interviewContent.innerHTML = `<p class="empty-section">Esta ficha ainda não possui entrevista registrada.</p>`;
+        return;
+    }
+
+    // interview_approved fica nulo enquanto a entrevista está só agendada, sem análise
+    let resultPill = `<span class="pill pill--gray">Entrevista ainda não analisada</span>`;
+    if (interview.interview_approved === true) resultPill = `<span class="pill pill--green">Entrevista aprovada</span>`;
+    if (interview.interview_approved === false) resultPill = `<span class="pill pill--red">Entrevista reprovada</span>`;
+
+    const reviewedAt = formatDateTimeToBR(interview.interview_reviewed_at);
+
+    interviewContent.innerHTML = `
+        <div class="approval-status">
+            ${resultPill}
+            ${reviewedAt ? `<span class="approval-status-meta">Analisada em ${escapeHtml(reviewedAt)}</span>` : ``}
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Entrevistador</span>
+                <span class="info-value">${escapeHtml(interview.interviewer_name || "—")}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Data da entrevista</span>
+                <span class="info-value">${escapeHtml(formatDateTimeToBR(interview.interview_date) || "—")}</span>
+            </div>
+        </div>
+
+        ${renderObservationCallout("Observações da entrevista", interview.interview_observation, true)}
+        ${renderObservationCallout("Observação do agendamento", interview.schedule_observation)}
+    `;
 }
 
 // Mostra por que a ficha voltou para a gerência: a observação da reprovação anterior,
@@ -110,17 +166,21 @@ function renderReanalysisSection(details) {
     reanalysisSection.hidden = false;
 }
 
-// busca o histórico completo da ficha para descobrir se ela já passou por uma reanálise
-async function loadReanalysisSection(applicationFormId) {
+// busca o histórico completo da ficha: a entrevista e se ela já passou por uma reanálise
+async function loadFormDetails(applicationFormId) {
     try {
         const response = await fetchWithAuth(`/entrevista-adesao/application-forms/${applicationFormId}/details`);
 
         if (!response.ok) throw new Error("Erro ao carregar o histórico da ficha");
 
-        renderReanalysisSection(await response.json());
+        const details = await response.json();
+
+        renderInterviewSection(details);
+        renderReanalysisSection(details);
     } catch (error) {
         // a análise não pode ser bloqueada por causa do histórico, então só esconde a seção
         console.log(error);
+        interviewContent.innerHTML = `<p class="empty-section">Não foi possível carregar as informações da entrevista.</p>`;
         reanalysisSection.hidden = true;
     }
 }
@@ -130,10 +190,11 @@ export function openAnalyzeManagementModal(applicationForm) {
     renderBeneficiaryInfo(beneficiaryInfoGrid, applicationForm);
     resetApprovalSection();
 
-    // esconde a seção enquanto o histórico ainda não chegou, evitando mostrar dados da ficha anterior
+    // limpa as seções enquanto o histórico ainda não chegou, evitando mostrar dados da ficha anterior
     reanalysisSection.hidden = true;
     reanalysisContent.innerHTML = ``;
-    loadReanalysisSection(applicationForm.id);
+    interviewContent.innerHTML = `<p class="empty-section">Carregando informações da entrevista...</p>`;
+    loadFormDetails(applicationForm.id);
 
     // preenche os campos ocultos que vão junto no envio pro backend
     applicationFormIdInput.value = applicationForm.id;

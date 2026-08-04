@@ -205,6 +205,42 @@
   line-height: 1.55;
 }
 
+/* ---------- Observações longas em destaque (entrevista, agendamento) ---------- */
+.observation-callout {
+  border: 1px solid var(--color-border-light);
+  border-left: 3px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  margin-top: 1rem;
+  background: var(--color-bg-secondary);
+}
+
+/* a observação do entrevistador é o que a gerência mais precisa ler, então ganha destaque */
+.observation-callout--highlight {
+  border-left-color: var(--color-brand);
+  background: var(--color-bg-surface);
+}
+
+.observation-callout-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-500);
+  margin-bottom: 0.4rem;
+}
+
+.observation-callout-text {
+  font-size: 14px;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.observation-callout-text--empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
 /* cada rodada de reanálise é exibida em um bloco próprio */
 .responsible-block {
   border: 1px solid var(--color-border-light);
