@@ -259,6 +259,29 @@ function renderManagement(management) {
     return renderSection("Aprovação da Gerência", inner);
 }
 
+// cada rodada de reanálise solicitada após uma reprovação da gerência
+function renderReanalysisRequests(reanalysisRequests) {
+    if (!reanalysisRequests || reanalysisRequests.length === 0) {
+        return renderSection("Solicitações de Reanálise", renderEmptySection("Nenhuma reanálise solicitada."));
+    }
+
+    const fields = [
+        { label: "Solicitado por", key: "requester_name" },
+        { label: "Solicitado em", key: "requested_at", format: "datetime" },
+        { label: "Observação", key: "reanalysis_observation", full: true, pre: true },
+    ];
+
+    // a lista vem da mais recente para a mais antiga, por isso a numeração é invertida
+    const blocks = reanalysisRequests.map((reanalysisRequest, index) => `
+        <div class="responsible-block">
+            <p class="responsible-block-title">Reanálise ${reanalysisRequests.length - index}</p>
+            ${renderInfoGrid(reanalysisRequest, fields)}
+        </div>
+    `).join("");
+
+    return renderSection("Solicitações de Reanálise", blocks);
+}
+
 function renderDocuments(documents) {
     if (!documents || documents.length === 0) {
         return renderSection("Documentos Anexados", renderEmptySection("Nenhum documento anexado."));
@@ -268,6 +291,10 @@ function renderDocuments(documents) {
         const size = formatBytes(document.size_bytes);
         const sizeHtml = size ? `<span class="document-item-size">${escapeHtml(size)}</span>` : "";
 
+        // destaca os laudos enviados nas reanálises, separando-os dos documentos da adesão
+        const isMedicalReport = document.document_type === "laudo_medico";
+        const tagHtml = isMedicalReport ? `<span class="pill pill--gray">Laudo médico</span>` : "";
+
         return `
             <div class="document-item">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -275,6 +302,7 @@ function renderDocuments(documents) {
                     <path d="M9 1.5V5.5h4" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
                 </svg>
                 <span>${escapeHtml(document.original_filename || "documento")}</span>
+                ${tagHtml}
                 ${sizeHtml}
             </div>
         `;
@@ -284,7 +312,7 @@ function renderDocuments(documents) {
 }
 
 function buildBody(details) {
-    const { form, responsibles, approval, interview, management, documents } = details;
+    const { form, responsibles, approval, interview, management, reanalysis_requests, documents } = details;
 
     return [
         renderSection("Dados do Formulário", renderInfoGrid(form, FORM_FIELDS)),
@@ -296,6 +324,7 @@ function buildBody(details) {
         renderFinancial(approval),
         renderInterview(interview),
         renderManagement(management),
+        renderReanalysisRequests(reanalysis_requests),
         renderDocuments(documents),
     ].join("");
 }
