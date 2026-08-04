@@ -1,13 +1,15 @@
 from database.connect_db import get_db_connection
 
 class ApplicationFormDocument:
-    def __init__(self, original_filename, content_type, stored_path, size_bytes, application_form_id, uploaded_at=None, id=None):
+    def __init__(self, original_filename, content_type, stored_path, size_bytes, application_form_id, uploaded_at=None, document_type='adesao', reanalysis_request_id=None, id=None):
         self.original_filename = original_filename
         self.content_type = content_type
         self.stored_path = stored_path
         self.size_bytes = size_bytes
         self.application_form_id = application_form_id
         self.uploaded_at = uploaded_at
+        self.document_type = document_type
+        self.reanalysis_request_id = reanalysis_request_id
         self.id = id
 
     def to_dict(self):
@@ -19,6 +21,8 @@ class ApplicationFormDocument:
             "size_bytes": self.size_bytes,
             "uploaded_at": self.uploaded_at,
             "application_form_id": self.application_form_id,
+            "document_type": self.document_type,
+            "reanalysis_request_id": self.reanalysis_request_id,
         }
 
 class ApplicationFormDocumentModel:
@@ -31,7 +35,7 @@ class ApplicationFormDocumentModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT id, original_filename, content_type, stored_path, size_bytes, uploaded_at, application_form_id
+                SELECT id, original_filename, content_type, stored_path, size_bytes, uploaded_at, application_form_id, document_type, reanalysis_request_id
                 FROM application_form_documents
             """
 
@@ -61,7 +65,7 @@ class ApplicationFormDocumentModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT id, original_filename, content_type, stored_path, size_bytes, uploaded_at, application_form_id
+                SELECT id, original_filename, content_type, stored_path, size_bytes, uploaded_at, application_form_id, document_type, reanalysis_request_id
                 FROM application_form_documents
                 WHERE application_form_id = %s
                 ORDER BY id
@@ -85,15 +89,45 @@ class ApplicationFormDocumentModel:
             if conn:
                 conn.close()
 
+    # GET de um único documento pelo id, usado para o download individual do arquivo
+    @staticmethod
+    def get_by_id(document_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT id, original_filename, content_type, stored_path, size_bytes, uploaded_at, application_form_id, document_type, reanalysis_request_id
+                FROM application_form_documents
+                WHERE id = %s
+            """
+            values = (document_id,)
+
+            cursor.execute(sql_query, values)
+            application_form_document_data = cursor.fetchone()
+
+            if not application_form_document_data:
+                return None
+
+            return ApplicationFormDocument(**application_form_document_data)
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     # Executa apenas o INSERT usando um cursor externo, sem commit/close.
     # Permite que o cadastro participe de uma transação maior (cadastro atômico).
     @staticmethod
     def insert(cursor, document):
         sql_query = """
             INSERT INTO application_form_documents (
-                original_filename, content_type, stored_path, size_bytes, uploaded_at, application_form_id
+                original_filename, content_type, stored_path, size_bytes, uploaded_at, application_form_id, document_type, reanalysis_request_id
             ) VALUES (
-                %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s, %s
             )
             RETURNING id
         """
@@ -104,6 +138,8 @@ class ApplicationFormDocumentModel:
             document.size_bytes,
             document.uploaded_at,
             document.application_form_id,
+            document.document_type,
+            document.reanalysis_request_id,
         )
 
         cursor.execute(sql_query, values)
