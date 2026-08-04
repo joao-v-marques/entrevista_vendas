@@ -86,6 +86,18 @@ create table application_forms (
     constraint fk_application_form_status foreign key (form_status_id) references form_status(id) on delete restrict
 );
 
+create table application_form_reanalysis_requests (
+	id int generated always as identity primary key,
+
+	requester_id int,
+	reanalysis_observation text,
+	requested_at timestamptz not null default now(),
+	application_form_id int not null,
+
+	constraint fk_reanalysis_application_form foreign key (application_form_id) references application_forms(id) on delete cascade,
+	constraint fk_reanalysis_requester foreign key (requester_id) references users(id) on delete restrict 
+);
+
 -- Tabela de documentos do form, considerando também que pode ser muitos, cada doc tem um registro nessa tabela
 create table application_form_documents (
 	id int generated always as identity primary key,
@@ -93,10 +105,15 @@ create table application_form_documents (
 	content_type text,
 	stored_path text not null,
 	size_bytes int,
+	document_type varchar(35) not null default 'adesao',
 	uploaded_at timestamptz not null default now(),
+	
 	application_form_id int not null,
+	reanalysis_request_id int null,
 
-	constraint fk_application_form_documents foreign key (application_form_id) references application_forms(id) on delete cascade
+
+	constraint fk_application_form_documents foreign key (application_form_id) references application_forms(id) on delete cascade,
+	constraint fk_document_reanalysis foreign key (reanalysis_request_id) references application_form_reanalysis_requests(id) on delete set null
 );
 
 -- Tabela de responsáveis pela inclusão, considerando que podem ser muitos
