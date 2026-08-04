@@ -127,11 +127,15 @@ function renderReanalysisSection(details) {
     const medicalReports = (details.documents || []).filter(document => document.document_type === "laudo_medico");
     const previousObservation = details.management?.management_observation;
 
+    // o wrapper só é renderizado quando existe observação, senão sobraria uma grade
+    // vazia carregando o espaçamento que separa esse trecho dos blocos de reanálise
     const previousHtml = previousObservation
         ? `
-            <div class="info-item info-item--full">
-                <span class="info-label">Observação da reprovação anterior</span>
-                <span class="info-value info-value--pre">${escapeHtml(previousObservation)}</span>
+            <div class="info-grid reanalysis-previous">
+                <div class="info-item info-item--full">
+                    <span class="info-label">Observação da reprovação anterior</span>
+                    <span class="info-value info-value--pre">${escapeHtml(previousObservation)}</span>
+                </div>
             </div>
         `
         : ``;
@@ -162,7 +166,7 @@ function renderReanalysisSection(details) {
         `;
     }).join("");
 
-    reanalysisContent.innerHTML = `<div class="info-grid">${previousHtml}</div>${blocks}`;
+    reanalysisContent.innerHTML = `${previousHtml}${blocks}`;
     reanalysisSection.hidden = false;
 }
 

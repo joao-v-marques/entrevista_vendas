@@ -241,6 +241,11 @@
   font-style: italic;
 }
 
+/* afasta a observação da reprovação anterior dos blocos de reanálise logo abaixo */
+.reanalysis-previous {
+  margin-bottom: 1.75rem;
+}
+
 /* cada rodada de reanálise é exibida em um bloco próprio */
 .responsible-block {
   border: 1px solid var(--color-border-light);
