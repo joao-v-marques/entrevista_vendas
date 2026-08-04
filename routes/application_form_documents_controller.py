@@ -40,6 +40,28 @@ def download_all(application_form_id):
             "message": str(e)
         }), 500
 
+# GET que devolve UM documento específico. Por padrão abre no navegador (inline), o que
+# permite visualizar o laudo médico da reanálise; com ?download=true força o download.
+@bp_application_form_documents.route("/application-form-documents/<int:document_id>/file", methods=['GET'])
+def download_file(document_id):
+    try:
+        absolute_path, document = ApplicationFormDocumentService.get_document_file(document_id)
+
+        return send_file(
+            absolute_path,
+            mimetype=document.content_type,
+            as_attachment=request.args.get("download") == "true",
+            download_name=document.original_filename,
+        )
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
 @bp_application_form_documents.route("/application-form-documents", methods=['POST'])
 def create():
     try:

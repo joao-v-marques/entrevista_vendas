@@ -12,6 +12,9 @@ from models.application_form_models import ApplicationFormModel
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOAD_ROOT = os.path.join(PROJECT_ROOT, "upload_docs")
 
+# extensões aceitas nos uploads, mesmo conjunto do accept do input de arquivos no front
+ALLOWED_EXTENSIONS = (".pdf", ".jpg", ".jpeg", ".png")
+
 class ApplicationFormDocumentService:
     # GET de todos os documentos cadastrados no sistema
     def get_all():
@@ -61,6 +64,32 @@ class ApplicationFormDocumentService:
         except Exception as e:
             raise Exception(str(e))
 
+    # Resolve o caminho absoluto de um único documento, para o download individual
+    # (usado para abrir o laudo médico sem precisar baixar o zip com todos os anexos).
+    # Retorna (caminho_absoluto, documento).
+    @staticmethod
+    def get_document_file(document_id):
+        try:
+            document = ApplicationFormDocumentModel.get_by_id(document_id)
+
+            if not document:
+                raise ValueError("Documento não encontrado")
+
+            absolute_path = os.path.abspath(os.path.join(PROJECT_ROOT, document.stored_path))
+
+            # trava de segurança: só servimos arquivos que estão dentro da pasta de uploads
+            if not absolute_path.startswith(os.path.abspath(UPLOAD_ROOT)):
+                raise ValueError("Documento inválido")
+
+            if not os.path.isfile(absolute_path):
+                raise ValueError("O arquivo deste documento não foi encontrado no servidor")
+
+            return absolute_path, document
+        except ValueError:
+            raise
+        except Exception as e:
+            raise Exception(str(e))
+
     # garante que nomes de arquivos repetidos não sobrescrevam uns aos outros dentro do zip
     @staticmethod
     def _build_unique_arcname(original_filename, used_names):
@@ -81,6 +110,29 @@ class ApplicationFormDocumentService:
         safe_name = re.sub(r"[^a-zA-Z0-9]+", "_", normalized_name).strip("_").lower()
 
         return f"documentos_{safe_name}_{application_form_id}.zip"
+
+    # Valida os arquivos recebidos e devolve apenas os que realmente foram enviados.
+    # O input de arquivos do front manda uma entrada vazia quando nada é selecionado, por isso
+    # essas entradas são descartadas antes da validação (permite upload opcional).
+    @staticmethod
+    def validate_files(files, allowed_extensions=ALLOWED_EXTENSIONS, max_files=None):
+        valid_files = [file for file in files if file and file.filename]
+
+        if not valid_files:
+            return []
+
+        if max_files and len(valid_files) > max_files:
+            raise ValueError(f"É permitido anexar no máximo {max_files} arquivo(s) por envio")
+
+        for file in valid_files:
+            extension = os.path.splitext(file.filename)[1].lower()
+
+            if extension not in allowed_extensions:
+                raise ValueError(
+                    f"O arquivo '{file.filename}' não é permitido. Envie apenas arquivos {', '.join(allowed_extensions)}"
+                )
+
+        return valid_files
 
     # Salva os arquivos em disco e devolve (documentos, caminhos_salvos), SEM gravar no banco.
     # Os caminhos salvos permitem desfazer os arquivos caso a transação do banco falhe.
