@@ -382,6 +382,22 @@ class ApplicationFormModel:
             if conn:
                 conn.close()
 
+    # Executa apenas o UPDATE do status usando um cursor externo, sem commit/close.
+    # Permite que a mudança de status participe de uma transação maior (ex: reanálise da gerência,
+    # onde o status só pode mudar se a solicitação e os laudos também forem gravados).
+    @staticmethod
+    def update_status_with_cursor(cursor, new_status_id, application_form_id):
+        sql_query = """
+            UPDATE application_forms
+            SET form_status_id = %s
+            WHERE id = %s
+        """
+        values = (new_status_id, application_form_id)
+
+        cursor.execute(sql_query, values)
+
+        return True
+
     # UPDATE do campo de status do formulário
     @staticmethod
     def update_status(new_status_id, application_form_id):
