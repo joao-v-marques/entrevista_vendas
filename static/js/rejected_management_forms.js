@@ -1,8 +1,12 @@
 import { fetchWithAuth } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
+import { openRequestReanalysisModal } from "./managementModals/requestReanalysisModal.js";
+
+// guarda os dados completos de cada ficha reprovada, pra abrir o modal de reanálise sem precisar de uma nova requisição
+const rejectedFormsById = new Map();
 
 // função para preencher tabela de formulários reprovados pela gerência
-async function populateRejectedManagementFormsTable() {
+export async function populateRejectedManagementFormsTable() {
     try {
         const response = await fetchWithAuth(`/entrevista-adesao/application-forms/status?status_id=11`);
 
@@ -13,12 +17,16 @@ async function populateRejectedManagementFormsTable() {
 
         const rejectedForms = await response.json();
 
+        rejectedFormsById.clear();
+
         const tbodyRejected = document.getElementById("tbodyRejectedManagementForms");
         tbodyRejected.innerHTML = ``;
 
         const rejectedFragment = document.createDocumentFragment();
 
         rejectedForms.forEach(form => {
+            rejectedFormsById.set(form.id, form);
+
             const trRejected = document.createElement("tr");
 
             trRejected.innerHTML = `
@@ -48,17 +56,6 @@ async function populateRejectedManagementFormsTable() {
     }
 }
 
-async function requestReanalysis(formId) {
-    const response = await fetchWithAuth(`/entrevista-adesao/application_form_management/${formId}/request-reanalysis`, {
-        method: "POST",
-    });
-
-    if (!response.ok) {
-        const errorJSON = await response.json().catch(() => null);
-        throw new Error(errorJSON?.message || `Erro ${response.status} ao solicitar reanálise`);
-    }
-}
-
 async function closeNegotiation(formId) {
     const response = await fetchWithAuth(`/entrevista-adesao/application_form_management/${formId}/close-negotiation`, {
         method: "POST",
@@ -82,9 +79,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             if (action === "reanalysis") {
-                await requestReanalysis(formId);
-                notyf.success("Reanálise solicitada com sucesso");
-            } else if (action === "close") {
+                // a solicitação em si é enviada pelo modal, que também recarrega a tabela
+                const applicationForm = rejectedFormsById.get(formId);
+                if (!applicationForm) return;
+
+                openRequestReanalysisModal(applicationForm);
+                return;
+            }
+
+            if (action === "close") {
                 const confirmed = confirm(`Tem certeza que deseja encerrar a negociação da ficha #${formId}? Essa ação não poderá ser desfeita.`);
                 if (!confirmed) return;
 

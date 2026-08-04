@@ -273,9 +273,61 @@
         <span>© 2026 Unimed SS Paraíso — Sistema de Fichas de Adesão</span>
     </footer>
 
+    <!-- ===== MODAL: SOLICITAR REANÁLISE ===== -->
+    <div class="modal-overlay" id="requestReanalysisModalOverlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="requestReanalysisModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="requestReanalysisModalTitle">Solicitar Reanálise da Ficha #<span id="requestReanalysisModalFormId"></span>
+                </h2>
+                <button type="button" class="modal-close" id="requestReanalysisModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <section class="modal-section">
+                    <h3 class="form-section-title">Beneficiário</h3>
+                    <p class="form-card-description" id="requestReanalysisBeneficiaryName"></p>
+                </section>
+
+                <section class="modal-section">
+                    <h3 class="form-section-title">Dados da Reanálise</h3>
+
+                    <form id="requestReanalysisForm" class="form-grid">
+                        <!-- ID do usuário logado, ou seja, quem está solicitando a reanálise -->
+                        <input type="hidden" id="reanalysis_requester_id" name="requester_id">
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="reanalysisObservation">Observações da solicitação</label>
+                            <textarea class="textarea" id="reanalysisObservation" name="reanalysis_observation"
+                                placeholder="Descreva o motivo da reanálise e as informações complementares para a gerência..."
+                                required></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="reanalysisMedicalReport">Laudo médico (opcional)</label>
+                            <input id="reanalysisMedicalReport" class="input" name="medical_report" type="file" multiple
+                                accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" id="requestReanalysisModalCancel">Cancelar</button>
+                <button form="requestReanalysisForm" type="submit" class="btn btn--primary"
+                    id="requestReanalysisModalSubmit">Solicitar Reanálise</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/managementModals/requestReanalysisModal.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/rejected_management_forms.js') }}"></script>
 </body>
 
