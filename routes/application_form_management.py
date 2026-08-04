@@ -40,13 +40,36 @@ def create():
             "message": str(e)
         }), 500
 
-# POST para solicitar reanálise de uma ficha reprovada pela gerência
+# POST para solicitar reanálise de uma ficha reprovada pela gerência.
+# Recebe multipart/form-data (e não JSON) porque a solicitação carrega o laudo médico
+# anexado junto da observação extra.
 @bp_application_form_management.route("/application_form_management/<int:application_form_id>/request-reanalysis", methods=['POST'])
 def request_reanalysis(application_form_id):
     try:
-        ApplicationFormManagementService.request_reanalysis(application_form_id)
+        reanalysis_observation = request.form.get("reanalysis_observation")
+        requester_id = request.form.get("requester_id")
+        files = request.files.getlist("medical_report")
 
-        return jsonify({"message": "Reanálise solicitada com sucesso"}), 200
+        # request.form sempre devolve string, mas requester_id é coluna int no banco
+        if requester_id:
+            if not requester_id.isdigit():
+                raise ValueError("Usuário solicitante inválido")
+
+            requester_id = int(requester_id)
+
+        reanalysis_request, documents = ApplicationFormManagementService.request_reanalysis(
+            application_form_id, requester_id, reanalysis_observation, files
+        )
+
+        return jsonify({
+            "message": "Reanálise solicitada com sucesso",
+            "reanalysis_request": reanalysis_request.to_dict(),
+            "documents": [document.to_dict() for document in documents],
+        }), 201
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except Exception as e:
         return jsonify({
             "message": str(e)

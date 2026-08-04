@@ -5,6 +5,7 @@ from models.application_forms_approvals import ApplicationFormApprovalModel
 from models.application_form_interviews import ApplicationFormInterviewModel
 from models.application_form_management import ApplicationFormManagementModel
 from models.application_form_documents import ApplicationFormDocumentModel
+from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel
 from services.application_form_documents_services import ApplicationFormDocumentService
 
 class ApplicationFormService:
@@ -18,7 +19,8 @@ class ApplicationFormService:
             raise Exception(str(e))
 
     # GET agregado com TODOS os dados de um formulário: dados principais, responsáveis
-    # pela inclusão, aprovação financeira, entrevista, aprovação da gerência e documentos.
+    # pela inclusão, aprovação financeira, entrevista, aprovação da gerência, solicitações de
+    # reanálise e documentos.
     # Usado pela tela de visualização (modal), servindo de base para o cadastro no outro sistema.
     def get_full_details(application_form_id):
         try:
@@ -31,6 +33,7 @@ class ApplicationFormService:
             approval = ApplicationFormApprovalModel.get_by_application_form_id(application_form_id)
             interview = ApplicationFormInterviewModel.get_by_application_form_id(application_form_id)
             management = ApplicationFormManagementModel.get_by_application_form_id(application_form_id)
+            reanalysis_requests = ApplicationFormReanalysisRequestModel.get_by_application_form_id(application_form_id)
             documents = ApplicationFormDocumentModel.get_by_application_form_id(application_form_id)
 
             return {
@@ -39,6 +42,10 @@ class ApplicationFormService:
                 "approval": approval.to_dict() if approval else None,
                 "interview": interview.to_dict() if interview else None,
                 "management": management.to_dict() if management else None,
+                "reanalysis_requests": [
+                    reanalysis_request.to_dict()
+                    for reanalysis_request in reanalysis_requests
+                ],
                 "documents": [document.to_dict() for document in documents],
             }
         except ValueError:
