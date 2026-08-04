@@ -259,6 +259,51 @@
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
 }
 
+/* ---------- Observações pré-definidas ---------- */
+.preset-observations-label {
+  margin-top: 0.75rem;
+}
+
+.preset-observations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.preset-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--gray-50);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+
+.preset-option input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--blue-600);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.preset-option:hover {
+  border-color: var(--blue-400);
+  background: #fff;
+}
+
+.preset-option:has(input:checked) {
+  border-color: var(--blue-500);
+  background: var(--blue-50);
+  color: var(--blue-700);
+}
+
 @media (max-width: 860px) {
   .info-grid {
     grid-template-columns: repeat(2, minmax(180px, 1fr));

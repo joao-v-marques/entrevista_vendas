@@ -389,6 +389,19 @@
                         <div class="form-group full-width">
                             <label class="form-label" for="interviewObservation">Observações</label>
                             <textarea class="textarea" id="interviewObservation" name="interview_observation" placeholder="Observações da análise da entrevista..." required></textarea>
+
+                            <!-- Opções pré-definidas: marcar anexa a frase às observações, desmarcar remove -->
+                            <span class="form-label preset-observations-label">Observações pré-definidas</span>
+                            <div class="preset-observations" id="interviewObservationPresets">
+                                <label class="preset-option">
+                                    <input type="checkbox" data-observation-text="Entrevista por vídeo.">
+                                    <span>Entrevista por vídeo</span>
+                                </label>
+                                <label class="preset-option">
+                                    <input type="checkbox" data-observation-text="Entrevista para menores de 18 anos, deverá ser realizada sempre com a presença do responsável legal.">
+                                    <span>Menor de 18 anos (presença do responsável legal)</span>
+                                </label>
+                            </div>
                         </div>
                     </form>
                 </section>

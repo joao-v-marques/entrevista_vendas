@@ -12,9 +12,32 @@ const closeButton = document.getElementById("analyzeInterviewModalClose");
 const cancelButton = document.getElementById("analyzeInterviewModalCancel");
 const applicationFormIdInput = document.getElementById("analyze_interview_application_form_id");
 const interviewerIdInput = document.getElementById("analyze_interview_interviewer_id");
+const observationTextarea = document.getElementById("interviewObservation");
+const observationPresets = document.getElementById("interviewObservationPresets");
 
 function closeModal() {
     overlay.hidden = true;
+}
+
+// anexa (ou remove) a frase pré-definida como uma linha própria das observações,
+// preservando o que o usuário digitou manualmente
+function toggleObservationPreset(presetText, isChecked) {
+    // tira a linha da opção de onde ela estiver, evitando duplicidade ao remarcar
+    const lines = observationTextarea.value.split("\n").filter(line => line.trim() !== presetText);
+
+    if (isChecked) lines.push(presetText);
+
+    // junta de volta e limpa linhas em branco sobrando no começo/fim
+    observationTextarea.value = lines.join("\n").replace(/^\n+/, "").replace(/\n+$/, "");
+}
+
+// mantém os checkboxes coerentes com o texto: se o usuário apagar a frase na mão, a opção desmarca
+function syncPresetsFromObservation() {
+    const lines = observationTextarea.value.split("\n").map(line => line.trim());
+
+    observationPresets.querySelectorAll("input[data-observation-text]").forEach(input => {
+        input.checked = lines.includes(input.dataset.observationText);
+    });
 }
 
 // renderiza a data agendada e a observação do agendamento da entrevista
@@ -95,6 +118,13 @@ function submitForm() {
         }
     });
 }
+
+observationPresets.addEventListener("change", (event) => {
+    const presetInput = event.target.closest("input[data-observation-text]");
+    if (presetInput) toggleObservationPreset(presetInput.dataset.observationText, presetInput.checked);
+});
+
+observationTextarea.addEventListener("input", syncPresetsFromObservation);
 
 closeButton.addEventListener("click", closeModal);
 cancelButton.addEventListener("click", closeModal);
