@@ -22,6 +22,7 @@ from routes.application_form_interviews import bp_form_interviews
 from routes.application_form_management import bp_application_form_management
 from routes.sectors_controller import bp_sectors
 from routes.roles_controller import bp_roles
+from routes.qualify_interview_controller import bp_qualify_interview
 
 prefix = "/entrevista-adesao"
 
@@ -55,3 +56,4 @@ def config_bps(app):
     app.register_blueprint(bp_application_form_management, url_prefix=prefix)
     app.register_blueprint(bp_sectors, url_prefix=prefix)
     app.register_blueprint(bp_roles, url_prefix=prefix)
+    app.register_blueprint(bp_qualify_interview, url_prefix=prefix)
