@@ -1,4 +1,5 @@
 from database.connect_db import get_db_connection
+from models.application_form_models import ApplicationFormModel
 
 class ApplicationFormInterview:
     def __init__(self, application_form_id, interview_date=None, schedule_observation=None, interviewer_id=None, interview_approved=None, interview_observation=None, interview_reviewed_at=None, interviewer_name=None, id=None, created_at=None):
@@ -173,53 +174,38 @@ class ApplicationFormInterviewModel:
             if conn:
                 conn.close()
 
-    # função para realizar a análise da entrevista (reprovado/aprovado)
+    # Executa a análise da entrevista com um cursor externo, sem commit/close.
+    # Não abre conexão de propósito: a análise nunca é gravada sozinha, ela sempre participa da
+    # transação que grava também a entrevista qualificada. Exigir o cursor torna impossível
+    # commitar metade da operação por engano.
     @staticmethod
-    def analyze_interview(form_interview):
-        conn = None
-        cursor = None
-        try:
-            conn, cursor = get_db_connection()
+    def analyze_interview(cursor, form_interview):
+        # 1) grava o parecer do entrevistador no agendamento que já existe.
+        # o RETURNING devolve o id da entrevista efetivamente atualizada, e é ele que amarra a
+        # entrevista qualificada — assim o vínculo não depende de nenhum id vindo do front
+        update_interview_query = """
+            UPDATE application_form_interviews
+            SET interviewer_id = %s,
+                interview_approved = %s,
+                interview_observation = %s,
+                interview_reviewed_at = %s
+            WHERE application_form_id = %s
+            RETURNING id
+        """
+        values_interview_update = (form_interview.interviewer_id, form_interview.interview_approved, form_interview.interview_observation, form_interview.interview_reviewed_at, form_interview.application_form_id)
+        cursor.execute(update_interview_query, values_interview_update)
 
-            # 1) fazer o update no agendamento
-            update_interview_query = """
-                UPDATE application_form_interviews
-                SET interviewer_id = %s,
-                    interview_approved = %s,
-                    interview_observation = %s,
-                    interview_reviewed_at = %s
-                WHERE application_form_id = %s
-            """
-            values_interview_update = (form_interview.interviewer_id, form_interview.interview_approved, form_interview.interview_observation, form_interview.interview_reviewed_at, form_interview.application_form_id)
-            cursor.execute(update_interview_query, values_interview_update)
+        updated_interview = cursor.fetchone()
 
-            # 2) fazer a atualização do status para o 4. Aguardando Aprovação da Gerência caso seja aprovado e 9. Reprovado na Entrevista
-            if form_interview.interview_approved:
-                update_query = """
-                    UPDATE application_forms
-                    SET form_status_id = %s
-                    WHERE id = %s
-                """
-                values_update = (4, form_interview.application_form_id)
-                cursor.execute(update_query, values_update)
-            else:
-                update_query = """
-                    UPDATE application_forms
-                    SET form_status_id = %s
-                    WHERE id = %s
-                """
-                values_update = (9, form_interview.application_form_id)
-                cursor.execute(update_query, values_update)
+        # nenhuma linha atualizada significa ficha sem entrevista agendada: aborta a transação inteira
+        if not updated_interview:
+            raise ValueError("Entrevista não encontrada para esta ficha")
 
-            conn.commit()
+        # 2) move a ficha para 4. Aguardando Aprovação da Gerência quando aprovada,
+        # e para 9. Reprovado na Entrevista quando reprovada
+        new_status_id = 4 if form_interview.interview_approved else 9
+        ApplicationFormModel.update_status_with_cursor(cursor, new_status_id, form_interview.application_form_id)
 
-            return True
-        except Exception as e:
-            if conn:
-                conn.rollback() # se o UPDATE (ou qualquer coisa falhar), o DELETE também é desfeito
-            raise Exception(str(e))
-        finally:
-            if cursor:
-                cursor.close()
-            if conn:
-                conn.close()
+        form_interview.id = updated_interview["id"]
+
+        return updated_interview["id"]

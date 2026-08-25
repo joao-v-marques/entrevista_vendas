@@ -398,6 +398,23 @@ class ApplicationFormModel:
 
         return True
 
+    # SELECT ... FOR UPDATE da ficha, usando um cursor externo. Trava a linha ate o fim da transacao
+    # para que duas analises simultaneas da mesma entrevista nao passem as duas pela checagem de status.
+    # Traz so o status porque quem chama quer validar, nao montar tela (o get_by_id faz joins pesados).
+    @staticmethod
+    def lock_for_interview_analysis(cursor, application_form_id):
+        sql_query = """
+            SELECT id, form_status_id
+            FROM application_forms
+            WHERE id = %s
+            FOR UPDATE
+        """
+        values = (application_form_id,)
+
+        cursor.execute(sql_query, values)
+
+        return cursor.fetchone()
+
     # UPDATE do campo de status do formulário
     @staticmethod
     def update_status(new_status_id, application_form_id):

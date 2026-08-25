@@ -52,15 +52,19 @@ class QualifyInterviewService:
         except Exception as e:
             raise Exception(str(e))
 
-    def create(data):
+    # Valida o payload e monta o objeto QualifyInterview SEM tocar no banco.
+    # A validação fica fora da transação de propósito: payload inválido é recusado antes de qualquer
+    # conexão ser aberta, e a transação só nasce quando os dados já são sabidamente válidos, vivendo
+    # o mínimo de tempo possível.
+    # O application_form_interview_id não vem do payload: quem preenche é o orquestrador, com o id
+    # devolvido pelo UPDATE da análise.
+    def build(data, inserted_by):
         try:
             if not data:
                 raise ValueError("Nenhum dado foi recebido para a entrevista qualificada")
 
-            # Vínculos: a entrevista qualificada pertence a uma entrevista e é registrada
-            # por um usuário logado (o inserted_by vem do input hidden do front)
-            application_form_interview_id = to_id(data.get('application_form_interview_id'), "entrevista")
-            inserted_by = to_id(data.get('inserted_by'), "usuário responsável")
+            # quem registra é o entrevistador logado, o mesmo que assina a análise da entrevista
+            inserted_by = to_id(inserted_by, "usuário responsável")
 
             # Escolha do médico orientador
             escolha_medico_orientador = (data.get('escolha_medico_orientador') or '').strip()
@@ -282,13 +286,11 @@ class QualifyInterviewService:
                 escolha_medico_orientador=escolha_medico_orientador,
                 parecer_unimed=parecer_unimed,
                 observation=observation,
-                application_form_interview_id=application_form_interview_id,
+                application_form_interview_id=None,
                 inserted_by=inserted_by
             )
 
-            new_qualify_interview = QualifyInterviewModel.create(qualify_interview)
-
-            return new_qualify_interview
+            return qualify_interview
         except ValueError:
             raise
         except Exception as e:

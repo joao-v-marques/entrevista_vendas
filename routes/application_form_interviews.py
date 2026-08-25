@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from psycopg.errors import UniqueViolation
 from services.application_form_interviews import ApplicationFormInterviewService
 from services.application_form_services import ApplicationFormService
 
@@ -47,6 +48,7 @@ def reschedule_interview():
             "message": str(e)
         }), 500
     
+# PUT que grava a análise da entrevista e a entrevista qualificada juntas, numa transação só
 @bp_form_interviews.route("/application-form-interviews", methods=['PUT'])
 def analyze_interview():
     try:
@@ -57,6 +59,16 @@ def analyze_interview():
         return jsonify({
             "message": "Entrevista análisada com sucesso!"
         }), 200
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
+    except UniqueViolation:
+        # constraint UNIQUE de qualify_interviews.application_form_interview_id: a entrevista já foi
+        # analisada. O rollback já desfez tudo, aqui só traduzimos o erro cru do Postgres
+        return jsonify({
+            "message": "Esta entrevista já foi analisada."
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
