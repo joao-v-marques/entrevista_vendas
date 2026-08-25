@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from services.qualify_interview import QualifyInterviewService
 
 bp_qualify_interview = Blueprint("bp_qualify_interview", __name__)
@@ -16,3 +16,20 @@ def get_all():
         return jsonify({
             "message": str(e)
         })
+
+@bp_qualify_interview.route("/qualify-interviews", methods=['POST'])
+def create():
+    try:
+        data = request.get_json()
+
+        new_qualify_interview = QualifyInterviewService.create(data)
+
+        return jsonify(new_qualify_interview.to_dict()), 201
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
