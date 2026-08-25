@@ -6,6 +6,7 @@ from routes.render_pages.bp_render_approve_form import bp_render_approve_form
 from routes.render_pages.bp_render_rejected_forms import bp_render_rejected_forms
 from routes.render_pages.bp_render_schedule_interview import bp_render_schedule_interview
 from routes.render_pages.bp_render_analyze_interview import bp_render_analyze_interview
+from routes.render_pages.bp_render_completed_interviews import bp_render_completed_interviews
 from routes.render_pages.bp_render_rejected_interview_forms import bp_render_rejected_interview_forms
 from routes.render_pages.bp_render_management_approval import bp_render_management_approval
 from routes.render_pages.bp_render_rejected_management_forms import bp_render_rejected_management_forms
@@ -39,6 +40,7 @@ def config_bps(app):
     app.register_blueprint(bp_render_rejected_forms, url_prefix=prefix)
     app.register_blueprint(bp_render_schedule_interview, url_prefix=prefix)
     app.register_blueprint(bp_render_analyze_interview, url_prefix=prefix)
+    app.register_blueprint(bp_render_completed_interviews, url_prefix=prefix)
     app.register_blueprint(bp_render_rejected_interview_forms, url_prefix=prefix)
     app.register_blueprint(bp_render_management_approval, url_prefix=prefix)
     app.register_blueprint(bp_render_rejected_management_forms, url_prefix=prefix)

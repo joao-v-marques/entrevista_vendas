@@ -6,6 +6,14 @@
   max-width: 1320px;
 }
 
+/* Listagens com mais colunas (ex.: Entrevistas Realizadas) ganham um respiro a mais.
+   Modificador em vez de alterar o .main-content acima, que vale para todas as telas.
+   Fica aqui, e não em approve_form.css, porque esta é a última folha que essas páginas
+   carregam — como a especificidade é a mesma, quem decide é a ordem da cascata. */
+.main-content--wide {
+  max-width: 1480px;
+}
+
 /* ---------- Barra de filtros ---------- */
 .forms-filters {
   display: flex;

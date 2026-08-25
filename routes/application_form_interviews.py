@@ -19,6 +19,21 @@ def get_all():
             "message": str(e)
         }), 500
     
+# GET das entrevistas já realizadas (analisadas), para a tela de Entrevistas Realizadas
+@bp_form_interviews.route("/application-form-interviews/completed", methods=['GET'])
+def get_completed():
+    try:
+        completed_interviews = ApplicationFormInterviewService.get_completed()
+
+        return jsonify([
+            completed_interview.to_dict()
+            for completed_interview in completed_interviews
+        ]), 200
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
 @bp_form_interviews.route("/application-form-interviews", methods=['POST'])
 def schedule_interview():
     try:

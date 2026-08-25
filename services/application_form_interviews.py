@@ -12,6 +12,15 @@ class ApplicationFormInterviewService:
             return form_interviews
         except Exception as e:
             raise Exception(str(e))
+
+    # GET das entrevistas já analisadas, usado pela tela de Entrevistas Realizadas
+    def get_completed():
+        try:
+            completed_interviews = ApplicationFormInterviewModel.get_completed()
+
+            return completed_interviews
+        except Exception as e:
+            raise Exception(str(e))
         
     def schedule_interview(data):
         try:

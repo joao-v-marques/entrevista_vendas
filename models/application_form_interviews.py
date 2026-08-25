@@ -28,6 +28,50 @@ class ApplicationFormInterview:
             "created_at": self.created_at
         }
     
+# DTO para entrevistas já realizadas/analisadas
+class CompletedInterview:
+    def __init__(self, id, interview_date, interview_approved, interview_observation, interview_reviewed_at,
+                 application_form_id, interviewer_id, interviewer_name, beneficiary_name, beneficiary_cpf,
+                 inclusion_type, consultant_id, consultant_name, form_status_id, form_status_name,
+                 qualify_interview_id=None):
+        self.id = id
+        self.interview_date = interview_date
+        self.interview_approved = interview_approved
+        self.interview_observation = interview_observation
+        self.interview_reviewed_at = interview_reviewed_at
+        self.application_form_id = application_form_id
+        self.interviewer_id = interviewer_id
+        self.interviewer_name = interviewer_name
+        self.beneficiary_name = beneficiary_name
+        self.beneficiary_cpf = beneficiary_cpf
+        self.inclusion_type = inclusion_type
+        self.consultant_id = consultant_id
+        self.consultant_name = consultant_name
+        self.form_status_id = form_status_id
+        self.form_status_name = form_status_name
+        # id da entrevista qualificada vinculada, que o PDF vai precisar para saber o que renderizar
+        self.qualify_interview_id = qualify_interview_id
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "interview_date": self.interview_date,
+            "interview_approved": self.interview_approved,
+            "interview_observation": self.interview_observation,
+            "interview_reviewed_at": self.interview_reviewed_at,
+            "application_form_id": self.application_form_id,
+            "interviewer_id": self.interviewer_id,
+            "interviewer_name": self.interviewer_name,
+            "beneficiary_name": self.beneficiary_name,
+            "beneficiary_cpf": self.beneficiary_cpf,
+            "inclusion_type": self.inclusion_type,
+            "consultant_id": self.consultant_id,
+            "consultant_name": self.consultant_name,
+            "form_status_id": self.form_status_id,
+            "form_status_name": self.form_status_name,
+            "qualify_interview_id": self.qualify_interview_id
+        }
+
 class ApplicationFormInterviewModel:
     # GET de todos cadastrados no sistema
     @staticmethod
@@ -52,6 +96,59 @@ class ApplicationFormInterviewModel:
             ]
 
             return form_interviews
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    # GET das entrevistas JÁ ANALISADAS (aprovadas e reprovadas), para a tela de Entrevistas
+    @staticmethod
+    def get_completed():
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT
+                    ai.id,
+                    ai.interview_date,
+                    ai.interview_approved,
+                    ai.interview_observation,
+                    ai.interview_reviewed_at,
+                    ai.application_form_id,
+                    ai.interviewer_id,
+                    ui.name AS interviewer_name,
+                    af.beneficiary_name,
+                    af.beneficiary_cpf,
+                    af.inclusion_type,
+                    af.consultant_id,
+                    uc.name AS consultant_name,
+                    af.form_status_id,
+                    fs.name AS form_status_name,
+                    qi.id AS qualify_interview_id
+                FROM application_form_interviews ai
+                INNER JOIN application_forms af ON af.id = ai.application_form_id
+                INNER JOIN users uc ON uc.id = af.consultant_id
+                INNER JOIN form_status fs ON fs.id = af.form_status_id
+                LEFT JOIN users ui ON ui.id = ai.interviewer_id
+                LEFT JOIN qualify_interviews qi ON qi.application_form_interview_id = ai.id
+                WHERE ai.interview_reviewed_at IS NOT NULL
+                ORDER BY ai.interview_reviewed_at DESC
+            """
+            cursor.execute(sql_query)
+
+            completed_interviews_data = cursor.fetchall()
+
+            completed_interviews = [
+                CompletedInterview(**completed_interview)
+                for completed_interview in completed_interviews_data
+            ]
+
+            return completed_interviews
         except Exception as e:
             raise Exception(str(e))
         finally:
@@ -112,7 +209,7 @@ class ApplicationFormInterviewModel:
             cursor.execute(insert_query, values_insert)
             new_id = cursor.fetchone()["id"]
             
-            # 2) move o status da fichha para 3
+            # 2) move o status da ficha para 3
             update_query = """
                 UPDATE application_forms
                 SET form_status_id = %s

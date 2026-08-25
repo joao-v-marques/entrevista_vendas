@@ -338,6 +338,23 @@
   transform: scale(0.94);
 }
 
+/* ações ainda não implementadas (ex.: Editar e Baixar PDF em Entrevistas Realizadas):
+   precisa neutralizar o hover/active acima, senão o botão continua parecendo clicável */
+.icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.icon-btn:disabled:hover {
+  background: var(--color-bg-surface);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.icon-btn:disabled:active {
+  transform: none;
+}
+
 .table-actions {
   display: flex;
   align-items: center;
