@@ -166,7 +166,8 @@
 /* ---------- Modal de análise da entrevista ---------- */
 /* o modal de análise é largo (grid de infos); o de reagendamento continua com 480px */
 #analyzeInterviewModalOverlay .modal {
-  max-width: 1080px;
+  max-width: 1320px;
+  width: 96vw;
 }
 
 #analyzeInterviewModalOverlay .modal-body {
@@ -177,28 +178,115 @@
   margin-bottom: 1rem;
 }
 
-/* ---------- Informações do beneficiário (somente leitura) ---------- */
+/* espaçamento entre os blocos do form de análise (questionário, observação da entrevista
+   qualificada, decisão, observações internas) -- sem isso eles ficavam colados uns nos outros */
+#interviewAnalysisForm.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ---------- Informações do beneficiário / agendamento (somente leitura) ---------- */
+.info-card {
+  background: var(--gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.15rem 1.35rem;
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(180px, 1fr));
-  gap: 1rem 1.5rem;
+  gap: 1.15rem 1.5rem;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
+}
+
+.info-item--wide {
+  grid-column: span 3;
 }
 
 .info-label {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
   color: var(--gray-500);
 }
 
 .info-value {
   font-size: 14px;
+  font-weight: 500;
   color: var(--color-text);
+}
+
+.form-label-note {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Escolha exclusiva em lista (médico orientador, parecer) ---------- */
+.choice-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.choice-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--gray-50);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+
+.choice-option input {
+  margin-top: 3px;
+  accent-color: var(--blue-600);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.choice-option:hover {
+  border-color: var(--blue-400);
+  background: #fff;
+}
+
+.choice-option:has(input:checked) {
+  border-color: var(--blue-500);
+  background: var(--blue-50);
+  color: var(--blue-700);
+}
+
+.choice-group--missing .choice-option {
+  border-color: var(--red-500);
+}
+
+/* opção incompatível com as respostas do questionário */
+.choice-option:has(input:disabled) {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: var(--gray-100);
+}
+
+.choice-option:has(input:disabled):hover {
+  border-color: var(--color-border);
+  background: var(--gray-100);
+}
+
+.choice-option input:disabled {
+  cursor: not-allowed;
 }
 
 /* ---------- Decisão (aprovada / reprovada) ---------- */
@@ -259,6 +347,258 @@
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
 }
 
+/* decisão de aprovação não escolhida no envio (espelha .choice-group--missing) */
+.decision-group--missing .decision-option {
+  border-color: var(--red-500);
+}
+
+/* ---------- Questionário de saúde ---------- */
+.qualify-interview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.qualify-interview-progress {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--gray-100);
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+}
+
+.qualify-interview-hint {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  margin: 0.35rem 0 0.85rem;
+}
+
+.qualify-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.qualify-group {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--gray-50);
+  /* sem overflow: hidden aqui -- combinado com a animação nativa de abrir/fechar do <details>,
+     isso causa um bug de pintura no Chrome (conteúdo é desenhado na posição do grupo errado
+     até um repaint qualquer acontecer). Arredondamos os cantos internos abaixo em vez de clipar. */
+}
+
+.qualify-group-summary {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.qualify-group:not([open]) .qualify-group-summary {
+  border-radius: var(--radius-md);
+}
+
+.qualify-group-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text);
+  list-style: none;
+}
+
+.qualify-group-summary::-webkit-details-marker {
+  display: none;
+}
+
+.qualify-group-summary::before {
+  content: "";
+  width: 0;
+  height: 0;
+  flex-shrink: 0;
+  border-left: 5px solid var(--gray-400);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform var(--transition);
+}
+
+.qualify-group[open] .qualify-group-summary::before {
+  transform: rotate(90deg);
+}
+
+.qualify-group-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--green-100);
+  color: var(--green-700);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.qualify-group-title {
+  flex: 1;
+}
+
+.qualify-group-status {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: #fff;
+  border: 1px solid var(--color-border);
+  padding: 2px 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.qualify-group--complete .qualify-group-status {
+  color: var(--green-700);
+  border-color: var(--green-200);
+  background: var(--green-50);
+}
+
+.qualify-group-body {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--color-border);
+}
+
+.qualify-item {
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--color-border-light);
+  background: #fff;
+}
+
+.qualify-item:last-child {
+  border-bottom: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.qualify-item-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.qualify-item-label {
+  font-size: 13px;
+  color: var(--color-text);
+  flex: 1;
+}
+
+.qualify-item-toggle {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.qualify-toggle-option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-border);
+  background: var(--gray-50);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+
+.qualify-toggle-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.qualify-toggle-option--yes:has(input:checked) {
+  border-color: var(--green-500);
+  background: var(--green-50);
+  color: var(--green-700);
+}
+
+.qualify-toggle-option--no:has(input:checked) {
+  border-color: var(--red-500);
+  background: var(--red-50);
+  color: var(--red-700);
+}
+
+.qualify-item-specification {
+  margin-top: 0.5rem;
+  width: 100%;
+  font-size: 12.5px;
+  padding: 6px 10px;
+}
+
+/* ---------- Medidas (peso / altura) e IMC ---------- */
+.qualify-measure-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.qualify-measure-input {
+  width: 130px;
+  font-size: 13px;
+  padding: 6px 10px;
+  text-align: right;
+}
+
+.qualify-measure-unit {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  min-width: 22px;
+}
+
+.qualify-item--invalid {
+  background: var(--red-50);
+}
+
+.qualify-item--invalid .qualify-measure-input {
+  border-color: var(--red-500);
+}
+
+.qualify-item--imc {
+  background: var(--gray-50);
+}
+
+.qualify-imc-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--green-700);
+  flex-shrink: 0;
+}
+
+.qualify-group--missing {
+  border-color: var(--red-500);
+}
+
+@media (max-width: 620px) {
+  .qualify-item-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
 /* ---------- Observações pré-definidas ---------- */
 .preset-observations-label {
   margin-top: 0.75rem;
@@ -313,6 +653,10 @@
 @media (max-width: 520px) {
   .info-grid {
     grid-template-columns: 1fr;
+  }
+
+  .info-item--wide {
+    grid-column: span 1;
   }
 
   .decision-group {

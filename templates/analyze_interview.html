@@ -345,12 +345,12 @@
                 <!-- Seção 1: Informações do beneficiário (somente leitura) -->
                 <section class="modal-section">
                     <h3 class="form-section-title">Informações do Beneficiário</h3>
-                    <div class="info-grid" id="analyzeInterviewBeneficiaryInfoGrid"></div>
+                    <div class="info-grid info-card" id="analyzeInterviewBeneficiaryInfoGrid"></div>
                 </section>
 
                 <section class="modal-section">
                     <h3 class="form-section-title">Informações do agendamento da entrevista</h3>
-                    <div class="info-grid" id="analyzeInterviewScheduleObservations"></div>
+                    <div class="info-grid info-card" id="analyzeInterviewScheduleObservations"></div>
                 </section>
 
                 <!-- Seção 2: Análise da entrevista -->
@@ -362,6 +362,62 @@
                         <input type="hidden" id="analyze_interview_application_form_id" name="application_form_id">
                         <!-- ID do usuário logado, ou seja, quem está realizando a análise -->
                         <input type="hidden" id="analyze_interview_interviewer_id" name="interviewer_id">
+
+                        <div class="form-group full-width">
+                            <div class="qualify-interview-header">
+                                <label class="form-label">Questionário de Saúde</label>
+                                <span class="qualify-interview-progress" id="qualifyInterviewProgress">0/141 perguntas respondidas</span>
+                            </div>
+                            <p class="qualify-interview-hint">Marque Sim ou Não para cada item. Ao marcar "Sim" é possível detalhar — o texto digitado é anexado automaticamente à observação da entrevista qualificada, abaixo.</p>
+                            <div class="qualify-groups" id="qualifyInterviewGroups"></div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Escolha do Médico Orientador</label>
+                            <div class="choice-group" id="orientadorGroup">
+                                <label class="choice-option">
+                                    <input type="radio" name="escolha_medico_orientador" value="medico_unimed">
+                                    <span>O preenchimento desta declaração contou com a presença do Médico Orientador indicado pela Unimed São Sebastião do Paraíso (sem ônus financeiro para o proponente).</span>
+                                </label>
+                                <label class="choice-option">
+                                    <input type="radio" name="escolha_medico_orientador" value="medico_proprio">
+                                    <span>Dispensou a presença do médico orientador da operadora e optou por um médico de livre escolha, assumindo o ônus financeiro desta opção.</span>
+                                </label>
+                                <label class="choice-option">
+                                    <input type="radio" name="escolha_medico_orientador" value="dispensou_orientador">
+                                    <span>Dispensou a presença do médico orientador da operadora para auxiliar no preenchimento desta Declaração de Saúde.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Parecer <span class="form-label-note">(reservado para a Unimed)</span></label>
+                            <p class="qualify-interview-hint" id="parecerHint">As opções disponíveis dependem das respostas do questionário de saúde.</p>
+                            <div class="choice-group" id="parecerGroup">
+                                <label class="choice-option">
+                                    <input type="radio" name="parecer_unimed" value="sem_preexistencias">
+                                    <span>Declaração de Saúde <strong>SEM</strong> Preexistências — para fins de emissão do Cartão de Identificação.</span>
+                                </label>
+                                <label class="choice-option">
+                                    <input type="radio" name="parecer_unimed" value="com_preexistencias_aceitou_cpt">
+                                    <span>Declaração de Saúde <strong>COM</strong> Preexistências — para fins de emissão do Cartão de Identificação, uma vez que o beneficiário aceitou cumprir a CPT.</span>
+                                </label>
+                                <label class="choice-option">
+                                    <input type="radio" name="parecer_unimed" value="com_preexistencias_recusou_cpt">
+                                    <span>Declaração de Saúde <strong>COM</strong> Preexistências — para fins de cancelamento do plano e arquivamento, uma vez que o beneficiário não aceitou cumprir a CPT.</span>
+                                </label>
+                                <label class="choice-option">
+                                    <input type="radio" name="parecer_unimed" value="recusou_pericia_exames">
+                                    <span>Declaração de Saúde para fins de cancelamento do plano e arquivamento, uma vez que o beneficiário não aceitou realizar perícia médica e/ou exames solicitados.</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="qualifyInterviewObservation">DECLARAÇÃO DE ACEITAÇÃO DA COBERTURA PARCIAL TEMPORÁRIA - CPT</label>
+                            <p class="qualify-interview-hint">Esse texto vai para o contrato — o beneficiário lê e confirma antes de assinar. Os detalhes das doenças marcadas "Sim" são anexados aqui automaticamente, mas você pode editar livremente.</p>
+                            <textarea class="textarea" id="qualifyInterviewObservation" name="qualify_interview_observation" placeholder="Observações da entrevista qualificada (doenças declaradas, condições, etc.)..."></textarea>
+                        </div>
 
                         <div class="form-group full-width">
                             <label class="form-label">Entrevista aprovada?</label>
@@ -387,8 +443,9 @@
                         </div>
 
                         <div class="form-group full-width">
-                            <label class="form-label" for="interviewObservation">Observações</label>
-                            <textarea class="textarea" id="interviewObservation" name="interview_observation" placeholder="Observações da análise da entrevista..." required></textarea>
+                            <label class="form-label" for="interviewObservation">Observações Internas</label>
+                            <p class="qualify-interview-hint">Uso interno — não vai para o contrato do beneficiário.</p>
+                            <textarea class="textarea" id="interviewObservation" name="interview_observation" placeholder="Observações internas da análise da entrevista..." required></textarea>
 
                             <!-- Opções pré-definidas: marcar anexa a frase às observações, desmarcar remove -->
                             <span class="form-label preset-observations-label">Observações pré-definidas</span>
