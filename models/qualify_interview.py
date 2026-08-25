@@ -64,7 +64,7 @@ class QualifyInterview:
                  is_traumatismos_fraturas=False, is_sequelas_acidentes_congenitas=False, is_cirurgia_previa=False,
                  is_internacao_tratamento_outro=False, is_radioterapia_quimioterapia_dialise=False,
                  is_indicacao_cirurgia_futura=False, is_protese_ortese=False,
-                 observation=None, id=None, created_at=None):
+                 observation=None, id=None, created_at=None, inserted_by_name=None):
         # 1. Doenças infecciosas ou parasitárias
         self.is_hiv = is_hiv
         self.is_chagas = is_chagas
@@ -253,6 +253,8 @@ class QualifyInterview:
         self.observation = observation
         self.application_form_interview_id = application_form_interview_id
         self.inserted_by = inserted_by
+        # vem do JOIN com users; None quando a linha é lida sem o join
+        self.inserted_by_name = inserted_by_name
         self.id = id
         self.created_at = created_at
 
@@ -448,6 +450,7 @@ class QualifyInterview:
             "observation": self.observation,
             "application_form_interview_id": self.application_form_interview_id,
             "inserted_by": self.inserted_by,
+            "inserted_by_name": self.inserted_by_name,
             "created_at": self.created_at
         }
 
@@ -474,6 +477,38 @@ class QualifyInterviewModel:
             ]
 
             return qualify_interviews
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    # GET da entrevista qualificada vinculada a uma entrevista (relação 1:1 garantida pelo
+    # UNIQUE em application_form_interview_id). Usada para montar o modal de visualização.
+    @staticmethod
+    def get_by_application_form_interview_id(application_form_interview_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT qi.*, u.name AS inserted_by_name
+                FROM qualify_interviews qi
+                LEFT JOIN users u ON u.id = qi.inserted_by
+                WHERE qi.application_form_interview_id = %s
+            """
+            values = (application_form_interview_id,)
+
+            cursor.execute(sql_query, values)
+            qualify_interview_data = cursor.fetchone()
+
+            if not qualify_interview_data:
+                return None
+
+            return QualifyInterview(**qualify_interview_data)
         except Exception as e:
             raise Exception(str(e))
         finally:

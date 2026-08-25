@@ -1,0 +1,174 @@
+/* =============================================
+   completed_interviews.css — modal de visualização da entrevista.
+   A casca do modal (.modal, .modal-body, .info-grid, .pill, .empty-section...) vem de
+   approve_form.css e forms.css, que esta página já carrega. Aqui ficam só as partes que
+   não existiam: o questionário de saúde em accordions e o bloco de observações.
+   ============================================= */
+
+/* ---------- Questionário de saúde (somente leitura) ---------- */
+
+.view-qualify-counter {
+  margin: 1.1rem 0 0.9rem;
+  padding: 0.7rem 0.9rem;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  background: var(--gray-50);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+}
+
+.view-qualify-counter strong {
+  color: var(--green-700);
+}
+
+.view-qualify-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.view-qualify-group {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.view-qualify-group-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--gray-50);
+  cursor: pointer;
+  list-style: none;
+  transition: background var(--transition);
+}
+
+/* esconde o triângulo padrão do <details> nos dois motores */
+.view-qualify-group-summary::-webkit-details-marker {
+  display: none;
+}
+
+.view-qualify-group-summary:hover {
+  background: var(--gray-100);
+}
+
+.view-qualify-group-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green-700);
+  background: var(--green-50);
+  border-radius: 50%;
+}
+
+.view-qualify-group-title {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.view-qualify-group-status {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--gray-600);
+  background: var(--gray-200);
+  border-radius: 999px;
+}
+
+/* grupos com alguma preexistência declarada — é o que interessa em uma consulta */
+.view-qualify-group-status--yes {
+  color: var(--red-700);
+  background: var(--red-100);
+}
+
+.view-qualify-group-body {
+  border-top: 1px solid var(--color-border-light);
+}
+
+.view-qualify-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 0.6rem 0.9rem;
+}
+
+.view-qualify-item + .view-qualify-item {
+  border-top: 1px solid var(--color-border-light);
+}
+
+.view-qualify-item-label {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.view-qualify-item-answer {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-500);
+}
+
+.view-qualify-item--yes {
+  background: var(--red-50);
+}
+
+.view-qualify-item--yes .view-qualify-item-label {
+  color: var(--color-text);
+}
+
+.view-qualify-item--yes .view-qualify-item-answer {
+  color: var(--red-700);
+}
+
+/* ---------- Observações da entrevista ---------- */
+
+.view-observations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 1.1rem;
+}
+
+.view-observation {
+  padding: 0.85rem 1rem;
+  background: var(--gray-50);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+}
+
+.view-observation-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.view-observation-hint {
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+}
+
+.view-observation-text {
+  margin-top: 0.55rem;
+  font-size: 13.5px;
+  color: var(--color-text);
+  /* preserva as quebras de linha que o usuário digitou nas observações */
+  white-space: pre-wrap;
+}
+
+@media (max-width: 640px) {
+  .view-qualify-item {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}

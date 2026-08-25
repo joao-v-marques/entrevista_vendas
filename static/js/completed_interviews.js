@@ -1,5 +1,6 @@
 import { fetchWithAuth } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
+import { openViewInterviewModal } from "./completedInterviewModals/viewInterviewModal.js";
 
 // guarda a lista completa carregada do backend; os filtros atuam sobre ela sem novo request
 let allInterviews = [];
@@ -97,6 +98,9 @@ function renderCompletedInterviewsTable(interviews) {
             <td class="status-column">${resultPill}</td>
             <td>
                 <div class="table-actions">
+                    <button class="icon-btn icon-btn--primary" title="Visualizar Entrevista" aria-label="Visualizar Entrevista" data-view-form-id="${interview.application_form_id}">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M1.5 8s2.4-4.2 6.5-4.2S14.5 8 14.5 8s-2.4 4.2-6.5 4.2S1.5 8 1.5 8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="1.9" stroke="currentColor" stroke-width="1.4"/></svg>
+                    </button>
                     <button class="icon-btn" title="Editar Entrevista (em breve)" aria-label="Editar Entrevista" data-edit-interview-id="${interview.id}" disabled>
                         <svg viewBox="0 0 16 16" fill="none"><path d="M11.3 2.2l2.5 2.5L6 12.5l-3.2.7.7-3.2 7.8-7.8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
                     </button>
@@ -167,6 +171,10 @@ document.addEventListener("DOMContentLoaded", () => {
         applyFilters();
     });
 
-    // Editar e Baixar PDF estão desabilitados, então nenhum listener é necessário por enquanto:
-    // um <button disabled> não dispara click.
+    document.getElementById("tbodyCompletedInterviews").addEventListener("click", (event) => {
+        // Editar e Baixar PDF estão desabilitados e não disparam click, então só o Visualizar
+        // precisa de tratamento aqui
+        const viewButton = event.target.closest(".icon-btn[data-view-form-id]");
+        if (viewButton) openViewInterviewModal(Number(viewButton.dataset.viewFormId));
+    });
 })

@@ -3,6 +3,7 @@ from models.application_form_models import ApplicationFormModel, ApplicationForm
 from models.inclusion_responsibles import InclusionResponsiblesModel, InclusionResponsibles
 from models.application_forms_approvals import ApplicationFormApprovalModel
 from models.application_form_interviews import ApplicationFormInterviewModel
+from models.qualify_interview import QualifyInterviewModel
 from models.application_form_management import ApplicationFormManagementModel
 from models.application_form_documents import ApplicationFormDocumentModel
 from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel
@@ -36,11 +37,19 @@ class ApplicationFormService:
             reanalysis_requests = ApplicationFormReanalysisRequestModel.get_by_application_form_id(application_form_id)
             documents = ApplicationFormDocumentModel.get_by_application_form_id(application_form_id)
 
+            # a entrevista qualificada pende da entrevista, não da ficha: só existe se a
+            # entrevista já foi analisada (as duas são gravadas na mesma transação)
+            qualify_interview = (
+                QualifyInterviewModel.get_by_application_form_interview_id(interview.id)
+                if interview else None
+            )
+
             return {
                 "form": application_form.to_dict(),
                 "responsibles": [responsible.to_dict() for responsible in responsibles],
                 "approval": approval.to_dict() if approval else None,
                 "interview": interview.to_dict() if interview else None,
+                "qualify_interview": qualify_interview.to_dict() if qualify_interview else None,
                 "management": management.to_dict() if management else None,
                 "reanalysis_requests": [
                     reanalysis_request.to_dict()

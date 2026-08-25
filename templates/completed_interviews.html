@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/approve_form.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/completed_interviews.css') }}" />
 </head>
 
 <body>
@@ -322,6 +323,24 @@
     <footer class="footer">
         <span>© 2026 Unimed SS Paraíso — Sistema de Fichas de Adesão</span>
     </footer>
+
+    <!-- ===== MODAL: VISUALIZAÇÃO DA ENTREVISTA (somente leitura) ===== -->
+    <div class="modal-overlay" id="viewInterviewModalOverlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="viewInterviewModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="viewInterviewModalTitle">Entrevista da Ficha #<span id="viewInterviewModalId"></span></h2>
+                <button type="button" class="modal-close" id="viewInterviewModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- todo o conteúdo é renderizado dinamicamente pelo viewInterviewModal.js -->
+            <div class="modal-body" id="viewInterviewModalBody"></div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
