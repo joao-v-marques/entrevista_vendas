@@ -174,7 +174,7 @@ function renderUsersTable(users) {
             <td>${escapeHtml(user.id)}</td>
             <td>${escapeHtml(user.name)}</td>
             <td>${escapeHtml(user.username)}</td>
-            <td>${user.cpf ? escapeHtml(formatCPF(user.cpf)) : "—"}</td>
+            <td class="user-cpf">${user.cpf ? escapeHtml(formatCPF(user.cpf)) : "—"}</td>
             <td class="user-email">${escapeHtml(user.email)}</td>
             <td><span class="pill ${getRolePillClass(user.role_name)}">${escapeHtml(getRoleLabel(user.role_name))}</span></td>
             <td>${escapeHtml(user.sector_name)}</td>
@@ -381,6 +381,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             createForm.reset();
             notyf.success("Usuário cadastrado com sucesso");
+            populateUsersTable(); // atualiza a tabela para o usuário novo já aparecer na lista
         } catch (error) {
             notyf.error(error.message);
         }

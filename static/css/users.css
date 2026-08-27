@@ -24,7 +24,7 @@
 
 /* ---------- Modal com formulário ---------- */
 .modal--form {
-  max-width: 720px;
+  max-width: 920px;
 }
 
 .modal--form .user-form-grid {
@@ -32,7 +32,7 @@
 }
 
 .modal--confirm {
-  max-width: 460px;
+  max-width: 560px;
 }
 
 .modal--confirm .modal-body {
@@ -44,6 +44,11 @@
 /* ---------- Coluna de e-mail (evita quebra estranha) ---------- */
 .fichas-table .user-email {
   color: var(--color-text-muted);
+}
+
+/* ---------- Coluna de CPF (o número mascarado não pode quebrar em duas linhas) ---------- */
+.fichas-table .user-cpf {
+  white-space: nowrap;
 }
 
 /* ---------- Responsivo ---------- */
