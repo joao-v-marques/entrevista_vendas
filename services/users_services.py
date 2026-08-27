@@ -93,9 +93,6 @@ class UserService:
             if user_with_username and user_with_username.id != user_id:
                 raise ConflictError(f"O usuário {data['username']} já está cadastrado")
 
-            if len(data.get('cpf')) != 11:
-                raise ConflictError("O CPF deve conter 11 digitos")
-
             user = User(
                 username=data['username'],
                 name=data['name'],
