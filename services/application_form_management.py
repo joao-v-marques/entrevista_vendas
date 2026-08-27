@@ -2,6 +2,7 @@ from models.application_form_management import ApplicationFormManagementModel, A
 from models.application_form_models import ApplicationFormModel
 from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel, ApplicationFormReanalysisRequest
 from services.application_form_documents_services import ApplicationFormDocumentService
+from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationError
 
 class ApplicationFormManagementService:
     def get_all():
@@ -37,18 +38,18 @@ class ApplicationFormManagementService:
             application_form = ApplicationFormModel.get_by_id(application_form_id)
 
             if not application_form:
-                raise ValueError("Ficha não encontrada")
+                raise NotFoundError("Ficha não encontrada")
 
             if application_form.form_status_id != 11:
-                raise ValueError("Só é possível solicitar reanálise de fichas reprovadas pela gerência")
+                raise ConflictError("Só é possível solicitar reanálise de fichas reprovadas pela gerência")
 
             if not requester_id:
-                raise ValueError("Não foi possível identificar o usuário que está solicitando a reanálise")
+                raise ValidationError("Não foi possível identificar o usuário que está solicitando a reanálise")
 
             observation = (reanalysis_observation or "").strip()
 
             if not observation:
-                raise ValueError("A observação da reanálise é obrigatória")
+                raise ValidationError("A observação da reanálise é obrigatória")
 
             # o laudo é opcional: só grava arquivos se algum foi realmente enviado
             valid_files = ApplicationFormDocumentService.validate_files(files)
@@ -73,10 +74,9 @@ class ApplicationFormManagementService:
             try:
                 return ApplicationFormReanalysisRequestModel.create_with_documents(reanalysis_request, documents)
             except Exception:
-                # o rollback desfaz o banco, mas não os arquivos já gravados em disco
                 ApplicationFormDocumentService.delete_files(saved_paths)
                 raise
-        except ValueError:
+        except AppError:
             raise
         except Exception as e:
             raise Exception(str(e))
@@ -87,13 +87,15 @@ class ApplicationFormManagementService:
             application_form = ApplicationFormModel.get_by_id(application_form_id)
 
             if not application_form:
-                raise ValueError("Ficha não encontrada")
+                raise NotFoundError("Ficha não encontrada")
 
             if application_form.form_status_id != 11:
-                raise ValueError("Só é possível encerrar a negociação de fichas reprovadas pela gerência")
+                raise ConflictError("Só é possível encerrar a negociação de fichas reprovadas pela gerência")
 
             ApplicationFormModel.close_management_negotiation(application_form_id)
 
             return True
+        except AppError:
+            raise
         except Exception as e:
             raise Exception(str(e))

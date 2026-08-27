@@ -2,6 +2,7 @@ import json
 
 from flask import Blueprint, request, jsonify
 from services.application_form_services import ApplicationFormService
+from utils.exceptions import ConflictError, NotFoundError, ValidationError
 
 bp_application_form = Blueprint("bp_application_form", __name__)
 
@@ -22,18 +23,22 @@ def get_all():
 # GET de todos por status (USANDO QUERY PARAMS, VARIÁVEL É status_id)
 @bp_application_form.route("/application-forms/status", methods=['GET'])
 def get_by_status():
-    status_id = request.args.get('status_id')
-    
-    if not status_id:
-        raise ValueError("ID do status é inválido, verifique e tente novamente")
-
     try:
+        status_id = request.args.get('status_id')
+
+        if not status_id:
+            raise ValidationError("ID do status é inválido, verifique e tente novamente")
+
         application_forms = ApplicationFormService.get_by_status(status_id)
 
         return jsonify([
             application_form.to_dict()
             for application_form in application_forms
         ])
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -47,7 +52,7 @@ def get_full_details(application_form_id):
         details = ApplicationFormService.get_full_details(application_form_id)
 
         return jsonify(details), 200
-    except ValueError as e:
+    except NotFoundError as e:
         return jsonify({
             "message": str(e)
         }), 404
@@ -89,7 +94,7 @@ def create_form_complete():
             "responsibles": [responsible.to_dict() for responsible in responsibles],
             "documents": [document.to_dict() for document in documents],
         }), 201
-    except ValueError as e:
+    except ValidationError as e:
         return jsonify({
             "message": str(e)
         }), 400
@@ -105,6 +110,14 @@ def request_reanalysis(application_form_id):
         ApplicationFormService.request_reanalysis(application_form_id)
 
         return jsonify({"message": "Reanálise solicitada com sucesso"}), 200
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -117,6 +130,14 @@ def close_negotiation(application_form_id):
         ApplicationFormService.close_negotiation(application_form_id)
 
         return jsonify({"message": "Negociação encerrada com sucesso"}), 200
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -129,10 +150,14 @@ def finalize_registration(application_form_id):
         ApplicationFormService.finalize_registration(application_form_id)
 
         return jsonify({"message": "Cadastro finalizado com sucesso"}), 200
-    except ValueError as e:
+    except NotFoundError as e:
         return jsonify({
             "message": str(e)
-        }), 400
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)

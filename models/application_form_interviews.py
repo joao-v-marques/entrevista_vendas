@@ -1,5 +1,6 @@
 from database.connect_db import get_db_connection
 from models.application_form_models import ApplicationFormModel
+from utils.exceptions import NotFoundError
 
 class ApplicationFormInterview:
     def __init__(self, application_form_id, interview_date=None, schedule_observation=None, interviewer_id=None, interview_approved=None, interview_observation=None, interview_reviewed_at=None, interviewer_name=None, id=None, created_at=None):
@@ -296,7 +297,7 @@ class ApplicationFormInterviewModel:
 
         # nenhuma linha atualizada significa ficha sem entrevista agendada: aborta a transação inteira
         if not updated_interview:
-            raise ValueError("Entrevista não encontrada para esta ficha")
+            raise NotFoundError("Entrevista não encontrada para esta ficha")
 
         # 2) move a ficha para 4. Aguardando Aprovação da Gerência quando aprovada,
         # e para 9. Reprovado na Entrevista quando reprovada

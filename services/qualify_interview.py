@@ -1,4 +1,5 @@
 from models.qualify_interview import QualifyInterviewModel, QualifyInterview
+from utils.exceptions import AppError, ValidationError
 
 # Valores aceitos pelas constraints chk_escolha_medico_orientador e chk_parecer_unimed. Usada para tratamento de erro
 ESCOLHAS_MEDICO_ORIENTADOR = ('medico_unimed', 'medico_proprio', 'dispensou_orientador')
@@ -27,21 +28,21 @@ def to_bool(value):
 # Campos numéricos chegam como int, float ou string dependendo do front
 def to_number(value, field_name):
     if value is None or str(value).strip() == '':
-        raise ValueError(f"O campo {field_name} é obrigatório")
+        raise ValidationError(f"O campo {field_name} é obrigatório")
 
     try:
         return float(str(value).strip().replace(',', '.'))
     except ValueError:
-        raise ValueError(f"O campo {field_name} precisa ser um número válido")
+        raise ValidationError(f"O campo {field_name} precisa ser um número válido")
 
 def to_id(value, field_name):
     if value is None or str(value).strip() == '':
-        raise ValueError(f"O campo {field_name} é obrigatório")
+        raise ValidationError(f"O campo {field_name} é obrigatório")
 
     try:
         return int(value)
     except (TypeError, ValueError):
-        raise ValueError(f"O campo {field_name} precisa ser um número inteiro válido")
+        raise ValidationError(f"O campo {field_name} precisa ser um número inteiro válido")
 
 class QualifyInterviewService:
     def get_all():
@@ -61,7 +62,7 @@ class QualifyInterviewService:
     def build(data, inserted_by):
         try:
             if not data:
-                raise ValueError("Nenhum dado foi recebido para a entrevista qualificada")
+                raise ValidationError("Nenhum dado foi recebido para a entrevista qualificada")
 
             # quem registra é o entrevistador logado, o mesmo que assina a análise da entrevista
             inserted_by = to_id(inserted_by, "usuário responsável")
@@ -70,30 +71,30 @@ class QualifyInterviewService:
             escolha_medico_orientador = (data.get('escolha_medico_orientador') or '').strip()
 
             if not escolha_medico_orientador:
-                raise ValueError("A escolha do médico orientador é obrigatória")
+                raise ValidationError("A escolha do médico orientador é obrigatória")
 
             if escolha_medico_orientador not in ESCOLHAS_MEDICO_ORIENTADOR:
-                raise ValueError("Escolha de médico orientador inválida")
+                raise ValidationError("Escolha de médico orientador inválida")
 
             # Parecer da Unimed sobre a declaração de saúde
             parecer_unimed = (data.get('parecer_unimed') or '').strip()
 
             if not parecer_unimed:
-                raise ValueError("O parecer da Unimed é obrigatório")
+                raise ValidationError("O parecer da Unimed é obrigatório")
 
             if parecer_unimed not in PARECERES_UNIMED:
-                raise ValueError("Parecer da Unimed inválido")
+                raise ValidationError("Parecer da Unimed inválido")
 
             # Peso e altura: usados no cálculo do IMC, que não é armazenado
             peso_kg = to_number(data.get('peso_kg'), "peso")
 
             if peso_kg <= 0 or peso_kg > PESO_KG_MAXIMO:
-                raise ValueError(f"O peso precisa estar entre 0 e {PESO_KG_MAXIMO} kg")
+                raise ValidationError(f"O peso precisa estar entre 0 e {PESO_KG_MAXIMO} kg")
 
             altura_cm = int(to_number(data.get('altura_cm'), "altura"))
 
             if altura_cm < ALTURA_CM_MINIMA or altura_cm > ALTURA_CM_MAXIMA:
-                raise ValueError(f"A altura precisa estar entre {ALTURA_CM_MINIMA} e {ALTURA_CM_MAXIMA} cm")
+                raise ValidationError(f"A altura precisa estar entre {ALTURA_CM_MINIMA} e {ALTURA_CM_MAXIMA} cm")
 
             # A observação vai para o contrato, então é opcional mas nunca string vazia
             observation = (data.get('observation') or '').strip() or None
@@ -291,7 +292,7 @@ class QualifyInterviewService:
             )
 
             return qualify_interview
-        except ValueError:
+        except AppError:
             raise
         except Exception as e:
             raise Exception(str(e))

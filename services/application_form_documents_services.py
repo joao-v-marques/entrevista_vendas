@@ -5,6 +5,7 @@ import zipfile
 import unicodedata
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from utils.exceptions import AppError, ForbiddenError, NotFoundError, ValidationError
 
 from models.application_form_documents import ApplicationFormDocumentModel, ApplicationFormDocument
 from models.application_form_models import ApplicationFormModel
@@ -32,7 +33,7 @@ class ApplicationFormDocumentService:
             documents = ApplicationFormDocumentModel.get_by_application_form_id(application_form_id)
 
             if not documents:
-                raise ValueError("Nenhum documento anexado foi encontrado para este formulário")
+                raise NotFoundError("Nenhum documento anexado foi encontrado para este formulário")
 
             zip_buffer = io.BytesIO()
             used_names = {}
@@ -51,7 +52,7 @@ class ApplicationFormDocumentService:
                     zip_file.write(absolute_path, arcname)
 
             if not zip_buffer.getbuffer().nbytes or not used_names:
-                raise ValueError("Os arquivos deste formulário não foram encontrados no servidor")
+                raise NotFoundError("Os arquivos deste formulário não foram encontrados no servidor")
 
             zip_buffer.seek(0)
 
@@ -59,7 +60,7 @@ class ApplicationFormDocumentService:
             zip_filename = ApplicationFormDocumentService._build_zip_filename(beneficiary_name, application_form_id)
 
             return zip_buffer.getvalue(), zip_filename
-        except ValueError:
+        except AppError:
             raise
         except Exception as e:
             raise Exception(str(e))
@@ -73,19 +74,19 @@ class ApplicationFormDocumentService:
             document = ApplicationFormDocumentModel.get_by_id(document_id)
 
             if not document:
-                raise ValueError("Documento não encontrado")
+                raise NotFoundError("Documento não encontrado")
 
             absolute_path = os.path.abspath(os.path.join(PROJECT_ROOT, document.stored_path))
 
             # trava de segurança: só servimos arquivos que estão dentro da pasta de uploads
             if not absolute_path.startswith(os.path.abspath(UPLOAD_ROOT)):
-                raise ValueError("Documento inválido")
+                raise ForbiddenError("Documento inválido")
 
             if not os.path.isfile(absolute_path):
-                raise ValueError("O arquivo deste documento não foi encontrado no servidor")
+                raise NotFoundError("O arquivo deste documento não foi encontrado no servidor")
 
             return absolute_path, document
-        except ValueError:
+        except AppError:
             raise
         except Exception as e:
             raise Exception(str(e))
@@ -122,13 +123,13 @@ class ApplicationFormDocumentService:
             return []
 
         if max_files and len(valid_files) > max_files:
-            raise ValueError(f"É permitido anexar no máximo {max_files} arquivo(s) por envio")
+            raise ValidationError(f"É permitido anexar no máximo {max_files} arquivo(s) por envio")
 
         for file in valid_files:
             extension = os.path.splitext(file.filename)[1].lower()
 
             if extension not in allowed_extensions:
-                raise ValueError(
+                raise ValidationError(
                     f"O arquivo '{file.filename}' não é permitido. Envie apenas arquivos {', '.join(allowed_extensions)}"
                 )
 
@@ -195,6 +196,8 @@ class ApplicationFormDocumentService:
             created_application_form_documents = ApplicationFormDocumentModel.create(new_application_form_documents)
 
             return created_application_form_documents
+        except AppError:
+            raise
         except Exception as e:
             raise Exception(str(e))
 

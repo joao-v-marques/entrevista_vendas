@@ -1,5 +1,6 @@
 from models.users_models import UserModel, User
 from utils.security import hash_password
+from utils.exceptions import AppError, ConflictError, NotFoundError
 
 class UserService:
     @staticmethod
@@ -33,12 +34,14 @@ class UserService:
     @staticmethod
     def create(data):
         try:
+            # Adicionar validações
+
             password_hash = hash_password(data['password'])
 
             existing_user = UserModel.get_by_username(data['username'])
 
             if existing_user:
-                raise ValueError(f"O usuário {data['username']} já está cadastrado")
+                raise ConflictError(f"O usuário {data['username']} já está cadastrado")
 
             user = User(
                 username=data['username'],
@@ -52,6 +55,8 @@ class UserService:
             created_user = UserModel.create(user)
 
             return created_user
+        except AppError:
+            raise
         except Exception as e:
             raise Exception(str(e))
 
@@ -62,13 +67,13 @@ class UserService:
             existing_user = UserModel.get_by_id(user_id)
 
             if not existing_user:
-                raise ValueError("Não existe nenhum usuário com o ID informado")
+                raise NotFoundError("Não existe nenhum usuário com o ID informado")
 
             # impede usar um username que já pertence a outro usuário
             user_with_username = UserModel.get_by_username(data['username'])
 
             if user_with_username and user_with_username.id != user_id:
-                raise ValueError(f"O usuário {data['username']} já está cadastrado")
+                raise ConflictError(f"O usuário {data['username']} já está cadastrado")
 
             user = User(
                 username=data['username'],
@@ -84,6 +89,8 @@ class UserService:
             updated_user = UserModel.update(user)
 
             return updated_user
+        except AppError:
+            raise
         except Exception as e:
             raise Exception(str(e))
 
@@ -93,10 +100,12 @@ class UserService:
             user = UserModel.get_by_id(user_id)
 
             if not user:
-                return ValueError("Não existe nenhum usuário com o ID informado")
+                raise NotFoundError("Não existe nenhum usuário com o ID informado")
 
             UserModel.delete(user_id)
 
             return True
+        except AppError:
+            raise
         except Exception as e:
             raise Exception(str(e))

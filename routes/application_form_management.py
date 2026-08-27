@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from services.application_form_management import ApplicationFormManagementService
 from services.application_form_services import ApplicationFormService
+from utils.exceptions import ConflictError, NotFoundError, ValidationError
 
 bp_application_form_management = Blueprint("bp_application_form_management", __name__)
 
@@ -35,6 +36,10 @@ def create():
             ApplicationFormService.update_status(11, data)
 
         return jsonify(created_management_form.to_dict()), 201
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -53,7 +58,7 @@ def request_reanalysis(application_form_id):
         # request.form sempre devolve string, mas requester_id é coluna int no banco
         if requester_id:
             if not requester_id.isdigit():
-                raise ValueError("Usuário solicitante inválido")
+                raise ValidationError("Usuário solicitante inválido")
 
             requester_id = int(requester_id)
 
@@ -66,10 +71,18 @@ def request_reanalysis(application_form_id):
             "reanalysis_request": reanalysis_request.to_dict(),
             "documents": [document.to_dict() for document in documents],
         }), 201
-    except ValueError as e:
+    except ValidationError as e:
         return jsonify({
             "message": str(e)
         }), 400
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -82,6 +95,14 @@ def close_negotiation(application_form_id):
         ApplicationFormManagementService.close_negotiation(application_form_id)
 
         return jsonify({"message": "Negociação encerrada com sucesso"}), 200
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)

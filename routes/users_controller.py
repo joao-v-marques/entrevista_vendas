@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from services.users_services import UserService
+from utils.exceptions import ConflictError, NotFoundError, ValidationError
 
 bp_users = Blueprint("bp_users", __name__)
 
@@ -55,6 +56,14 @@ def create():
         created_user = UserService.create(data)
 
         return jsonify(created_user.to_dict()), 201
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -69,6 +78,18 @@ def update(id):
         updated_user = UserService.update(id, data)
 
         return jsonify(updated_user.to_dict()), 200
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -83,6 +104,10 @@ def delete(id):
         return jsonify({
             "message": "Usuário deletado com sucesso"
         }), 200
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
     except Exception as e:
         return jsonify({
             "message": str(e)

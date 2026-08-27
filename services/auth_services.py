@@ -1,23 +1,25 @@
 from models.users_models import UserModel
 from utils.jwt_handler import generated_token
 from utils.security import verify_password
+from utils.exceptions import AppError, AuthError, NotFoundError, ValidationError
 
 class AuthService:
     @staticmethod
     def login(data):
         if not data['username']:
-            raise ValueError("Username é obrigatório")
+            raise ValidationError("Username é obrigatório")
         
         if not data['password']:
-            raise ValueError("A senha é obrigatória")
+            raise ValidationError("A senha é obrigatória")
         
         user = UserModel.get_by_username(data['username'])
 
+        # a mesma mensagem nos dois casos de propósito: não revela se o username existe
         if not user:
-            raise ValueError("Usuário ou senha inválidos")
+            raise AuthError("Usuário ou senha inválidos")
         
         if not verify_password(user.password_hash, data['password']):
-            raise ValueError("Usuário ou senha inválidos")
+            raise AuthError("Usuário ou senha inválidos")
 
         token = generated_token(user)
 
@@ -29,8 +31,10 @@ class AuthService:
             user = UserModel.get_by_id(user_id)
 
             if not user:
-                raise ValueError("Não foi encontrado nenhum usuário com esse ID")
+                raise NotFoundError("Não foi encontrado nenhum usuário com esse ID")
             
             return user.to_dict()
+        except AppError:
+            raise
         except Exception as e:
             raise Exception(str(e))

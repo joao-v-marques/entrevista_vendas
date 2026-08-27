@@ -8,6 +8,7 @@ from models.application_form_management import ApplicationFormManagementModel
 from models.application_form_documents import ApplicationFormDocumentModel
 from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel
 from services.application_form_documents_services import ApplicationFormDocumentService
+from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationError
 
 class ApplicationFormService:
     # GET de todos cadastrados no sistema
@@ -19,16 +20,13 @@ class ApplicationFormService:
         except Exception as e:
             raise Exception(str(e))
 
-    # GET agregado com TODOS os dados de um formulário: dados principais, responsáveis
-    # pela inclusão, aprovação financeira, entrevista, aprovação da gerência, solicitações de
-    # reanálise e documentos.
-    # Usado pela tela de visualização (modal), servindo de base para o cadastro no outro sistema.
+    # GET agregado com TODOS os dados de um formulário. Usado para a tela de visualização geral
     def get_full_details(application_form_id):
         try:
             application_form = ApplicationFormModel.get_by_id(application_form_id)
 
             if not application_form:
-                raise ValueError("Formulário não encontrado")
+                raise NotFoundError("Formulário não encontrado")
 
             responsibles = InclusionResponsiblesModel.get_by_application_form_id(application_form_id)
             approval = ApplicationFormApprovalModel.get_by_application_form_id(application_form_id)
@@ -57,7 +55,7 @@ class ApplicationFormService:
                 ],
                 "documents": [document.to_dict() for document in documents],
             }
-        except ValueError:
+        except AppError:
             raise
         except Exception as e:
             raise Exception(str(e))
@@ -135,10 +133,10 @@ class ApplicationFormService:
             files = files or []
 
             if not responsibles_data:
-                raise ValueError("É necessário informar ao menos um responsável pela inclusão")
+                raise ValidationError("É necessário informar ao menos um responsável pela inclusão")
 
             if not files:
-                raise ValueError("É necessário anexar ao menos um documento")
+                raise ValidationError("É necessário anexar ao menos um documento")
 
             # discount_percentage é salvo como fração (ex: 50% -> 0.50) para caber em numeric(3, 2)
             discount_percentage = form_data.get("discount_percentage")
@@ -211,7 +209,7 @@ class ApplicationFormService:
             conn.commit()
 
             return new_application_form, new_responsibles, new_documents
-        except ValueError:
+        except AppError:
             if conn:
                 conn.rollback()
             ApplicationFormDocumentService.delete_files(saved_paths)
@@ -242,14 +240,16 @@ class ApplicationFormService:
             application_form = ApplicationFormModel.get_by_id(application_form_id)
 
             if not application_form:
-                raise ValueError("Ficha não encontrada")
+                raise NotFoundError("Ficha não encontrada")
 
             if application_form.form_status_id != 7:
-                raise ValueError("Só é possível solicitar reanálise de fichas reprovadas pelo financeiro")
+                raise ConflictError("Só é possível solicitar reanálise de fichas reprovadas pelo financeiro")
 
             ApplicationFormModel.update_status(1, application_form_id)
 
             return True
+        except AppError:
+            raise
         except Exception as e:
             raise Exception(str(e))
 
@@ -259,33 +259,34 @@ class ApplicationFormService:
             application_form = ApplicationFormModel.get_by_id(application_form_id)
 
             if not application_form:
-                raise ValueError("Ficha não encontrada")
+                raise NotFoundError("Ficha não encontrada")
 
             if application_form.form_status_id != 7:
-                raise ValueError("Só é possível encerrar a negociação de fichas reprovadas pelo financeiro")
+                raise ConflictError("Só é possível encerrar a negociação de fichas reprovadas pelo financeiro")
 
             ApplicationFormModel.close_negotiation(application_form_id)
 
             return True
+        except AppError:
+            raise
         except Exception as e:
             raise Exception(str(e))
 
-    # Finaliza o cadastro de um formulário que está aguardando cadastro no Backoffice
-    # (status 5), movendo-o para o status 6. Finalizado
+    # Finaliza o cadastro de um formulário que está aguardando cadastro no Backoffice. Muda de status 5 para status 6
     def finalize_registration(application_form_id):
         try:
             application_form = ApplicationFormModel.get_by_id(application_form_id)
 
             if not application_form:
-                raise ValueError("Formulário não encontrado")
+                raise NotFoundError("Formulário não encontrado")
 
             if application_form.form_status_id != 5:
-                raise ValueError("Só é possível finalizar o cadastro de formulários aguardando cadastro no Backoffice")
+                raise ConflictError("Só é possível finalizar o cadastro de formulários aguardando cadastro no Backoffice")
 
             ApplicationFormModel.update_status(6, application_form_id)
 
             return True
-        except ValueError:
+        except AppError:
             raise
         except Exception as e:
             raise Exception(str(e))

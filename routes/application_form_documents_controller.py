@@ -2,6 +2,7 @@ import io
 
 from flask import Blueprint, request, jsonify, send_file
 from services.application_form_documents_services import ApplicationFormDocumentService
+from utils.exceptions import ForbiddenError, NotFoundError, ValidationError
 
 bp_application_form_documents = Blueprint("bp_application_form_documents", __name__)
 
@@ -31,7 +32,7 @@ def download_all(application_form_id):
             as_attachment=True,
             download_name=zip_filename,
         )
-    except ValueError as e:
+    except NotFoundError as e:
         return jsonify({
             "message": str(e)
         }), 404
@@ -53,7 +54,11 @@ def download_file(document_id):
             as_attachment=request.args.get("download") == "true",
             download_name=document.original_filename,
         )
-    except ValueError as e:
+    except ForbiddenError as e:
+        return jsonify({
+            "message": str(e)
+        }), 403
+    except NotFoundError as e:
         return jsonify({
             "message": str(e)
         }), 404
@@ -74,6 +79,10 @@ def create():
             application_form_document.to_dict()
             for application_form_document in application_form_documents
         ]), 201
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except Exception as e:
         return jsonify({
             "message": str(e)

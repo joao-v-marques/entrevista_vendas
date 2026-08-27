@@ -5,6 +5,7 @@ from psycopg.errors import UniqueViolation
 from services.application_form_interviews import ApplicationFormInterviewService
 from services.application_form_services import ApplicationFormService
 from services.interview_document_service import InterviewDocumentService
+from utils.exceptions import ConflictError, NotFoundError, ValidationError
 from utils.interview_pdf import render_interview_report
 
 bp_form_interviews = Blueprint("bp_form_interviews", __name__)
@@ -51,10 +52,14 @@ def download_document(application_form_id):
             as_attachment=True,
             download_name=context["nome_arquivo"],
         )
-    except ValueError as e:
+    except NotFoundError as e:
         return jsonify({
             "message": str(e)
         }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -70,6 +75,10 @@ def schedule_interview():
         created_form_interview = ApplicationFormInterviewService.schedule_interview(data)
 
         return jsonify(created_form_interview.to_dict()), 201
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -85,6 +94,18 @@ def reschedule_interview():
         return jsonify({
             "message": "Solicitado reagendamento da entrevista"
         }), 200
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -101,10 +122,18 @@ def analyze_interview():
         return jsonify({
             "message": "Entrevista análisada com sucesso!"
         }), 200
-    except ValueError as e:
+    except ValidationError as e:
         return jsonify({
             "message": str(e)
         }), 400
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except UniqueViolation:
         # constraint UNIQUE de qualify_interviews.application_form_interview_id: a entrevista já foi
         # analisada. O rollback já desfez tudo, aqui só traduzimos o erro cru do Postgres
@@ -123,6 +152,14 @@ def request_reanalysis(application_form_id):
         ApplicationFormInterviewService.request_reanalysis(application_form_id)
 
         return jsonify({"message": "Reanálise solicitada com sucesso"}), 200
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
@@ -135,6 +172,14 @@ def close_negotiation(application_form_id):
         ApplicationFormInterviewService.close_negotiation(application_form_id)
 
         return jsonify({"message": "Negociação encerrada com sucesso"}), 200
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)

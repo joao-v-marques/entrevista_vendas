@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from services.auth_services import AuthService
 from middlewares.jwt_middleware import token_required
+from utils.exceptions import AuthError, NotFoundError, ValidationError
 
 bp_auth = Blueprint("bp_auth", __name__)
 
@@ -25,7 +26,11 @@ def user_login():
         )
 
         return response, 200
-    except ValueError as e:
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
+    except AuthError as e:
         return jsonify({
             "message": str(e)
         }), 401
@@ -43,6 +48,10 @@ def get_me():
         user = AuthService.get_me(user_id)
 
         return jsonify(user)
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
     except Exception as e:
         return jsonify({
             "message": str(e)

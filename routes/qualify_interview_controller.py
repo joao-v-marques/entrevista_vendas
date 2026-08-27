@@ -15,7 +15,7 @@ def get_all():
     except Exception as e:
         return jsonify({
             "message": str(e)
-        })
+        }), 500
 
 # Não existe POST de entrevista qualificada: ela nunca é gravada sozinha.
 # A gravação acontece junto com a análise da entrevista, na mesma transação, em

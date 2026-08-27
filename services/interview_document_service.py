@@ -1,16 +1,7 @@
-# -*- coding: utf-8 -*-
-"""Monta o contexto do documento da entrevista.
-
-Camada de dados do PDF: lê o banco e devolve um dicionário plano, já formatado, sem saber nada
-sobre PDF. Quem desenha é utils/interview_pdf.py, que recebe justamente este dicionário. A
-separação existe para que ajustes de layout não encostem em regra de negócio, e vice-versa.
-
-O documento reproduzido é a Declaração de Saúde / Entrevista Qualificada da Unimed São Sebastião
-do Paraíso (VERSÃO Julho/2025), com 16 páginas.
-"""
 import re
 import unicodedata
 from datetime import date, datetime, timezone
+from utils.exceptions import ConflictError, NotFoundError
 
 from services.application_form_services import ApplicationFormService
 from utils.qualify_interview_questions import QUALIFY_INTERVIEW_GROUPS, QUALIFY_INTERVIEW_QUESTIONS
@@ -114,13 +105,13 @@ class InterviewDocumentService:
         qualify = details.get("qualify_interview") or {}
 
         if not interview:
-            raise ValueError("Esta ficha não possui entrevista registrada")
+            raise NotFoundError("Esta ficha não possui entrevista registrada")
 
         if not interview.get("interview_reviewed_at"):
-            raise ValueError("A entrevista desta ficha ainda não foi analisada")
+            raise ConflictError("A entrevista desta ficha ainda não foi analisada")
 
         if not qualify:
-            raise ValueError("Esta entrevista não possui entrevista qualificada registrada")
+            raise ConflictError("Esta entrevista não possui entrevista qualificada registrada")
 
         # Trava contra divergência entre o questionário em Python e as colunas da tabela: uma
         # pergunta ausente aqui viraria uma doença omitida em silêncio num documento assinado.
