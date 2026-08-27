@@ -1,4 +1,5 @@
 import { fetchWithAuth } from "./utils/apiHelper.js";
+import { formatCPF } from "./utils/detailsView.js";
 
 // mapeia role_name (vindo do backend) para o rótulo exibido e o variant da .pill
 const ROLE_LABELS = {
@@ -39,6 +40,30 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
+}
+
+// aplica a máscara 000.000.000-00 conforme o usuário digita
+function maskCpf(digits) {
+    let masked = digits.slice(0, 3);
+    if (digits.length > 3) masked += "." + digits.slice(3, 6);
+    if (digits.length > 6) masked += "." + digits.slice(6, 9);
+    if (digits.length > 9) masked += "-" + digits.slice(9, 11);
+    return masked;
+}
+
+// prende o input à máscara: aceita só dígitos e no máximo os 11 do CPF
+function bindCpfMask(input) {
+    if (!input) return;
+    input.addEventListener("input", () => {
+        const digits = input.value.replace(/\D/g, "").slice(0, 11);
+        input.value = maskCpf(digits);
+    });
+}
+
+// só os dígitos vão para o backend (a coluna é CHAR(11)); vazio vira null
+function getCpfDigits(value) {
+    const digits = String(value || "").replace(/\D/g, "");
+    return digits || null;
 }
 
 // guarda a lista completa carregada; os filtros atuam sobre ela sem novo request
@@ -116,7 +141,9 @@ function getFilteredUsers() {
     const status = document.getElementById("filterUserStatus").value; // "1", "0" ou ""
 
     return allUsers.filter(user => {
-        const haystack = `${user.name || ""} ${user.username || ""} ${user.email || ""}`.toLowerCase();
+        // o CPF entra cru e mascarado para achar tanto "12345678900" quanto "123.456.789-00"
+        const cpf = user.cpf || "";
+        const haystack = `${user.name || ""} ${user.username || ""} ${user.email || ""} ${cpf} ${formatCPF(cpf)}`.toLowerCase();
         const matchesSearch = !search || haystack.includes(search);
         const matchesRole = !role || user.role_name === role;
         const matchesStatus = status === "" || String(user.is_active ? 1 : 0) === status;
@@ -131,7 +158,7 @@ function renderUsersTable(users) {
     tbody.innerHTML = "";
 
     if (users.length === 0) {
-        tbody.innerHTML = `<tr class="forms-empty-row"><td colspan="8">Nenhum usuário encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr class="forms-empty-row"><td colspan="9">Nenhum usuário encontrado.</td></tr>`;
         return;
     }
 
@@ -147,6 +174,7 @@ function renderUsersTable(users) {
             <td>${escapeHtml(user.id)}</td>
             <td>${escapeHtml(user.name)}</td>
             <td>${escapeHtml(user.username)}</td>
+            <td>${user.cpf ? escapeHtml(formatCPF(user.cpf)) : "—"}</td>
             <td class="user-email">${escapeHtml(user.email)}</td>
             <td><span class="pill ${getRolePillClass(user.role_name)}">${escapeHtml(getRoleLabel(user.role_name))}</span></td>
             <td>${escapeHtml(user.sector_name)}</td>
@@ -188,7 +216,7 @@ async function populateUsersTable() {
         applyFilters();
     } catch (error) {
         console.log(error);
-        tbody.innerHTML = `<tr class="forms-empty-row"><td colspan="8">Não foi possível carregar os usuários.</td></tr>`;
+        tbody.innerHTML = `<tr class="forms-empty-row"><td colspan="9">Não foi possível carregar os usuários.</td></tr>`;
     }
 }
 
@@ -197,6 +225,7 @@ function openEditModal(user) {
     document.getElementById("editUserId").value = user.id ?? "";
     document.getElementById("editName").value = user.name ?? "";
     document.getElementById("editUsername").value = user.username ?? "";
+    document.getElementById("editCpf").value = user.cpf ? formatCPF(user.cpf) : "";
     document.getElementById("editEmail").value = user.email ?? "";
     document.getElementById("editRole").value = user.role_id ?? "";
     document.getElementById("editSector").value = user.sector_id ?? "";
@@ -235,6 +264,10 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(error);
         notyf.error("Não foi possível carregar os setores.");
     });
+
+    // ---------- Máscara de CPF (cadastro e edição) ----------
+    bindCpfMask(document.getElementById("createCpf"));
+    bindCpfMask(document.getElementById("editCpf"));
 
     // ---------- Filtros ----------
     const filterUser = document.getElementById("filterUser");
@@ -302,6 +335,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     notyf.error(`O campo ${field} não pode estar vazio`);
                     return;
                 }
+            }
+
+            // o input mantém a máscara na tela, mas só os 11 dígitos vão para o backend
+            data.cpf = getCpfDigits(data.cpf);
+
+            if (!data.cpf) {
+                notyf.error("O campo CPF não pode estar vazio");
+                return;
+            }
+
+            if (data.cpf.length !== 11) {
+                notyf.error("O CPF informado deve conter 11 dígitos");
+                return;
             }
 
             if (data.password !== data.password_confirm) {
@@ -373,6 +419,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     notyf.error(`O campo ${field} não pode estar vazio`);
                     return;
                 }
+            }
+
+            // o CPF continua opcional aqui porque existem usuários cadastrados antes do campo;
+            // quando preenchido precisa estar completo e vai sem máscara para o backend
+            data.cpf = getCpfDigits(data.cpf);
+
+            if (data.cpf && data.cpf.length !== 11) {
+                notyf.error("O CPF informado deve conter 11 dígitos");
+                return;
             }
 
             // o select de status envia "1"/"0"; o backend espera um booleano
