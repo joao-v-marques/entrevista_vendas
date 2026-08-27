@@ -1,7 +1,11 @@
-from flask import Blueprint, jsonify, request
+import io
+
+from flask import Blueprint, jsonify, request, send_file
 from psycopg.errors import UniqueViolation
 from services.application_form_interviews import ApplicationFormInterviewService
 from services.application_form_services import ApplicationFormService
+from services.interview_document_service import InterviewDocumentService
+from utils.interview_pdf import render_interview_report
 
 bp_form_interviews = Blueprint("bp_form_interviews", __name__)
 
@@ -33,6 +37,29 @@ def get_completed():
         return jsonify({
             "message": str(e)
         }), 500
+
+# GET que gera e devolve o documento da entrevista em PDFs
+@bp_form_interviews.route("/application-form-interviews/<int:application_form_id>/document", methods=['GET'])
+def download_document(application_form_id):
+    try:
+        context = InterviewDocumentService.build_context(application_form_id)
+        pdf_bytes = render_interview_report(context)
+
+        return send_file(
+            io.BytesIO(pdf_bytes),
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=context["nome_arquivo"],
+        )
+    except ValueError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
 
 @bp_form_interviews.route("/application-form-interviews", methods=['POST'])
 def schedule_interview():
