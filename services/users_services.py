@@ -1,6 +1,23 @@
+import re
+
 from models.users_models import UserModel, User
 from utils.security import hash_password
-from utils.exceptions import AppError, ConflictError, NotFoundError
+from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationError
+
+
+# o CPF chega mascarado do front (000.000.000-00) e a coluna é CHAR(11), então
+# guardamos só os dígitos. Campo vazio vira None para não colidir na constraint UNIQUE
+def normalize_cpf(cpf):
+    digits = re.sub(r"\D", "", str(cpf or ""))
+
+    if not digits:
+        return None
+
+    if len(digits) != 11:
+        raise ValidationError("O CPF informado deve conter 11 dígitos")
+
+    return digits
+
 
 class UserService:
     @staticmethod
@@ -49,7 +66,8 @@ class UserService:
                 password_hash=password_hash,
                 email=data['email'],
                 role_id=data['role_id'],
-                sector_id=data['sector_id']
+                sector_id=data['sector_id'],
+                cpf=normalize_cpf(data.get('cpf'))
             )
 
             created_user = UserModel.create(user)
@@ -75,6 +93,9 @@ class UserService:
             if user_with_username and user_with_username.id != user_id:
                 raise ConflictError(f"O usuário {data['username']} já está cadastrado")
 
+            if len(data.get('cpf')) != 11:
+                raise ConflictError("O CPF deve conter 11 digitos")
+
             user = User(
                 username=data['username'],
                 name=data['name'],
@@ -83,7 +104,8 @@ class UserService:
                 role_id=data['role_id'],
                 sector_id=data['sector_id'],
                 is_active=data['is_active'],
-                id=user_id
+                id=user_id,
+                cpf=normalize_cpf(data.get('cpf'))
             )
 
             updated_user = UserModel.update(user)

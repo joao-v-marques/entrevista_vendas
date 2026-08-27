@@ -1,7 +1,7 @@
 from database.connect_db import get_db_connection
 
 class User:
-    def __init__(self, username, name, password_hash, email, role_id=None, role_name=None, sector_id=None, sector_name=None, is_active=None, id=None):
+    def __init__(self, username, name, password_hash, email, role_id=None, role_name=None, sector_id=None, sector_name=None, is_active=None, id=None, cpf=None):
         self.username = username
         self.name = name
         self.password_hash = password_hash
@@ -11,6 +11,7 @@ class User:
         self.sector_id = sector_id
         self.sector_name = sector_name
         self.is_active = is_active
+        self.cpf = cpf
         self.id = id
 
     def to_dict(self):
@@ -23,6 +24,7 @@ class User:
             "sector_id": self.sector_id,
             "sector_name": self.sector_name,
             "is_active": self.is_active,
+            "cpf": self.cpf,
             "id": self.id
         }
     
@@ -36,7 +38,7 @@ class UserModel:
             conn, cursor = get_db_connection()
 
             sql = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.cpf, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id
@@ -68,7 +70,7 @@ class UserModel:
             conn, cursor = get_db_connection()
 
             sql = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.cpf, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id
@@ -103,7 +105,7 @@ class UserModel:
             conn, cursor = get_db_connection()
 
             sql = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
+                SELECT u.id, u.username, u.name, u.password_hash, u.cpf, u.email, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id
@@ -138,11 +140,11 @@ class UserModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                INSERT INTO users (username, name, password_hash, email, role_id, sector_id)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO users (username, name, password_hash, email, role_id, sector_id, cpf)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
                 RETURNING id
             """
-            values = (user.username, user.name, user.password_hash, user.email, user.role_id, user.sector_id)
+            values = (user.username, user.name, user.password_hash, user.email, user.role_id, user.sector_id, user.cpf)
 
             cursor.execute(sql_query, values)
             new_id = cursor.fetchone()["id"]
@@ -169,10 +171,10 @@ class UserModel:
 
             sql_query = """
                 UPDATE users
-                SET username = %s, name = %s, email = %s, role_id = %s, sector_id = %s, is_active = %s
+                SET username = %s, name = %s, email = %s, role_id = %s, sector_id = %s, is_active = %s, cpf = %s
                 WHERE id = %s
             """
-            values = (user.username, user.name, user.email, user.role_id, user.sector_id, user.is_active, user.id)
+            values = (user.username, user.name, user.email, user.role_id, user.sector_id, user.is_active, user.cpf, user.id)
 
             cursor.execute(sql_query, values)
             conn.commit()
