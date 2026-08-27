@@ -26,6 +26,9 @@ create table users (
 	constraint fk_user_sectors foreign key (sector_id) references sectors(id) on delete restrict	
 );
 
+ALTER TABLE users
+ADD COLUMN cpf CHAR(11) UNIQUE;
+
 -- Tabela de status do formulário, temos uma migration mostrando cada status
 create table form_status (
     id int generated always as identity primary key,
