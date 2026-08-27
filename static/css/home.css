@@ -338,7 +338,7 @@
   transform: scale(0.94);
 }
 
-/* ações ainda não implementadas (ex.: Editar e Baixar PDF em Entrevistas Realizadas):
+/* ações ainda não implementadas (ex.: Baixar PDF em Entrevistas Realizadas):
    precisa neutralizar o hover/active acima, senão o botão continua parecendo clicável */
 .icon-btn:disabled {
   opacity: 0.45;

@@ -87,8 +87,7 @@ function renderCompletedInterviewsTable(interviews) {
             ? `<span class="pill pill--green">Aprovada</span>`
             : `<span class="pill pill--red">Reprovada</span>`;
 
-        // Editar e Baixar PDF ainda não estão implementados: ficam desabilitados, mas já carregam
-        // o id da entrevista pra que a implementação futura só precise ligar o handler
+        // Entrevista já registrada não pode ser editada, por isso não há ação de edição aqui.
         trInterview.innerHTML = `
             <td>${interview.application_form_id}</td>
             <td>${interview.beneficiary_name}</td>
@@ -101,10 +100,7 @@ function renderCompletedInterviewsTable(interviews) {
                     <button class="icon-btn icon-btn--primary" title="Visualizar Entrevista" aria-label="Visualizar Entrevista" data-view-form-id="${interview.application_form_id}">
                         <svg viewBox="0 0 16 16" fill="none"><path d="M1.5 8s2.4-4.2 6.5-4.2S14.5 8 14.5 8s-2.4 4.2-6.5 4.2S1.5 8 1.5 8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="1.9" stroke="currentColor" stroke-width="1.4"/></svg>
                     </button>
-                    <button class="icon-btn" title="Editar Entrevista (em breve)" aria-label="Editar Entrevista" data-edit-interview-id="${interview.id}" disabled>
-                        <svg viewBox="0 0 16 16" fill="none"><path d="M11.3 2.2l2.5 2.5L6 12.5l-3.2.7.7-3.2 7.8-7.8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-                    </button>
-                    <button class="icon-btn" title="Baixar PDF da Entrevista (em breve)" aria-label="Baixar PDF da Entrevista" data-pdf-interview-id="${interview.id}" disabled>
+                    <button class="icon-btn" title="Baixar PDF da Entrevista" aria-label="Baixar PDF da Entrevista" data-pdf-form-id="${interview.application_form_id}">
                         <svg viewBox="0 0 16 16" fill="none"><path d="M8 2v7.5M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.8 13h10.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
                     </button>
                 </div>
@@ -142,6 +138,44 @@ export async function populateCompletedInterviewsTable() {
     }
 }
 
+// Baixa o PDF da entrevista. O documento é gerado sob demanda no servidor, o que leva alguns
+// instantes, então o botão trava enquanto isso para não disparar duas gerações.
+async function downloadInterviewDocument(button) {
+    button.disabled = true;
+
+    try {
+        const applicationFormId = Number(button.dataset.pdfFormId);
+        const response = await fetchWithAuth(`/entrevista-adesao/application-form-interviews/${applicationFormId}/document`);
+
+        if (!response.ok) {
+            const errorJSON = await response.json().catch(() => null);
+            throw new Error(errorJSON?.message || "Erro ao gerar o documento da entrevista");
+        }
+
+        // o nome do arquivo vem no Content-Disposition montado pelo backend
+        const disposition = response.headers.get("Content-Disposition") || "";
+        const suggestedName = disposition.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i)?.[1];
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = decodeURIComponent(suggestedName || `entrevista_${applicationFormId}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        // libera a memória do blob depois que o navegador iniciou o download
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error(error);
+        notyf.error(error.message || "Não foi possível gerar o documento da entrevista.");
+    } finally {
+        button.disabled = false;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     populateCompletedInterviewsTable();
 
@@ -172,9 +206,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById("tbodyCompletedInterviews").addEventListener("click", (event) => {
-        // Editar e Baixar PDF estão desabilitados e não disparam click, então só o Visualizar
-        // precisa de tratamento aqui
         const viewButton = event.target.closest(".icon-btn[data-view-form-id]");
-        if (viewButton) openViewInterviewModal(Number(viewButton.dataset.viewFormId));
+        if (viewButton) {
+            openViewInterviewModal(Number(viewButton.dataset.viewFormId));
+            return;
+        }
+
+        const pdfButton = event.target.closest(".icon-btn[data-pdf-form-id]");
+        if (pdfButton) downloadInterviewDocument(pdfButton);
     });
 })
