@@ -363,6 +363,39 @@ def _linha_assinatura(legenda, largura=None):
     return campo
 
 
+# Dois campos de assinatura lado a lado, ocupando a largura do conteúdo — o mesmo arranjo dos
+# blocos da carta (página 2). Empilhados, os dois deixavam a página com um vazio comprido no meio
+# e destoavam do resto do documento, em que os campos de duas assinaturas vêm na horizontal.
+#
+# Uma tabela única com as duas linhas e as duas legendas, e não dois _linha_assinatura colocados
+# em células: tabela aninhada ganha um deslocamento próprio do ReportLab e as linhas não ficariam
+# na mesma altura das dos outros blocos.
+def _par_de_linhas_assinatura(legenda_esquerda, legenda_direita):
+    largura = S.ASSINATURA_BLOCO_LARGURA
+    legendas = [_rico(legenda).rstrip(": ") for legenda in (legenda_esquerda, legenda_direita)]
+
+    campo = Table(
+        [
+            ["", "", ""],
+            [Paragraph(legendas[0], S.ASSINATURA_LEGENDA), "",
+             Paragraph(legendas[1], S.ASSINATURA_LEGENDA)],
+        ],
+        colWidths=[largura, S.ASSINATURA_VAO_ENTRE_BLOCOS, largura],
+        rowHeights=[14 * mm, None],
+        hAlign="LEFT",
+    )
+    campo.setStyle([
+        ("LINEBELOW", (0, 0), (0, 0), 0.6, S.PRETO),
+        ("LINEBELOW", (2, 0), (2, 0), 0.6, S.PRETO),
+        ("VALIGN", (0, 0), (-1, -1), "BOTTOM"),
+        ("TOPPADDING", (0, 1), (-1, 1), 2),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+    ])
+
+    return campo
+
+
 def _local_e_data(ctx):
     return Paragraph("%s %s" % (_rico(T.LOCAL_ASSINATURA), _esc(ctx["data_extenso"])), S.CORPO)
 
@@ -664,14 +697,11 @@ def _pagina_medico_orientador(ctx):
     flowables.extend([
         Spacer(1, 5 * mm),
         _local_e_data(ctx),
-        # os dois campos de assinatura ocupam a sobra da página, centralizados verticalmente
-        _CentralizaVerticalmente(
-            [
-                _linha_assinatura(T.ASSINATURA_MEDICO),
-                _linha_assinatura(T.ASSINATURA_BENEFICIARIO_LINHA),
-            ],
-            espaco_entre=22 * mm,
-        ),
+        # os dois campos de assinatura, lado a lado, ocupam a sobra da página, centralizados
+        # verticalmente
+        _CentralizaVerticalmente([
+            _par_de_linhas_assinatura(T.ASSINATURA_MEDICO, T.ASSINATURA_BENEFICIARIO_LINHA),
+        ]),
     ])
 
     return flowables
@@ -766,9 +796,6 @@ def _pagina_cpt(ctx):
         _local_e_data(ctx),
         # o campo de assinatura ocupa a sobra da página, centralizado verticalmente
         _CentralizaVerticalmente([_linha_assinatura(T.ASSINATURA_PROPONENTE)]),
-        # última folha do documento original, só com a moldura da operadora
-        PageBreak(),
-        Spacer(1, 1 * mm),
     ])
 
     return flowables
