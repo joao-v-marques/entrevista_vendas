@@ -413,15 +413,16 @@ def _pagina_carta(ctx):
 # sem isso os campos de um lado ficariam mais altos que os do outro.
 #
 # O que o sistema já sabe vem preenchido: o nome do beneficiário (o mesmo exibido na página 3),
-# o nome de quem conduziu a entrevista como intermediário, a cidade e a data de emissão nos dois
-# blocos. Ficam em branco só o CPF do intermediário e as assinaturas.
+# o nome e o CPF de quem conduziu a entrevista como intermediário, a cidade e a data de emissão
+# nos dois blocos. Ficam em branco só as assinaturas.
 def _blocos_de_assinatura(ctx):
     data = ctx["data_extenso"]
     cidade = T.LOCAL_CIDADE
 
     esquerda = ("Beneficiário", [("Nome:", ctx["proponente"]), ("Assinatura:", "")])
     direita = ("Intermediário entre a operadora e o beneficiário",
-               [("Nome:", ctx["entrevista"]["atendente"]), ("CPF:", ""), ("Assinatura:", "")])
+               [("Nome:", ctx["entrevista"]["atendente"]),
+                ("CPF:", ctx["entrevista"]["atendente_cpf"]), ("Assinatura:", "")])
 
     tabela = Table(
         [
