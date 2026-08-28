@@ -131,6 +131,40 @@ class UserModel:
             if conn:
                 conn.close()
 
+    # GET pelo CPF, para barrar CPF repetido antes de o INSERT esbarrar na constraint UNIQUE.
+    # Sem os JOINs de roles/sectors de propósito: um usuário antigo com cargo ou setor nulo não
+    # apareceria no INNER JOIN, a checagem passaria batido e o erro voltaria como 500 do banco.
+    @staticmethod
+    def get_by_cpf(cpf):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql = """
+                SELECT id, username, name, password_hash, email, cpf, role_id, sector_id, is_active
+                FROM users
+                WHERE cpf = %s
+            """
+            values = (cpf,)
+
+            cursor.execute(sql, values)
+            userData = cursor.fetchone()
+
+            if not userData:
+                return None
+
+            user = User(**userData)
+
+            return user
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     # POST para criar novo usuário
     @staticmethod
     def create(user):
