@@ -151,6 +151,9 @@ class InterviewDocumentService:
 
             "entrevista": {
                 "atendente": _texto(interview.get("interviewer_name")),
+                # CPF do colaborador que conduziu a entrevista: vai preenchido no bloco de
+                # assinatura do intermediário, ao lado do nome dele
+                "atendente_cpf": _cpf(interview.get("interviewer_cpf")),
                 "consultor": _texto(form.get("consultant_name")),
                 "data": _data_hora(interview.get("interview_date")),
                 "analisada_em": _data_hora(interview.get("interview_reviewed_at")),
