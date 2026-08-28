@@ -1,34 +1,178 @@
 /* =============================================
    users.css — Página de administração de usuários
+
+   Esta é a última folha carregada por users.html (depois de home.css,
+   approve_form.css e forms.css). Por isso as correções abaixo, que precisam
+   vencer regras compartilhadas, funcionam pela ordem da cascata — sem
+   !important e sem tocar nas folhas usadas pelas outras telas.
    ============================================= */
 
 .main-content {
   max-width: 1320px;
 }
 
-/* ---------- Formulário de cadastro / edição ---------- */
+/* ---------- Cabeçalho do card da lista ----------
+   approve_form.css força .form-card-header em coluna (é o que aquela página
+   precisa). Aqui o cabeçalho volta a ser uma linha para o botão "Novo usuário"
+   ficar alinhado à direita, ao lado do título. */
+.form-card-header {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.users-header-text {
+  min-width: 0;
+}
+
+/* contador "X de Y usuários" ao lado da descrição do card */
+.users-count {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 1px 9px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green-700);
+  background: var(--green-50);
+  border-radius: 99px;
+  vertical-align: 1px;
+  white-space: nowrap;
+}
+
+/* ---------- Tabela de usuários ----------
+   .fichas-list (home.css) usa overflow: hidden para arredondar os cantos, o que
+   corta a tabela quando ela passa da largura do card. Reabrir só o eixo X dá o
+   scroll horizontal como rede de segurança; o eixo Y continua hidden, então o
+   border-radius do container é preservado. */
+.fichas-list--scroll {
+  overflow-x: auto;
+}
+
+/* 1.5rem de padding lateral por célula (home.css) é caro demais numa tabela com
+   coluna de identidade composta; 1.1rem mantém o respiro e devolve largura. */
+.users-table thead th,
+.users-table tbody td {
+  padding: 12px 1.1rem;
+}
+
+.users-table {
+  min-width: 860px;
+}
+
+/* larguras por coluna: a identidade cresce, o resto fica no tamanho do conteúdo */
+.users-table .users-col-user   { width: auto; }
+.users-table .users-col-cpf    { width: 170px; }
+.users-table .users-col-role   { width: 240px; }
+.users-table .status-column    { width: 120px; }
+.users-table .actions-column   { width: 110px; }
+
+/* ---------- Coluna de identidade (nome + @usuário · #id + e-mail) ---------- */
+.user-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.user-cell-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.user-cell-meta,
+.user-cell-email {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-cell-meta {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Coluna de cargo + setor ---------- */
+.user-role-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.user-cell-sector {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Coluna de CPF (o número mascarado não pode quebrar em duas linhas) ---------- */
+.fichas-table .user-cpf {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Cabeçalhos ordenáveis ---------- */
+.users-table th.is-sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transition), background var(--transition);
+}
+
+.users-table th.is-sortable:hover {
+  color: var(--color-text);
+  background: var(--gray-100);
+}
+
+.sort-indicator {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--color-text-hint);
+  transition: color var(--transition);
+}
+
+.sort-indicator::before {
+  content: '\2195'; /* ↕ — coluna ordenável, mas não é a ordenação ativa */
+}
+
+.users-table th.is-sorted-asc .sort-indicator,
+.users-table th.is-sorted-desc .sort-indicator {
+  color: var(--color-brand);
+}
+
+.users-table th.is-sorted-asc .sort-indicator::before  { content: '\25B2'; } /* ▲ */
+.users-table th.is-sorted-desc .sort-indicator::before { content: '\25BC'; } /* ▼ */
+
+/* ---------- Formulário de cadastro / edição (agora sempre dentro de modal) ---------- */
 .user-form-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.1rem 1.3rem;
 }
 
-.user-form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-  padding-top: 1.3rem;
-  border-top: 1px solid var(--color-border-light);
+/* ---------- Modais ---------- */
+
+/* Trava a rolagem do fundo enquanto qualquer modal está aberto.
+
+   A trava vai no <html> por ser o elemento de rolagem da viewport
+   (document.scrollingElement): assim não depende da regra de propagação do
+   overflow do <body> para a viewport, que só vale enquanto o <html> estiver com
+   overflow visible.
+
+   O .modal-body já tem overflow-y: auto (approve_form.css), então formulários
+   longos continuam acessíveis rolando dentro do próprio modal. O padding-right
+   compensatório é aplicado pelo JS com a largura real da barra de rolagem, para
+   o conteúdo não dar um pulo lateral quando a barra some. */
+html.modal-open {
+  overflow: hidden;
 }
 
-/* ---------- Modal com formulário ---------- */
 .modal--form {
   max-width: 920px;
-}
-
-.modal--form .user-form-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .modal--confirm {
@@ -41,33 +185,39 @@
   color: var(--color-text);
 }
 
-/* ---------- Coluna de e-mail (evita quebra estranha) ---------- */
-.fichas-table .user-email {
-  color: var(--color-text-muted);
-}
+/* ---------- Responsivo ----------
+   home.css esconde th/td:nth-child(3..6) abaixo de 768px, contando as colunas
+   por posição. Na tabela de 5 colunas daqui isso apagaria Cargo/Setor, Status e
+   Ações — justamente o que importa. Os seletores abaixo têm a mesma
+   especificidade e vêm depois, então devolvem as células e escondem só o CPF,
+   que é o dado menos consultado no celular. */
+@media (max-width: 768px) {
+  .users-table th:nth-child(n),
+  .users-table td:nth-child(n) {
+    display: table-cell;
+  }
 
-/* ---------- Coluna de CPF (o número mascarado não pode quebrar em duas linhas) ---------- */
-.fichas-table .user-cpf {
-  white-space: nowrap;
-}
+  .users-table th.users-col-cpf,
+  .users-table td.user-cpf {
+    display: none;
+  }
 
-/* ---------- Responsivo ---------- */
-@media (max-width: 900px) {
-  .user-form-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .users-table {
+    min-width: 0;
+  }
+
+  .form-card-header {
+    flex-direction: column;
+  }
+
+  .users-header-actions .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
 @media (max-width: 560px) {
-  .user-form-grid,
-  .modal--form .user-form-grid {
+  .user-form-grid {
     grid-template-columns: 1fr;
-  }
-  .user-form-actions {
-    flex-direction: column-reverse;
-  }
-  .user-form-actions .btn {
-    width: 100%;
-    justify-content: center;
   }
 }

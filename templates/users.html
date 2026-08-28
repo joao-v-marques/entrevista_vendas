@@ -170,17 +170,93 @@
 
     <main class="main-content">
 
-        <!-- ===== CADASTRO DE NOVO USUÁRIO ===== -->
+        <!-- ===== LISTA DE USUÁRIOS ===== -->
         <section class="section">
             <h2 class="section-label">Administração de usuários</h2>
             <div class="form-card">
                 <div class="form-card-header">
-                    <h2 class="form-card-title">Cadastrar novo usuário</h2>
-                    <p class="form-card-description">Preencha os dados abaixo para adicionar um novo usuário ao sistema.</p>
+                    <div class="users-header-text">
+                        <h2 class="form-card-title">Usuários cadastrados</h2>
+                        <p class="form-card-description">
+                            Todos os usuários com acesso ao sistema.
+                            <span class="users-count" id="usersCount"></span>
+                        </p>
+                    </div>
+                    <div class="users-header-actions">
+                        <button type="button" class="btn btn--primary" id="btnOpenCreateUser">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            Novo usuário
+                        </button>
+                    </div>
                 </div>
 
-                <!-- A lógica de submissão será implementada posteriormente -->
-                <form id="createUserForm" novalidate>
+                <!-- Filtros -->
+                <div class="forms-filters">
+                    <div class="forms-filter-field forms-filter-field--grow">
+                        <label for="filterUser">Buscar</label>
+                        <input type="text" id="filterUser" class="input" placeholder="Buscar por nome, usuário, CPF, e-mail ou setor..." autocomplete="off" />
+                    </div>
+                    <div class="forms-filter-field">
+                        <label for="filterRole">Cargo</label>
+                        <select id="filterRole" class="select">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="forms-filter-field">
+                        <label for="filterSector">Setor</label>
+                        <select id="filterSector" class="select">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="forms-filter-field">
+                        <label for="filterUserStatus">Status</label>
+                        <select id="filterUserStatus" class="select">
+                            <option value="">Todos</option>
+                            <option value="1">Ativos</option>
+                            <option value="0">Inativos</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn--ghost forms-filter-clear" id="filterUserClear">Limpar</button>
+                </div>
+
+                <!-- Tabela de usuários -->
+                <div class="fichas-list fichas-list--scroll">
+                    <table class="fichas-table users-table">
+                        <thead>
+                            <tr>
+                                <th class="users-col-user is-sortable" data-sort="name" aria-sort="ascending">Usuário<span class="sort-indicator" aria-hidden="true"></span></th>
+                                <th class="users-col-cpf">CPF</th>
+                                <th class="users-col-role is-sortable" data-sort="role" aria-sort="none">Cargo / Setor<span class="sort-indicator" aria-hidden="true"></span></th>
+                                <th class="status-column is-sortable" data-sort="status" aria-sort="none">Status<span class="sort-indicator" aria-hidden="true"></span></th>
+                                <th class="actions-column">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyUsers">
+                            <tr class="forms-empty-row"><td colspan="5">Carregando usuários...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <span>© 2026 Unimed SS Paraíso — Sistema de Fichas de Adesão</span>
+    </footer>
+
+    <!-- ===== MODAL: CADASTRAR USUÁRIO ===== -->
+    <div class="modal-overlay" id="createUserModalOverlay" hidden>
+        <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="createUserModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="createUserModalTitle">Cadastrar novo usuário</h2>
+                <button type="button" class="modal-close" id="createUserModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+                </button>
+            </div>
+
+            <form id="createUserForm" novalidate>
+                <div class="modal-body">
                     <div class="user-form-grid">
                         <div class="form-group">
                             <label class="form-label required" for="createName">Nome completo</label>
@@ -219,78 +295,17 @@
                             <input type="password" id="createPasswordConfirm" name="password_confirm" class="input" placeholder="Repita a senha" autocomplete="new-password" />
                         </div>
                     </div>
-
-                    <div class="user-form-actions">
-                        <button type="reset" class="btn btn--ghost">Limpar</button>
-                        <button type="submit" class="btn btn--primary" id="btnCreateUser">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                            Cadastrar usuário
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <!-- ===== LISTA DE USUÁRIOS ===== -->
-        <section class="section">
-            <div class="form-card">
-                <div class="form-card-header">
-                    <h2 class="form-card-title">Usuários cadastrados</h2>
-                    <p class="form-card-description">Todos os usuários com acesso ao sistema.</p>
                 </div>
-
-                <!-- Filtro -->
-                <div class="forms-filters">
-                    <div class="forms-filter-field forms-filter-field--grow">
-                        <label for="filterUser">Buscar</label>
-                        <input type="text" id="filterUser" class="input" placeholder="Buscar por nome, usuário, CPF ou e-mail..." autocomplete="off" />
-                    </div>
-                    <div class="forms-filter-field">
-                        <label for="filterRole">Cargo</label>
-                        <select id="filterRole" class="select">
-                            <option value="">Todos</option>
-                        </select>
-                    </div>
-                    <div class="forms-filter-field">
-                        <label for="filterUserStatus">Status</label>
-                        <select id="filterUserStatus" class="select">
-                            <option value="">Todos</option>
-                            <option value="1">Ativos</option>
-                            <option value="0">Inativos</option>
-                        </select>
-                    </div>
-                    <button type="button" class="btn btn--ghost forms-filter-clear" id="filterUserClear">Limpar</button>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn--ghost">Limpar</button>
+                    <button type="submit" class="btn btn--primary" id="btnCreateUser">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        Cadastrar usuário
+                    </button>
                 </div>
-
-                <!-- Tabela de usuários -->
-                <div class="fichas-list">
-                    <table class="fichas-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nome</th>
-                                <th>Usuário</th>
-                                <th>CPF</th>
-                                <th>E-mail</th>
-                                <th>Cargo</th>
-                                <th>Setor</th>
-                                <th class="status-column">Status</th>
-                                <th class="actions-column">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyUsers">
-                            <tr class="forms-empty-row"><td colspan="9">Carregando usuários...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer">
-        <span>© 2026 Unimed SS Paraíso — Sistema de Fichas de Adesão</span>
-    </footer>
+            </form>
+        </div>
+    </div>
 
     <!-- ===== MODAL: EDITAR USUÁRIO ===== -->
     <div class="modal-overlay" id="editUserModalOverlay" hidden>
@@ -302,7 +317,6 @@
                 </button>
             </div>
 
-            <!-- A lógica de atualização será implementada posteriormente -->
             <form id="editUserForm" novalidate>
                 <div class="modal-body">
                     <input type="hidden" id="editUserId" name="id" />
@@ -326,17 +340,13 @@
                         <div class="form-group">
                             <label class="form-label required" for="editRole">Cargo</label>
                             <select id="editRole" name="role_id" class="select">
-                                <option value="1">Administrador</option>
-                                <option value="2">Funcionário</option>
+                                <!-- Preenchido pelo JS -->
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label required" for="editSector">Setor</label>
                             <select id="editSector" name="sector_id" class="select">
-                                <option value="1">Vendas</option>
-                                <option value="2">Financeiro</option>
-                                <option value="3">Gerência</option>
-                                <option value="4">Backoffice</option>
+                                <!-- Preenchido pelo JS -->
                             </select>
                         </div>
                         <div class="form-group">

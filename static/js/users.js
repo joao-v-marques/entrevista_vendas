@@ -73,6 +73,10 @@ let allUsers = [];
 let allRoles = [];
 let allSectors = [];
 
+// ordenação atual da tabela; a lista já vem do backend por id, mas por nome é
+// bem mais útil para procurar alguém na lista
+let currentSort = { key: "name", dir: "asc" };
+
 // preenche um <select> com options a partir de uma lista, escapando os valores
 function fillSelectOptions(select, items, getValue, getLabel) {
     if (!select) return;
@@ -122,7 +126,18 @@ async function loadSectors() {
     fillSelectOptions(document.getElementById("editSector"), allSectors, getValue, getLabel);
 }
 
-// preenche o select de cargo do filtro com os valores presentes nos dados carregados
+// preenche um select de filtro com os valores distintos presentes nos dados carregados
+function populateFilterSelect(select, values) {
+    const previous = select.value;
+    const options = [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+    select.innerHTML = `<option value="">Todos</option>` +
+        options.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("");
+
+    if (options.includes(previous)) select.value = previous;
+}
+
+// o filtro de cargo guarda o role_name cru no value, mas exibe o rótulo traduzido
 function populateRoleFilter(users) {
     const roleSelect = document.getElementById("filterRole");
     const roles = [...new Set(users.map(u => u.role_name).filter(Boolean))].sort();
@@ -134,31 +149,85 @@ function populateRoleFilter(users) {
     if (roles.includes(previous)) roleSelect.value = previous;
 }
 
+function populateSectorFilter(users) {
+    populateFilterSelect(document.getElementById("filterSector"), users.map(u => u.sector_name));
+}
+
 // aplica os filtros ativos sobre allUsers e retorna apenas os usuários correspondentes
 function getFilteredUsers() {
     const search = document.getElementById("filterUser").value.trim().toLowerCase();
     const role = document.getElementById("filterRole").value;
+    const sector = document.getElementById("filterSector").value;
     const status = document.getElementById("filterUserStatus").value; // "1", "0" ou ""
 
     return allUsers.filter(user => {
         // o CPF entra cru e mascarado para achar tanto "12345678900" quanto "123.456.789-00"
         const cpf = user.cpf || "";
-        const haystack = `${user.name || ""} ${user.username || ""} ${user.email || ""} ${cpf} ${formatCPF(cpf)}`.toLowerCase();
+        const haystack = `${user.name || ""} ${user.username || ""} ${user.email || ""} ${user.sector_name || ""} ${cpf} ${formatCPF(cpf)}`.toLowerCase();
         const matchesSearch = !search || haystack.includes(search);
         const matchesRole = !role || user.role_name === role;
+        const matchesSector = !sector || user.sector_name === sector;
         const matchesStatus = status === "" || String(user.is_active ? 1 : 0) === status;
 
-        return matchesSearch && matchesRole && matchesStatus;
+        return matchesSearch && matchesRole && matchesSector && matchesStatus;
     });
 }
 
-// renderiza a tabela a partir de uma lista já filtrada
+// valor usado na comparação de cada coluna ordenável
+function getSortValue(user, key) {
+    if (key === "role") return getRoleLabel(user.role_name);
+    if (key === "status") return user.is_active ? 1 : 0;
+    return user.name || user.username || "";
+}
+
+// ordena uma cópia da lista para não mexer na ordem original de allUsers
+function sortUsers(users) {
+    const { key, dir } = currentSort;
+    const factor = dir === "desc" ? -1 : 1;
+
+    return [...users].sort((a, b) => {
+        const valueA = getSortValue(a, key);
+        const valueB = getSortValue(b, key);
+
+        const comparison = typeof valueA === "number"
+            ? valueA - valueB
+            : String(valueA).localeCompare(String(valueB), "pt-BR", { sensitivity: "base" });
+
+        // empate cai para o nome, para a ordem não ficar instável entre renders
+        if (comparison === 0 && key !== "name") {
+            return String(a.name || "").localeCompare(String(b.name || ""), "pt-BR");
+        }
+
+        return comparison * factor;
+    });
+}
+
+// reflete a ordenação atual nos cabeçalhos (seta + aria-sort para leitores de tela)
+function updateSortIndicators() {
+    document.querySelectorAll(".users-table th.is-sortable").forEach(th => {
+        const isActive = th.dataset.sort === currentSort.key;
+
+        th.classList.toggle("is-sorted-asc", isActive && currentSort.dir === "asc");
+        th.classList.toggle("is-sorted-desc", isActive && currentSort.dir === "desc");
+        th.setAttribute("aria-sort", isActive ? (currentSort.dir === "asc" ? "ascending" : "descending") : "none");
+    });
+}
+
+// "12 usuários" quando não há filtro; "5 de 12 usuários" quando há
+function updateUsersCount(shown, total) {
+    const counter = document.getElementById("usersCount");
+    const label = total === 1 ? "usuário" : "usuários";
+
+    counter.textContent = shown === total ? `${total} ${label}` : `${shown} de ${total} ${label}`;
+}
+
+// renderiza a tabela a partir de uma lista já filtrada e ordenada
 function renderUsersTable(users) {
     const tbody = document.getElementById("tbodyUsers");
     tbody.innerHTML = "";
 
     if (users.length === 0) {
-        tbody.innerHTML = `<tr class="forms-empty-row"><td colspan="9">Nenhum usuário encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr class="forms-empty-row"><td colspan="5">Nenhum usuário encontrado.</td></tr>`;
         return;
     }
 
@@ -171,15 +240,22 @@ function renderUsersTable(users) {
             : `<span class="pill pill--gray">Inativo</span>`;
 
         tr.innerHTML = `
-            <td>${escapeHtml(user.id)}</td>
-            <td>${escapeHtml(user.name)}</td>
-            <td>${escapeHtml(user.username)}</td>
-            <td class="user-cpf">${user.cpf ? escapeHtml(formatCPF(user.cpf)) : "—"}</td>
-            <td class="user-email">${escapeHtml(user.email)}</td>
-            <td><span class="pill ${getRolePillClass(user.role_name)}">${escapeHtml(getRoleLabel(user.role_name))}</span></td>
-            <td>${escapeHtml(user.sector_name)}</td>
-            <td class="status-column">${statusPill}</td>
             <td>
+                <div class="user-cell">
+                    <span class="user-cell-name">${escapeHtml(user.name)}</span>
+                    <span class="user-cell-meta">@${escapeHtml(user.username)} · #${escapeHtml(user.id)}</span>
+                    <span class="user-cell-email">${user.email ? escapeHtml(user.email) : "—"}</span>
+                </div>
+            </td>
+            <td class="user-cpf">${user.cpf ? escapeHtml(formatCPF(user.cpf)) : "—"}</td>
+            <td>
+                <div class="user-role-cell">
+                    <span class="pill ${getRolePillClass(user.role_name)}">${escapeHtml(getRoleLabel(user.role_name))}</span>
+                    <span class="user-cell-sector">${user.sector_name ? escapeHtml(user.sector_name) : "—"}</span>
+                </div>
+            </td>
+            <td class="status-column">${statusPill}</td>
+            <td class="actions-column">
                 <div class="table-actions">
                     <button class="icon-btn btn-edit-user" data-id="${escapeHtml(user.id)}" title="Editar" aria-label="Editar">
                         <svg viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2L6 12l-2.7.7L4 10l7.5-7.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
@@ -198,7 +274,11 @@ function renderUsersTable(users) {
 }
 
 function applyFilters() {
-    renderUsersTable(getFilteredUsers());
+    const filtered = getFilteredUsers();
+
+    renderUsersTable(sortUsers(filtered));
+    updateSortIndicators();
+    updateUsersCount(filtered.length, allUsers.length);
 }
 
 async function populateUsersTable() {
@@ -213,11 +293,44 @@ async function populateUsersTable() {
 
         allUsers = await response.json();
         populateRoleFilter(allUsers);
+        populateSectorFilter(allUsers);
         applyFilters();
     } catch (error) {
         console.log(error);
-        tbody.innerHTML = `<tr class="forms-empty-row"><td colspan="9">Não foi possível carregar os usuários.</td></tr>`;
+        tbody.innerHTML = `<tr class="forms-empty-row"><td colspan="5">Não foi possível carregar os usuários.</td></tr>`;
     }
+}
+
+// ---------- Controle dos modais ----------
+// Enquanto houver algum modal aberto o fundo não pode rolar. A trava é derivada do
+// estado real dos overlays (e não de um contador), então qualquer caminho de
+// fechamento — X, Cancelar, Esc ou clique fora — chega ao mesmo resultado.
+function syncBodyScrollLock() {
+    const anyOpen = [...document.querySelectorAll(".modal-overlay")].some(overlay => !overlay.hidden);
+    const root = document.documentElement;
+
+    if (anyOpen === root.classList.contains("modal-open")) return;
+
+    // mede a barra de rolagem ANTES de travar; depois de travar ela já sumiu
+    const scrollbarWidth = window.innerWidth - root.clientWidth;
+
+    root.classList.toggle("modal-open", anyOpen);
+    root.style.paddingRight = anyOpen && scrollbarWidth > 0 ? `${scrollbarWidth}px` : "";
+}
+
+function setModalVisible(overlayId, visible) {
+    document.getElementById(overlayId).hidden = !visible;
+    syncBodyScrollLock();
+}
+
+// ---------- Modal de cadastro ----------
+function openCreateModal() {
+    setModalVisible("createUserModalOverlay", true);
+    document.getElementById("createName").focus();
+}
+
+function closeCreateModal() {
+    setModalVisible("createUserModalOverlay", false);
 }
 
 // ---------- Modal de edição ----------
@@ -231,11 +344,11 @@ function openEditModal(user) {
     document.getElementById("editSector").value = user.sector_id ?? "";
     document.getElementById("editStatus").value = user.is_active ? "1" : "0";
 
-    document.getElementById("editUserModalOverlay").hidden = false;
+    setModalVisible("editUserModalOverlay", true);
 }
 
 function closeEditModal() {
-    document.getElementById("editUserModalOverlay").hidden = true;
+    setModalVisible("editUserModalOverlay", false);
 }
 
 // ---------- Modal de exclusão ----------
@@ -244,12 +357,12 @@ let userToDelete = null;
 function openDeleteModal(user) {
     userToDelete = user;
     document.getElementById("deleteUserName").textContent = user.name || user.username || `#${user.id}`;
-    document.getElementById("deleteUserModalOverlay").hidden = false;
+    setModalVisible("deleteUserModalOverlay", true);
 }
 
 function closeDeleteModal() {
     userToDelete = null;
-    document.getElementById("deleteUserModalOverlay").hidden = true;
+    setModalVisible("deleteUserModalOverlay", false);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -272,16 +385,34 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---------- Filtros ----------
     const filterUser = document.getElementById("filterUser");
     const filterRole = document.getElementById("filterRole");
+    const filterSector = document.getElementById("filterSector");
     const filterUserStatus = document.getElementById("filterUserStatus");
     const filterUserClear = document.getElementById("filterUserClear");
 
     filterUser.addEventListener("input", applyFilters);
     filterRole.addEventListener("change", applyFilters);
+    filterSector.addEventListener("change", applyFilters);
     filterUserStatus.addEventListener("change", applyFilters);
     filterUserClear.addEventListener("click", () => {
         filterUser.value = "";
         filterRole.value = "";
+        filterSector.value = "";
         filterUserStatus.value = "";
+        applyFilters();
+    });
+
+    // ---------- Ordenação (delegação no thead) ----------
+    document.querySelector(".users-table thead").addEventListener("click", (event) => {
+        const th = event.target.closest("th.is-sortable");
+        if (!th) return;
+
+        const key = th.dataset.sort;
+
+        // clicar de novo na mesma coluna inverte; trocar de coluna recomeça em asc
+        currentSort = key === currentSort.key
+            ? { key, dir: currentSort.dir === "asc" ? "desc" : "asc" }
+            : { key, dir: "asc" };
+
         applyFilters();
     });
 
@@ -303,11 +434,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ---------- Formulário de cadastro (lógica de backend pendente) ----------
+    // ---------- Modal de cadastro ----------
+    document.getElementById("btnOpenCreateUser").addEventListener("click", openCreateModal);
+    document.getElementById("createUserModalClose").addEventListener("click", closeCreateModal);
+
     const createForm = document.getElementById("createUserForm");
     createForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
+
         try {
             const formData = new FormData(createForm);
 
@@ -380,6 +514,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             createForm.reset();
+            closeCreateModal();
             notyf.success("Usuário cadastrado com sucesso");
             populateUsersTable(); // atualiza a tabela para o usuário novo já aparecer na lista
         } catch (error) {
@@ -456,9 +591,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ========== Modal de exclusão ==========
     document.getElementById("deleteUserModalClose").addEventListener("click", closeDeleteModal);
-    
+
     document.getElementById("deleteUserCancel").addEventListener("click", closeDeleteModal);
-    
+
     document.getElementById("deleteUserConfirm").addEventListener("click", async () => {
         try {
             if (!userToDelete) {
@@ -473,7 +608,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!response.ok) {
                 throw new Error(await getErrorMessage(response, "Houve um erroao tentar excluir o usuário"));
             }
-        
+
             closeDeleteModal();
             notyf.success("Usuário deletado com sucesso");
             populateUsersTable(); // Atualiza a tabela após realiar a exclusão
@@ -485,12 +620,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // fecha os modais ao clicar fora do conteúdo ou pressionar Esc
     document.querySelectorAll(".modal-overlay").forEach(overlay => {
         overlay.addEventListener("click", (event) => {
-            if (event.target === overlay) overlay.hidden = true;
+            if (event.target !== overlay) return;
+
+            overlay.hidden = true;
+            syncBodyScrollLock();
         });
     });
 
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
+            closeCreateModal();
             closeEditModal();
             closeDeleteModal();
         }
