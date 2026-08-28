@@ -3,7 +3,7 @@ from models.application_form_models import ApplicationFormModel
 from utils.exceptions import NotFoundError
 
 class ApplicationFormInterview:
-    def __init__(self, application_form_id, interview_date=None, schedule_observation=None, interviewer_id=None, interview_approved=None, interview_observation=None, interview_reviewed_at=None, interviewer_name=None, id=None, created_at=None):
+    def __init__(self, application_form_id, interview_date=None, schedule_observation=None, interviewer_id=None, interview_approved=None, interview_observation=None, interview_reviewed_at=None, interviewer_name=None, interviewer_cpf=None, id=None, created_at=None):
         self.interview_date = interview_date
         self.schedule_observation = schedule_observation
         self.interviewer_id = interviewer_id
@@ -12,6 +12,8 @@ class ApplicationFormInterview:
         self.interview_reviewed_at = interview_reviewed_at
         self.application_form_id = application_form_id
         self.interviewer_name = interviewer_name
+        # o CPF de quem conduziu a entrevista vai para o bloco de assinatura do intermediário no PDF
+        self.interviewer_cpf = interviewer_cpf
         self.id = id
         self.created_at = created_at
 
@@ -26,6 +28,7 @@ class ApplicationFormInterview:
             "interview_reviewed_at": self.interview_reviewed_at,
             "application_form_id": self.application_form_id,
             "interviewer_name": self.interviewer_name,
+            "interviewer_cpf": self.interviewer_cpf,
             "created_at": self.created_at
         }
     
@@ -83,7 +86,7 @@ class ApplicationFormInterviewModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT ai.id, ai.interview_date, ai.schedule_observation, ai.interviewer_id, u.name AS interviewer_name, ai.interview_approved, ai.interview_observation, ai.interview_reviewed_at, ai.application_form_id, ai.created_at
+                SELECT ai.id, ai.interview_date, ai.schedule_observation, ai.interviewer_id, u.name AS interviewer_name, u.cpf AS interviewer_cpf, ai.interview_approved, ai.interview_observation, ai.interview_reviewed_at, ai.application_form_id, ai.created_at
                 FROM application_form_interviews ai
                 LEFT JOIN users u ON u.id = ai.interviewer_id
             """
@@ -168,7 +171,7 @@ class ApplicationFormInterviewModel:
 
             sql_query = """
                 SELECT ai.id, ai.interview_date, ai.schedule_observation, ai.interviewer_id, u.name AS interviewer_name,
-                       ai.interview_approved, ai.interview_observation, ai.interview_reviewed_at, ai.application_form_id, ai.created_at
+                       u.cpf AS interviewer_cpf, ai.interview_approved, ai.interview_observation, ai.interview_reviewed_at, ai.application_form_id, ai.created_at
                 FROM application_form_interviews ai
                 LEFT JOIN users u ON u.id = ai.interviewer_id
                 WHERE ai.application_form_id = %s
