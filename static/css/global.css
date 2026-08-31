@@ -432,3 +432,128 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--color-bg-surface);
   margin-top: 3rem;
 }
+
+/* ---------- Notificações (Notyf) ---------- */
+.notyf {
+  padding: clamp(10px, 2vw, 18px);
+  z-index: 9999;
+}
+
+.notyf__toast {
+  width: clamp(280px, 36vw, 400px);
+  max-width: calc(100vw - 20px);
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: #15966a !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+  overflow: hidden;
+}
+
+.notyf__ripple {
+  top: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+  background: inherit !important;
+  transform: none !important;
+}
+
+.notyf__toast--success,
+.notyf__toast--success .notyf__ripple {
+  background: #15966a !important;
+}
+
+.notyf__toast--error,
+.notyf__toast--error .notyf__ripple {
+  background: #c94b58 !important;
+}
+
+.notyf__wrapper {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 62px;
+  padding: 13px 10px 13px 16px;
+}
+
+.notyf__icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  min-width: 24px;
+  margin: 0;
+}
+
+.notyf__message {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #fff;
+  overflow-wrap: anywhere;
+}
+
+.notyf__dismiss {
+  position: static;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+}
+
+.notyf__dismiss-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  opacity: 0.68;
+  transition: background-color 0.25s ease, border-color 0.25s ease,
+              opacity 0.25s ease, transform 0.25s ease;
+}
+
+.notyf__dismiss-btn:hover,
+.notyf__dismiss-btn:focus-visible {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.12);
+  opacity: 1;
+  transform: rotate(90deg) scale(1.06);
+}
+
+.notyf__dismiss-btn:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg) scale(0.94);
+}
+
+@media (max-width: 600px) {
+  .notyf__toast {
+    width: calc(100vw - 20px);
+    max-width: none;
+    margin-bottom: 10px;
+    border-radius: 14px;
+  }
+
+  .notyf__wrapper {
+    gap: 10px;
+    min-height: 58px;
+    padding: 12px 8px 12px 14px;
+  }
+
+  .notyf__message {
+    font-size: 13px;
+  }
+}
