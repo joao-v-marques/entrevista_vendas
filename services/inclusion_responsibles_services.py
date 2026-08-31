@@ -2,7 +2,7 @@ import re
 
 from models.application_form_models import ApplicationFormModel
 from models.inclusion_responsibles import InclusionResponsiblesModel, InclusionResponsibles
-from services.users_services import normalize_cpf, texto_obrigatorio, to_id
+from utils.validations import normalize_cpf, required_text, to_id
 from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationError
 
 # limites das colunas da tabela inclusion_responsibles
@@ -27,7 +27,7 @@ class InclusionResponsiblesService:
             if not data:
                 raise ValidationError("Nenhum dado foi recebido para o responsável pela inclusão")
 
-            name = texto_obrigatorio(data.get("name"), "nome do responsável", TAMANHO_MAXIMO_NAME)
+            name = required_text(data.get("name"), "nome do responsável", TAMANHO_MAXIMO_NAME)
 
             # normalize_cpf devolve None quando o campo vem vazio: aqui o CPF é obrigatório
             cpf = normalize_cpf(data.get("cpf"))
@@ -35,10 +35,10 @@ class InclusionResponsiblesService:
             if not cpf:
                 raise ValidationError("O CPF do responsável pela inclusão é obrigatório")
 
-            marital_state = texto_obrigatorio(
+            marital_state = required_text(
                 data.get("marital_state"), "estado civil do responsável", TAMANHO_MAXIMO_MARITAL_STATE
             )
-            profession = texto_obrigatorio(
+            profession = required_text(
                 data.get("profession"), "profissão do responsável", TAMANHO_MAXIMO_PROFISSAO
             )
 

@@ -3,7 +3,7 @@ from models.application_form_models import ApplicationFormModel
 from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel, ApplicationFormReanalysisRequest
 from models.users_models import UserModel
 from services.application_form_documents_services import ApplicationFormDocumentService
-from services.users_services import to_id, to_bool
+from utils.validations import to_id, to_bool
 from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationError
 
 # a ficha só pode receber o parecer da gerência enquanto estiver aguardando essa etapa

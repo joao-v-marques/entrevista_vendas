@@ -1,5 +1,6 @@
 from models.qualify_interview import QualifyInterviewModel, QualifyInterview
 from utils.exceptions import AppError, ValidationError
+from utils.validations import to_id, to_bool, to_number
 
 # Valores aceitos pelas constraints chk_escolha_medico_orientador e chk_parecer_unimed. Usada para tratamento de erro
 ESCOLHAS_MEDICO_ORIENTADOR = ('medico_unimed', 'medico_proprio', 'dispensou_orientador')
@@ -15,34 +16,6 @@ PARECERES_UNIMED = (
 PESO_KG_MAXIMO = 999.99
 ALTURA_CM_MINIMA = 30
 ALTURA_CM_MAXIMA = 300
-
-def to_bool(value):
-    if isinstance(value, bool):
-        return value
-
-    if value is None:
-        return False
-
-    return str(value).strip().lower() in ('true', '1', 'sim', 'on', 'yes')
-
-# Campos numéricos chegam como int, float ou string dependendo do front
-def to_number(value, field_name):
-    if value is None or str(value).strip() == '':
-        raise ValidationError(f"O campo {field_name} é obrigatório")
-
-    try:
-        return float(str(value).strip().replace(',', '.'))
-    except ValueError:
-        raise ValidationError(f"O campo {field_name} precisa ser um número válido")
-
-def to_id(value, field_name):
-    if value is None or str(value).strip() == '':
-        raise ValidationError(f"O campo {field_name} é obrigatório")
-
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        raise ValidationError(f"O campo {field_name} precisa ser um número inteiro válido")
 
 class QualifyInterviewService:
     def get_all():
