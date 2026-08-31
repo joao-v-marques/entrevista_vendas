@@ -420,7 +420,7 @@
                                 <!-- Idade do beneficiário titular -->
                                 <div class="form-group">
                                     <label for="idade_titular" class="form-label">Data de Nascimento</label>
-                                    <input id="idade_titular" class="input" name="beneficiary_birth_date" type="date" placeholder="Idade" required>
+                                    <input id="idade_titular" class="input" name="beneficiary_birth_date" type="date" min="1900-01-01" required>
                                 </div>
 
                             {% else %}
@@ -434,7 +434,7 @@
                                 <!-- Idade do beneficiário dependente -->
                                 <div class="form-group">
                                     <label for="idade_dependente" class="form-label">Data de Nascimento</label>
-                                    <input id="idade_dependente" class="input" name="beneficiary_birth_date" type="date" placeholder="Idade" required>
+                                    <input id="idade_dependente" class="input" name="beneficiary_birth_date" type="date" min="1900-01-01" required>
                                 </div>
 
                                 <!-- Se dependente, nome do titular -->
