@@ -140,9 +140,6 @@ class UserService:
             senha = valida_senha(data)
             cpf = normalize_cpf(data.get('cpf'))
 
-            if not cpf:
-                raise ValidationError("O campo CPF é obrigatório")
-
             if not RoleModel.get_by_id(role_id):
                 raise ValidationError("O cargo informado não existe")
 
