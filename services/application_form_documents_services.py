@@ -9,12 +9,17 @@ from utils.exceptions import AppError, ForbiddenError, NotFoundError, Validation
 
 from models.application_form_documents import ApplicationFormDocumentModel, ApplicationFormDocument
 from models.application_form_models import ApplicationFormModel
+from services.users_services import to_id
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOAD_ROOT = os.path.join(PROJECT_ROOT, "upload_docs")
 
 # extensões aceitas nos uploads, mesmo conjunto do accept do input de arquivos no front
 ALLOWED_EXTENSIONS = (".pdf", ".jpg", ".jpeg", ".png")
+
+# mesmo limite já comunicado ao usuário no front (static/js/new_form.js), agora garantido
+# também no backend para quem chamar a API diretamente
+MAX_TOTAL_SIZE_BYTES = 20 * 1024 * 1024
 
 class ApplicationFormDocumentService:
     # GET de todos os documentos cadastrados no sistema
@@ -116,7 +121,7 @@ class ApplicationFormDocumentService:
     # O input de arquivos do front manda uma entrada vazia quando nada é selecionado, por isso
     # essas entradas são descartadas antes da validação (permite upload opcional).
     @staticmethod
-    def validate_files(files, allowed_extensions=ALLOWED_EXTENSIONS, max_files=None):
+    def validate_files(files, allowed_extensions=ALLOWED_EXTENSIONS, max_files=None, max_total_size_bytes=None):
         valid_files = [file for file in files if file and file.filename]
 
         if not valid_files:
@@ -131,6 +136,20 @@ class ApplicationFormDocumentService:
             if extension not in allowed_extensions:
                 raise ValidationError(
                     f"O arquivo '{file.filename}' não é permitido. Envie apenas arquivos {', '.join(allowed_extensions)}"
+                )
+
+        if max_total_size_bytes:
+            total_size_bytes = 0
+            for file in valid_files:
+                file.stream.seek(0, os.SEEK_END)
+                total_size_bytes += file.stream.tell()
+                file.stream.seek(0)
+
+            if total_size_bytes > max_total_size_bytes:
+                total_mb = total_size_bytes / (1024 * 1024)
+                max_mb = max_total_size_bytes / (1024 * 1024)
+                raise ValidationError(
+                    f"Os documentos somam {total_mb:.1f} MB e excedem o limite de {max_mb:.0f} MB. Reduza os arquivos e tente novamente."
                 )
 
         return valid_files
@@ -184,21 +203,34 @@ class ApplicationFormDocumentService:
 
     # POST de um ou mais documentos anexados a um form
     def create(application_form_id, files):
+        saved_paths = []
         try:
-            # VALIDAÇÕES AQUI
+            application_form_id = to_id(application_form_id, "formulário")
 
-            beneficiary_name = ApplicationFormModel.get_beneficiary_name(application_form_id)
+            application_form = ApplicationFormModel.get_by_id(application_form_id)
 
-            new_application_form_documents, _ = ApplicationFormDocumentService.save_files(
-                application_form_id, beneficiary_name, files
+            if not application_form:
+                raise NotFoundError("Ficha não encontrada")
+
+            valid_files = ApplicationFormDocumentService.validate_files(
+                files, max_total_size_bytes=MAX_TOTAL_SIZE_BYTES
+            )
+
+            if not valid_files:
+                raise ValidationError("É necessário anexar ao menos um documento")
+
+            new_application_form_documents, saved_paths = ApplicationFormDocumentService.save_files(
+                application_form_id, application_form.beneficiary_name, valid_files
             )
 
             created_application_form_documents = ApplicationFormDocumentModel.create(new_application_form_documents)
 
             return created_application_form_documents
         except AppError:
+            ApplicationFormDocumentService.delete_files(saved_paths)
             raise
         except Exception as e:
+            ApplicationFormDocumentService.delete_files(saved_paths)
             raise Exception(str(e))
 
     # monta o nome da subpasta: nome_do_beneficiario_id_do_form_uploaded_at

@@ -83,6 +83,10 @@ def create():
         return jsonify({
             "message": str(e)
         }), 400
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
     except Exception as e:
         return jsonify({
             "message": str(e)
