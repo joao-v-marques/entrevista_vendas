@@ -29,7 +29,8 @@ def create():
         # realiza o cadastro do formulário de aprovação da gerência no banco
         created_management_form = ApplicationFormManagementService.create(data)
 
-        if data['management_approved']:
+        # usa o booleano já normalizado pelo service, e não o valor cru do payload
+        if created_management_form.management_approved:
             # faz o update do status para o próximo (5. Aguardando Cadastro no Backoffice)
             ApplicationFormService.update_status(5, data)
         else:
@@ -40,6 +41,14 @@ def create():
         return jsonify({
             "message": str(e)
         }), 400
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
