@@ -472,14 +472,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // o input mantém a máscara na tela, mas só os 11 dígitos vão para o backend
+            // o CPF é opcional no cadastro
             data.cpf = getCpfDigits(data.cpf);
 
-            if (!data.cpf) {
-                notyf.error("O campo CPF não pode estar vazio");
-                return;
-            }
-
-            if (data.cpf.length !== 11) {
+            if (data.cpf && data.cpf.length !== 11) {
                 notyf.error("O CPF informado deve conter 11 dígitos");
                 return;
             }
