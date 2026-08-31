@@ -1,5 +1,7 @@
 import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js";
 import { populateRejectedManagementFormsTable } from "../rejected_management_forms.js";
+import { setSubmitLoading } from "../utils/submitLoading.js";
+import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 
 const overlay = document.getElementById("requestReanalysisModalOverlay");
 const formIdLabel = document.getElementById("requestReanalysisModalFormId");
@@ -51,7 +53,7 @@ function submitForm() {
         }
 
         // evita envio duplicado enquanto o upload do laudo está em andamento
-        submitButton.disabled = true;
+        setSubmitLoading(submitButton, true, "Solicitando...");
 
         try {
             const response = await fetchWithAuth(`/entrevista-adesao/application_form_management/${currentApplicationFormId}/request-reanalysis`, {
@@ -70,16 +72,14 @@ function submitForm() {
         } catch (error) {
             notyf.error(error.message || "Houve um erro ao solicitar a reanálise");
         } finally {
-            submitButton.disabled = false;
+            setSubmitLoading(submitButton, false);
         }
     });
 }
 
 closeButton.addEventListener("click", closeModal);
 cancelButton.addEventListener("click", closeModal);
-overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) closeModal();
-});
+bindOverlayDismiss(overlay, closeModal);
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !overlay.hidden) closeModal();
 });

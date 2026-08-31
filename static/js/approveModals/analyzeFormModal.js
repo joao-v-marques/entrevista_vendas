@@ -1,6 +1,8 @@
 import { renderBeneficiaryInfo } from "./beneficiaryInfoView.js";
 import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js"
 import { populateFormsApproveTable } from "../approve_form.js";
+import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
+import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 
 const overlay = document.getElementById("analyzeModalOverlay");
 const formIdLabel = document.getElementById("analyzeModalFormId");
@@ -40,6 +42,7 @@ export function openAnalyzeFormModal(applicationForm) {
 
 function submitForm() {
     const formApprove = document.getElementById("financialApprovalForm");
+    const submitButton = getFormSubmitButton(formApprove);
 
     formApprove.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -63,6 +66,7 @@ function submitForm() {
 
         // COLOCAR VALIDAÇÕES DE REQUIRED FIELDS NO FUTURO
 
+        setSubmitLoading(submitButton, true);
         try {
             const response = await fetchWithAuth("/entrevista-adesao/application_form_approval", {
                 method: "POST",
@@ -82,15 +86,15 @@ function submitForm() {
             await populateFormsApproveTable();
         } catch (error) {
             notyf.error(error.message || "Houve um erro ao enviar a análise");
+        } finally {
+            setSubmitLoading(submitButton, false);
         }
     });
 }
 
 closeButton.addEventListener("click", closeModal);
 cancelButton.addEventListener("click", closeModal);
-overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) closeModal();
-});
+bindOverlayDismiss(overlay, closeModal);
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !overlay.hidden) closeModal();
 });

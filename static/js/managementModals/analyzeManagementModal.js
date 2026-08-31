@@ -2,6 +2,8 @@ import { renderBeneficiaryInfo } from "../approveModals/beneficiaryInfoView.js";
 import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js"
 import { formatDateTimeToBR } from "../utils/dateUtils.js";
 import { populateManagementApproveTable } from "../management_approval.js";
+import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
+import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 
 const overlay = document.getElementById("analyzeManagementModalOverlay");
 const formIdLabel = document.getElementById("analyzeManagementModalFormId");
@@ -211,6 +213,7 @@ export function openAnalyzeManagementModal(applicationForm) {
 }
 
 function submitForm() {
+    const submitButton = getFormSubmitButton(managementApprovalForm);
     managementApprovalForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -234,6 +237,7 @@ function submitForm() {
         data.management_approved = decision === null ? null : decision === "true";
         data.management_reviewed_at = new Date().toISOString();
 
+        setSubmitLoading(submitButton, true);
         try {
             const response = await fetchWithAuth("/entrevista-adesao/application_form_management", {
                 method: "POST",
@@ -253,15 +257,15 @@ function submitForm() {
             await populateManagementApproveTable();
         } catch (error) {
             notyf.error(error.message || "Houve um erro ao enviar a análise");
+        } finally {
+            setSubmitLoading(submitButton, false);
         }
     });
 }
 
 closeButton.addEventListener("click", closeModal);
 cancelButton.addEventListener("click", closeModal);
-overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) closeModal();
-});
+bindOverlayDismiss(overlay, closeModal);
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !overlay.hidden) closeModal();
 });

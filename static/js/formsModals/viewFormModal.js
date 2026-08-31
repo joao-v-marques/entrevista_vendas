@@ -7,6 +7,7 @@ import {
     renderDecisionPill,
     renderEmptySection,
 } from "../utils/detailsView.js";
+import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 
 const overlay = document.getElementById("viewFormModalOverlay");
 const idLabel = document.getElementById("viewFormModalId");
@@ -251,9 +252,7 @@ export async function openViewFormModal(applicationFormId) {
 }
 
 closeButton.addEventListener("click", closeModal);
-overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) closeModal();
-});
+bindOverlayDismiss(overlay, closeModal);
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !overlay.hidden) closeModal();
 });

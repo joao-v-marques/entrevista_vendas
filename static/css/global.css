@@ -43,6 +43,29 @@ button {
   cursor: pointer;
 }
 
+/* Estado compartilhado dos botões durante envios assíncronos. */
+button.is-loading {
+  pointer-events: none;
+  cursor: wait;
+  opacity: 0.75;
+}
+
+.btn-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ---------- Variáveis globais ---------- */
 :root {
   /* Verde Unimed — paleta principal */
