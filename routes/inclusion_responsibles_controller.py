@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.inclusion_responsibles_services import InclusionResponsiblesService
+from utils.exceptions import ConflictError, NotFoundError, ValidationError
 from middlewares.jwt_middleware import token_required
 from middlewares.permissions import role_required
 
@@ -31,6 +32,18 @@ def create():
         inclusion_responsible = InclusionResponsiblesService.create(data)
 
         return jsonify(inclusion_responsible.to_dict()), 201
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
     except Exception as e:
         return jsonify({
             "message": str(e)
