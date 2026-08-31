@@ -1,5 +1,7 @@
 import { fetchWithAuth } from "../utils/apiHelper.js";
 import { populateAnalyzeInterviewTable } from "../analyze_interview.js";
+import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
+import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 
 const overlay = document.getElementById("rescheduleInterviewModalOverlay");
 const interviewIdLabel = document.getElementById("rescheduleModalInterviewId");
@@ -24,9 +26,7 @@ export function openRescheduleInterviewModal(applicationForm) {
 
 closeButton.addEventListener("click", closeModal);
 cancelButton.addEventListener("click", closeModal);
-overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) closeModal();
-});
+bindOverlayDismiss(overlay, closeModal);
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !overlay.hidden) closeModal();
 });
@@ -34,12 +34,14 @@ document.addEventListener("keydown", (event) => {
 // TODO: lógica de confirmar o reagendamento pro backend (ainda não implementado)
 function submitRescheduleForm() {
     const rescheduleInterviewForm = document.getElementById("rescheduleInterviewForm");
+    const submitButton = getFormSubmitButton(rescheduleInterviewForm);
 
     rescheduleInterviewForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const applicationFormId = applicationFormIdInput.value;
 
+        setSubmitLoading(submitButton, true, "Solicitando...");
         try {
             const response = await fetchWithAuth(
                 `/entrevista-adesao/application-form-interviews?application-form-id=${applicationFormId}`,
@@ -56,6 +58,8 @@ function submitRescheduleForm() {
             await populateAnalyzeInterviewTable();
         } catch (error) {
             notyf.error(error.message);
+        } finally {
+            setSubmitLoading(submitButton, false);
         }
     })
 }

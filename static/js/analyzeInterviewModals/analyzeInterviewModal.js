@@ -3,6 +3,8 @@ import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js";
 import { formatDateTimeToBR } from "../utils/dateUtils.js";
 import { populateAnalyzeInterviewTable } from "../analyze_interview.js";
 import { QUALIFY_INTERVIEW_GROUPS, QUALIFY_INTERVIEW_TOTAL_ITEMS } from "./qualifyInterviewQuestions.js";
+import { setSubmitLoading } from "../utils/submitLoading.js";
+import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 
 const overlay = document.getElementById("analyzeInterviewModalOverlay");
 const formIdLabel = document.getElementById("analyzeInterviewModalFormId");
@@ -477,7 +479,7 @@ function submitForm() {
 
         // trava o botão durante o envio: a constraint UNIQUE já barra a duplicata no banco,
         // isso só evita que um duplo clique vire um 409 desnecessário na cara do usuário
-        submitButton.disabled = true;
+        setSubmitLoading(submitButton, true);
 
         try {
             const response = await fetchWithAuth("/entrevista-adesao/application-form-interviews", {
@@ -524,7 +526,7 @@ function submitForm() {
             notyf.error("Houve um erro ao enviar a análise. Tente novamente.");
         } finally {
             // reabilita sempre, para que o usuário consiga tentar de novo depois de um erro
-            submitButton.disabled = false;
+            setSubmitLoading(submitButton, false);
         }
     });
 }
@@ -538,9 +540,7 @@ observationTextarea.addEventListener("input", syncPresetsFromObservation);
 
 closeButton.addEventListener("click", closeModal);
 cancelButton.addEventListener("click", closeModal);
-overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) closeModal();
-});
+bindOverlayDismiss(overlay, closeModal);
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !overlay.hidden) closeModal();
 });

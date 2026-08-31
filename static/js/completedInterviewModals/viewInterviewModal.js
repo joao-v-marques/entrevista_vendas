@@ -8,6 +8,7 @@ import {
     renderEmptySection,
 } from "../utils/detailsView.js";
 import { QUALIFY_INTERVIEW_GROUPS } from "../analyzeInterviewModals/qualifyInterviewQuestions.js";
+import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 
 const overlay = document.getElementById("viewInterviewModalOverlay");
 const idLabel = document.getElementById("viewInterviewModalId");
@@ -321,9 +322,7 @@ export async function openViewInterviewModal(applicationFormId) {
 }
 
 closeButton.addEventListener("click", closeModal);
-overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) closeModal();
-});
+bindOverlayDismiss(overlay, closeModal);
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !overlay.hidden) closeModal();
 });

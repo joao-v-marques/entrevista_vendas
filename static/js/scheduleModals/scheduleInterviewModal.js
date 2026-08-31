@@ -1,6 +1,8 @@
 import { renderBeneficiaryInfo } from "../approveModals/beneficiaryInfoView.js";
 import { fetchWithAuth } from "../utils/apiHelper.js";
 import { populateScheduleInterviewTable } from "../schedule_interview.js";
+import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
+import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 
 const overlay = document.getElementById("scheduleInterviewModalOverlay");
 const formIdLabel = document.getElementById("scheduleModalFormId");
@@ -46,6 +48,7 @@ export function openScheduleInterviewModal(applicationForm) {
 }
 
 function submitForm() {
+    const submitButton = getFormSubmitButton(scheduleInterviewForm);
     scheduleInterviewForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -64,6 +67,7 @@ function submitForm() {
 
         // COLOCAR VALIDAÇÕES DE REQUIRED FIELDS NO FUTURO
 
+        setSubmitLoading(submitButton, true, "Agendando...");
         try {
             const response = await fetchWithAuth("/entrevista-adesao/application-form-interviews", {
                 method: "POST",
@@ -104,15 +108,15 @@ function submitForm() {
 
         } catch (error) {
             notyf.error(error.message)
+        } finally {
+            setSubmitLoading(submitButton, false);
         }
     });
 }
 
 closeButton.addEventListener("click", closeModal);
 cancelButton.addEventListener("click", closeModal);
-overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) closeModal();
-});
+bindOverlayDismiss(overlay, closeModal);
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !overlay.hidden) closeModal();
 });

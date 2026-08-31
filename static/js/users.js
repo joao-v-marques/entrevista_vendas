@@ -1,5 +1,7 @@
 import { fetchWithAuth } from "./utils/apiHelper.js";
 import { formatCPF } from "./utils/detailsView.js";
+import { getFormSubmitButton, setSubmitLoading } from "./utils/submitLoading.js";
+import { bindOverlayDismiss } from "./utils/modalOverlay.js";
 
 // mapeia role_name (vindo do backend) para o rótulo exibido e o variant da .pill
 const ROLE_LABELS = {
@@ -439,6 +441,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("createUserModalClose").addEventListener("click", closeCreateModal);
 
     const createForm = document.getElementById("createUserForm");
+    const createSubmitButton = getFormSubmitButton(createForm);
     createForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -485,6 +488,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            setSubmitLoading(createSubmitButton, true, "Cadastrando...");
             const response = await fetchWithAuth("/entrevista-adesao/users", {
                 method: "POST",
                 headers: {
@@ -515,6 +519,8 @@ document.addEventListener("DOMContentLoaded", () => {
             populateUsersTable(); // atualiza a tabela para o usuário novo já aparecer na lista
         } catch (error) {
             notyf.error(error.message);
+        } finally {
+            setSubmitLoading(createSubmitButton, false);
         }
     });
 
@@ -522,6 +528,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("editUserModalClose").addEventListener("click", closeEditModal);
     document.getElementById("editUserCancel").addEventListener("click", closeEditModal);
     const editForm = document.getElementById("editUserForm");
+    const editSubmitButton = getFormSubmitButton(editForm);
     editForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -565,6 +572,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // o select de status envia "1"/"0"; o backend espera um booleano
             data.is_active = data.is_active === "1";
 
+            setSubmitLoading(editSubmitButton, true, "Salvando...");
             const response = await fetchWithAuth(`/entrevista-adesao/users/${data.id}`, {
                 method: "PUT",
                 headers: {
@@ -582,6 +590,8 @@ document.addEventListener("DOMContentLoaded", () => {
             populateUsersTable(); // atualiza a tabela após a edição
         } catch (error) {
             notyf.error(error.message);
+        } finally {
+            setSubmitLoading(editSubmitButton, false);
         }
     });
 
@@ -615,9 +625,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // fecha os modais ao clicar fora do conteúdo ou pressionar Esc
     document.querySelectorAll(".modal-overlay").forEach(overlay => {
-        overlay.addEventListener("click", (event) => {
-            if (event.target !== overlay) return;
-
+        bindOverlayDismiss(overlay, () => {
             overlay.hidden = true;
             syncBodyScrollLock();
         });

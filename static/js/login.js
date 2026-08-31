@@ -1,5 +1,16 @@
 const form = document.getElementById("loginForm");
 const messageLogin = document.getElementById("messageLogin");
+const submitButton = form.querySelector('[type="submit"]');
+const submitButtonOriginalHTML = submitButton.innerHTML;
+
+function setLoginSubmitting(isSubmitting) {
+    submitButton.disabled = isSubmitting;
+    submitButton.classList.toggle("is-loading", isSubmitting);
+    submitButton.setAttribute("aria-busy", String(isSubmitting));
+    submitButton.innerHTML = isSubmitting
+        ? `<span class="btn-spinner" aria-hidden="true"></span>Entrando...`
+        : submitButtonOriginalHTML;
+}
 
 // ! ========== Mostrar/ocultar senha ==========
 const passwordInput = document.getElementById("password_id");
@@ -30,6 +41,7 @@ form.addEventListener("submit", async (event) => {
         }
     }
 
+    setLoginSubmitting(true);
     try {
         const response = await fetch("/entrevista-adesao/login", {
             method: "POST",
@@ -70,5 +82,7 @@ form.addEventListener("submit", async (event) => {
     } catch (error) {
         messageLogin.textContent = error.message || error;
         messageLogin.className = "error";
+    } finally {
+        setLoginSubmitting(false);
     }
 });
