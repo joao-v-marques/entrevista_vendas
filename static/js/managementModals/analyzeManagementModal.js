@@ -228,10 +228,11 @@ function submitForm() {
         const data = Object.fromEntries(formData.entries());
         data.application_form_id = Number(data.application_form_id);
         data.manager_id = Number(data.manager_id);
-        data.management_approved = data.management_approved === "true";
+        // sem nenhum radio marcado a chave nem existe no FormData: envia null para o backend
+        // recusar a análise, em vez de gravar uma reprovação silenciosa
+        const decision = formData.get("management_approved");
+        data.management_approved = decision === null ? null : decision === "true";
         data.management_reviewed_at = new Date().toISOString();
-
-        // COLOCAR VALIDAÇÕES DE REQUIRED FIELDS NO FUTURO
 
         try {
             const response = await fetchWithAuth("/entrevista-adesao/application_form_management", {

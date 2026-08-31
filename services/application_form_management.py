@@ -1,8 +1,13 @@
 from models.application_form_management import ApplicationFormManagementModel, ApplicationFormManagement
 from models.application_form_models import ApplicationFormModel
 from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel, ApplicationFormReanalysisRequest
+from models.users_models import UserModel
 from services.application_form_documents_services import ApplicationFormDocumentService
+from services.users_services import to_id, to_bool
 from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationError
+
+# a ficha só pode receber o parecer da gerência enquanto estiver aguardando essa etapa
+STATUS_AGUARDANDO_APROVACAO_GERENCIA = 4
 
 class ApplicationFormManagementService:
     def get_all():
@@ -15,24 +20,60 @@ class ApplicationFormManagementService:
 
     def create(data):
         try:
-            # ! COLOCAR VALIDAÇÕES NOS CAMPOS AQUI
+            # Validação caso receba o payload vazio (Apenas para a API)
+            if not data:
+                raise ValidationError("Nenhum dado foi recebido para a análise da gerência")
+
+            application_form_id = to_id(data.get('application_form_id'), "formulário")
+
+            application_form = ApplicationFormModel.get_by_id(application_form_id)
+
+            if not application_form:
+                raise NotFoundError("Ficha não encontrada")
+
+            # não checamos se a ficha já tem parecer: a reanálise devolve a ficha para o status 4
+            # e gera um segundo parecer. O status é o que impede o envio duplicado.
+            if application_form.form_status_id != STATUS_AGUARDANDO_APROVACAO_GERENCIA:
+                raise ConflictError("Só é possível analisar fichas aguardando aprovação da gerência")
+
+            if data.get('management_approved') is None:
+                raise ValidationError("O campo management_approved é obrigatório")
+
+            management_approved = to_bool(data['management_approved'])
+
+            manager_id = to_id(data.get('manager_id'), "gerente")
+
+            if not UserModel.get_by_id(manager_id):
+                raise ValidationError("O gerente informado não existe")
+
+            management_reviewed_at = data.get('management_reviewed_at')
+
+            if not str(management_reviewed_at or "").strip():
+                raise ValidationError("A data de análise da gerência é obrigatória")
+
+            management_observation = str(data.get('management_observation') or "").strip()
+
+            # a observação registra o motivo da decisão, tanto na aprovação quanto na reprovação
+            if not management_observation:
+                raise ValidationError("A observação da análise da gerência é obrigatória")
 
             management_form = ApplicationFormManagement(
-                manager_id=data['manager_id'],
-                management_approved=data['management_approved'],
-                management_observation=data['management_observation'],
-                management_reviewed_at=data['management_reviewed_at'],
-                application_form_id=data['application_form_id']
+                manager_id=manager_id,
+                management_approved=management_approved,
+                management_observation=management_observation,
+                management_reviewed_at=management_reviewed_at,
+                application_form_id=application_form_id
             )
 
             created_management_form = ApplicationFormManagementModel.create(management_form)
 
             return created_management_form
+        except AppError:
+            raise
         except Exception as e:
             raise Exception(str(e))
 
-    # Solicita reanálise de uma ficha reprovada pela gerência: registra a solicitação com a
-    # observação, anexa os laudos médicos (opcional) e volta o status para 4.
+    # Solicita reanálise de uma ficha reprovada pela gerência, retorna para o status 4.
     def request_reanalysis(application_form_id, requester_id, reanalysis_observation, files):
         try:
             application_form = ApplicationFormModel.get_by_id(application_form_id)
