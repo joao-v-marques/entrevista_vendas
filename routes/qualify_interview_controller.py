@@ -1,9 +1,13 @@
 from flask import Blueprint, jsonify
 from services.qualify_interview import QualifyInterviewService
+from middlewares.jwt_middleware import token_required
+from middlewares.permissions import role_required
 
 bp_qualify_interview = Blueprint("bp_qualify_interview", __name__)
 
 @bp_qualify_interview.route("/qualify-interviews", methods=['GET'])
+@token_required
+@role_required("administrator", "employee")
 def get_all():
     try:
         qualify_interviews = QualifyInterviewService.get_all()

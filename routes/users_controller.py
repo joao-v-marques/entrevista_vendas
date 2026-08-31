@@ -1,11 +1,15 @@
 from flask import Blueprint, jsonify, request
 from services.users_services import UserService
 from utils.exceptions import ConflictError, NotFoundError, ValidationError
+from middlewares.jwt_middleware import token_required
+from middlewares.permissions import role_required
 
 bp_users = Blueprint("bp_users", __name__)
 
 # GET de todos
 @bp_users.route("/users", methods=['GET'])
+@token_required
+@role_required("administrator")
 def get_all():
     try:
         users = UserService.get_all()
@@ -20,6 +24,8 @@ def get_all():
         }), 500
 
 @bp_users.route("/users/<string:username>", methods=['GET'])
+@token_required
+@role_required("administrator")
 def get_by_username(username):
     try:
         user = UserService.get_by_username(username)
@@ -34,6 +40,8 @@ def get_by_username(username):
         }), 500
     
 @bp_users.route("/users/<int:user_id>", methods=['GET'])
+@token_required
+@role_required("administrator")
 def get_by_id(user_id):
     try:
         user = UserService.get_by_id(user_id)
@@ -49,6 +57,8 @@ def get_by_id(user_id):
 
 # create novo user
 @bp_users.route("/users", methods=['POST'])
+@token_required
+@role_required("administrator")
 def create():
     try:
         data = request.get_json()
@@ -71,6 +81,8 @@ def create():
 
 # update do usuário
 @bp_users.route("/users/<int:id>", methods=['PUT'])
+@token_required
+@role_required("administrator")
 def update(id):
     try:
         data = request.get_json()
@@ -97,6 +109,8 @@ def update(id):
 
 # delete do usuário
 @bp_users.route("/users/<int:id>", methods=['DELETE'])
+@token_required
+@role_required("administrator")
 def delete(id):
     try:
         UserService.delete(id)

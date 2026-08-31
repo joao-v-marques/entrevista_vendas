@@ -2,11 +2,15 @@ from flask import Blueprint, jsonify, request
 from services.application_form_management import ApplicationFormManagementService
 from services.application_form_services import ApplicationFormService
 from utils.exceptions import ConflictError, NotFoundError, ValidationError
+from middlewares.jwt_middleware import token_required
+from middlewares.permissions import role_required
 
 bp_application_form_management = Blueprint("bp_application_form_management", __name__)
 
 # GET de todos cadastrados no sistema
 @bp_application_form_management.route("/application_form_management", methods=['GET'])
+@token_required
+@role_required("administrator", "employee")
 def get_all():
     try:
         management_forms = ApplicationFormManagementService.get_all()
@@ -22,6 +26,8 @@ def get_all():
 
 # POST de um novo formulário de aprovação da gerência
 @bp_application_form_management.route("/application_form_management", methods=['POST'])
+@token_required
+@role_required("administrator", "employee")
 def create():
     try:
         data = request.get_json()
@@ -49,6 +55,8 @@ def create():
 # Recebe multipart/form-data (e não JSON) porque a solicitação carrega o laudo médico
 # anexado junto da observação extra.
 @bp_application_form_management.route("/application_form_management/<int:application_form_id>/request-reanalysis", methods=['POST'])
+@token_required
+@role_required("administrator", "employee")
 def request_reanalysis(application_form_id):
     try:
         reanalysis_observation = request.form.get("reanalysis_observation")
@@ -90,6 +98,8 @@ def request_reanalysis(application_form_id):
 
 # POST para encerrar a negociação de uma ficha reprovada pela gerência
 @bp_application_form_management.route("/application_form_management/<int:application_form_id>/close-negotiation", methods=['POST'])
+@token_required
+@role_required("administrator", "employee")
 def close_negotiation(application_form_id):
     try:
         ApplicationFormManagementService.close_negotiation(application_form_id)
