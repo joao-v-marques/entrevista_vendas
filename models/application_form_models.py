@@ -333,25 +333,6 @@ class ApplicationFormModel:
 
         return application_form
 
-    @staticmethod
-    def create_form(application_form):
-        conn = None
-        cursor = None
-        try:
-            conn, cursor = get_db_connection()
-
-            ApplicationFormModel.insert_form(cursor, application_form)
-            conn.commit()
-
-            return application_form
-        except Exception as e:
-            raise Exception(str(e))
-        finally:
-            if cursor:
-                cursor.close()
-            if conn:
-                conn.close()
-
     # GET apenas do nome do beneficiário, usado para montar a pasta de upload dos documentos
     @staticmethod
     def get_beneficiary_name(application_form_id):

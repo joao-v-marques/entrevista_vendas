@@ -62,19 +62,6 @@ def get_full_details(application_form_id):
         }), 500
 
 
-@bp_application_form.route("/application-forms", methods=['POST'])
-def create_form():
-    try:
-        data = request.get_json()
-
-        application_form = ApplicationFormService.create_form(data)
-
-        return jsonify(application_form.to_dict()), 201
-    except Exception as e:
-        return jsonify({
-            "message": str(e)
-        }), 500
-
 # POST ATÔMICO: cria o formulário, seus responsáveis pela inclusão e os documentos
 # anexados em uma única transação, evitando o cadastro de um registro sem os demais
 # obrigatórios. Recebe multipart/form-data: "form" (JSON), "responsibles" (JSON) e os arquivos.

@@ -345,7 +345,6 @@ Todas as rotas são registradas sob o prefixo **`/entrevista-adesao`**.
 | `GET` | `/application-forms` | Lista todas as fichas |
 | `GET` | `/application-forms/status?status_id=` | Lista as fichas de um status específico |
 | `GET` | `/application-forms/{id}/details` | Retorno agregado: ficha, responsáveis, aprovações, entrevista, reanálises e documentos |
-| `POST` | `/application-forms` | Cria apenas a ficha (JSON) |
 | `POST` | `/application-forms/complete` | Cria ficha + responsáveis + documentos em uma transação (`multipart/form-data`) |
 | `POST` | `/application-forms/{id}/request-reanalysis` | Reanálise financeira: status 7 volta para 1 |
 | `POST` | `/application-forms/{id}/close-negotiation` | Encerra a negociação após reprovação financeira (status 8) |
