@@ -1,10 +1,9 @@
-import re
-
 from models.users_models import UserModel, User
 from models.roles_models import RoleModel
 from models.sectors_models import SectorModel
 from utils.security import hash_password
 from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationError
+from utils.validations import normalize_cpf, required_text, to_id, to_bool, normalize_email
 
 SENHA_TAMANHO_MINIMO = 8
 
@@ -12,75 +11,7 @@ TAMANHO_MAXIMO_USERNAME = 100
 TAMANHO_MAXIMO_NAME = 155
 TAMANHO_MAXIMO_EMAIL = 255
 
-EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-
-
-def normalize_cpf(cpf):
-    digits = re.sub(r"\D", "", str(cpf or ""))
-
-    if not digits:
-        return None
-
-    if len(digits) != 11:
-        raise ValidationError("O CPF informado deve conter 11 dígitos")
-
-    return digits
-
-
-def texto_obrigatorio(value, field_name, tamanho_maximo):
-    texto = str(value or "").strip()
-
-    if not texto:
-        raise ValidationError(f"O campo {field_name} é obrigatório")
-
-    if len(texto) > tamanho_maximo:
-        raise ValidationError(f"O campo {field_name} deve ter no máximo {tamanho_maximo} caracteres")
-
-    return texto
-
-
-def texto_opcional(value, field_name, tamanho_maximo):
-    texto = str(value or "").strip()
-
-    if not texto:
-        return None
-
-    if len(texto) > tamanho_maximo:
-        raise ValidationError(f"O campo {field_name} deve ter no máximo {tamanho_maximo} caracteres")
-
-    return texto
-
-
-def normalize_email(value):
-    email = texto_opcional(value, "e-mail", TAMANHO_MAXIMO_EMAIL)
-
-    if email and not EMAIL_REGEX.match(email):
-        raise ValidationError("O e-mail informado é inválido")
-
-    return email
-
-
-def to_id(value, field_name):
-    if value is None or str(value).strip() == '':
-        raise ValidationError(f"O campo {field_name} é obrigatório")
-
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        raise ValidationError(f"O campo {field_name} precisa ser um número inteiro válido")
-
-
-def to_bool(value):
-    if isinstance(value, bool):
-        return value
-
-    if value is None:
-        return False
-
-    return str(value).strip().lower() in ('true', '1', 'sim', 'on', 'yes')
-
-
-def valida_senha(data):
+def validate_password(data):
     senha = str(data.get('password') or "")
 
     if not senha.strip():
@@ -95,7 +26,6 @@ def valida_senha(data):
         raise ValidationError("As senhas informadas não são iguais")
 
     return senha
-
 
 class UserService:
     @staticmethod
@@ -132,12 +62,12 @@ class UserService:
             if not data:
                 raise ValidationError("Nenhum dado foi recebido para o usuário")
 
-            username = texto_obrigatorio(data.get('username'), "username", TAMANHO_MAXIMO_USERNAME)
-            name = texto_obrigatorio(data.get('name'), "nome", TAMANHO_MAXIMO_NAME)
-            email = normalize_email(data.get('email'))
+            username = required_text(data.get('username'), "username", TAMANHO_MAXIMO_USERNAME)
+            name = required_text(data.get('name'), "nome", TAMANHO_MAXIMO_NAME)
+            email = normalize_email(data.get('email'), TAMANHO_MAXIMO_EMAIL)
             role_id = to_id(data.get('role_id'), "cargo")
             sector_id = to_id(data.get('sector_id'), "setor")
-            senha = valida_senha(data)
+            senha = validate_password(data)
             cpf = normalize_cpf(data.get('cpf'))
 
             if not RoleModel.get_by_id(role_id):
@@ -187,9 +117,9 @@ class UserService:
             if not data:
                 raise ValidationError("Nenhum dado foi recebido para o usuário")
 
-            username = texto_obrigatorio(data.get('username'), "username", TAMANHO_MAXIMO_USERNAME)
-            name = texto_obrigatorio(data.get('name'), "nome", TAMANHO_MAXIMO_NAME)
-            email = normalize_email(data.get('email'))
+            username = required_text(data.get('username'), "username", TAMANHO_MAXIMO_USERNAME)
+            name = required_text(data.get('name'), "nome", TAMANHO_MAXIMO_NAME)
+            email = normalize_email(data.get('email'), TAMANHO_MAXIMO_EMAIL)
             role_id = to_id(data.get('role_id'), "cargo")
             sector_id = to_id(data.get('sector_id'), "setor")
 
