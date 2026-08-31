@@ -1,5 +1,22 @@
 const form = document.getElementById("newMainForm");
 
+// Limita os calendarios a datas coerentes. O valor e montado no fuso local para evitar
+// que, perto da meia-noite, a conversao para UTC selecione o dia anterior ou seguinte.
+function getLocalDateValue(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
+const today = getLocalDateValue();
+
+document
+    .querySelectorAll('input[name="beneficiary_birth_date"]')
+    .forEach((dateInput) => {
+        dateInput.max = today;
+    });
+
 // ! ========== Aviso de campos obrigatórios não preenchidos ==========
 // O evento "invalid" dispara em cada campo obrigatório vazio ao tentar enviar. Como ele não
 // borbulha, capturamos no form. Exibimos um único toast por tentativa e rolamos até o primeiro

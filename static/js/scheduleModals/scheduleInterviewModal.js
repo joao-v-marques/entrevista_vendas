@@ -9,6 +9,24 @@ const scheduleInterviewForm = document.getElementById("scheduleInterviewForm");
 const closeButton = document.getElementById("scheduleModalClose");
 const cancelButton = document.getElementById("scheduleModalCancel");
 const applicationFormIdInput = document.getElementById("schedule_application_form_id");
+const interviewDateInput = document.getElementById("interview_date");
+const interviewDatePicker = flatpickr(interviewDateInput, {
+    locale: "pt",
+    enableTime: true,
+    time_24hr: true,
+    minuteIncrement: 15,
+    minDate: "today",
+    dateFormat: "Y-m-d\\TH:i",
+    altInput: true,
+    altFormat: "d/m/Y - H:i",
+    altInputClass: "input schedule-date-picker",
+    allowInput: false,
+    disableMobile: true,
+});
+
+// O Flatpickr preserva o valor tecnico em um campo oculto e cria o campo visual.
+// Replicamos o required para que o navegador continue impedindo envio sem selecao.
+interviewDatePicker.altInput.required = true;
 
 function closeModal() {
     overlay.hidden = true;
@@ -18,6 +36,8 @@ export function openScheduleInterviewModal(applicationForm) {
     formIdLabel.textContent = applicationForm.id;
     renderBeneficiaryInfo(beneficiaryInfoGrid, applicationForm);
     scheduleInterviewForm.reset();
+    interviewDatePicker.clear();
+    interviewDatePicker.set("minDate", new Date());
 
     // preenche o campo oculto que vai junto no envio pro backend
     applicationFormIdInput.value = applicationForm.id;
