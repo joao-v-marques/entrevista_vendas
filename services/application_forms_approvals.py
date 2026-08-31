@@ -12,6 +12,10 @@ from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationE
 # a ficha só pode receber aprovação financeira enquanto estiver aguardando essa etapa
 STATUS_AGUARDANDO_APROVACAO_FINANCEIRA = 1
 
+# para onde a ficha vai depois da análise financeira
+STATUS_AGUARDANDO_AGENDAMENTO_ENTREVISTA = 2
+STATUS_REPROVADO_FINANCEIRO = 7
+
 class ApplicationFormApprovalService:
     def get_all():
         try:
@@ -66,7 +70,15 @@ class ApplicationFormApprovalService:
                 application_form_id=application_form_id
             )
 
-            created_approve_form = ApplicationFormApprovalModel.create(approve_form)
+            # a análise aprovada libera o agendamento da entrevista, a reprovada devolve a ficha
+            # para o consultor com as opções de reanálise/encerramento
+            new_status_id = (
+                STATUS_AGUARDANDO_AGENDAMENTO_ENTREVISTA if financial_approved
+                else STATUS_REPROVADO_FINANCEIRO
+            )
+
+            # o parecer e a mudança de status são gravados na mesma transação (tudo ou nada)
+            created_approve_form = ApplicationFormApprovalModel.create_with_status(approve_form, new_status_id)
 
             return created_approve_form
         except AppError:

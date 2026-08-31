@@ -1,4 +1,5 @@
 from database.connect_db import get_db_connection
+from models.application_form_models import ApplicationFormModel
 
 class ApplicationFormApproval:
     def __init__(self, financial_approved, financial_reviewer_id, financial_reviewed_at, financial_observation, application_form_id, financial_reviewer_name=None, created_at=None, id=None):
@@ -87,44 +88,62 @@ class ApplicationFormApprovalModel:
             if conn:
                 conn.close()
 
-    # POST/Cadastro de um formulário de aprovação
-    def create(approve_form):
+    # Executa apenas o INSERT usando um cursor externo, sem commit/close.
+    # Não abre conexão de propósito: o parecer financeiro nunca é gravado sozinho, ele sempre
+    # participa da transação que também move a ficha de status. Exigir o cursor torna impossível
+    # commitar metade da operação por engano.
+    @staticmethod
+    def insert(cursor, approve_form):
+        sql_query = """
+            INSERT INTO application_form_approvals (
+                financial_approved,
+                financial_reviewer_id,
+                financial_reviewed_at,
+                financial_observation,
+                application_form_id
+            ) VALUES (
+                %s,
+                %s,
+                %s,
+                %s,
+                %s
+            )
+            RETURNING id
+        """
+        values = (
+            approve_form.financial_approved,
+            approve_form.financial_reviewer_id,
+            approve_form.financial_reviewed_at,
+            approve_form.financial_observation,
+            approve_form.application_form_id
+        )
+
+        cursor.execute(sql_query, values)
+        approve_form.id = cursor.fetchone()["id"]
+
+        return approve_form
+
+    # POST do parecer financeiro em uma ÚNICA transação: grava a aprovação e move a ficha para o
+    # status decidido pelo service. Se qualquer um dos passos falhar, nada é gravado (rollback),
+    # evitando que o parecer fique registrado com a ficha presa aguardando aprovação financeira —
+    # o que permitiria analisar a mesma ficha de novo e gerar um parecer duplicado.
+    @staticmethod
+    def create_with_status(approve_form, new_status_id):
         conn = None
         cursor = None
         try:
             conn, cursor = get_db_connection()
 
-            sql_query = """
-                INSERT INTO application_form_approvals (
-                    financial_approved,
-                    financial_reviewer_id,
-                    financial_reviewed_at,
-                    financial_observation,
-                    application_form_id
-                ) VALUES (
-                    %s,
-                    %s,
-                    %s,
-                    %s,
-                    %s
-                )
-                RETURNING id
-            """
-            values = (
-                approve_form.financial_approved,
-                approve_form.financial_reviewer_id,
-                approve_form.financial_reviewed_at,
-                approve_form.financial_observation,
-                approve_form.application_form_id
-            )
+            ApplicationFormApprovalModel.insert(cursor, approve_form)
 
-            cursor.execute(sql_query, values)
-            new_id = cursor.fetchone()["id"]
+            ApplicationFormModel.update_status_with_cursor(cursor, new_status_id, approve_form.application_form_id)
+
             conn.commit()
 
-            approve_form.id = new_id
             return approve_form
         except Exception as e:
+            if conn:
+                conn.rollback() # desfaz o INSERT se o UPDATE (ou qualquer outra coisa) falhar
             raise Exception(str(e))
         finally:
             if cursor:
