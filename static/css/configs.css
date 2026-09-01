@@ -1,25 +1,100 @@
 /* =============================================
-   users.css — Página de administração de usuários
+   configs.css — Página unificada de Configurações
 
-   Esta é a última folha carregada por users.html (depois de home.css,
-   approve_form.css e forms.css). Por isso as correções abaixo, que precisam
+   Esta é a última folha carregada por configs.html (depois de global, navbar,
+   home, approve_form e forms). Por isso as correções abaixo, que precisam
    vencer regras compartilhadas, funcionam pela ordem da cascata — sem
    !important e sem tocar nas folhas usadas pelas outras telas.
+
+   Além do layout de sidebar + painel, este arquivo herdou o CSS da antiga
+   users.css: as regras genéricas de modal que só ela definia no projeto
+   (html.modal-open, .modal--form, .modal--confirm) e as regras específicas da
+   tabela de usuários, que agora é a primeira seção desta página.
    ============================================= */
 
-.main-content {
-  max-width: 1320px;
+/* =============================================
+   1. Layout: mini-sidebar + painel
+   ============================================= */
+
+.configs-layout {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: 2rem;
 }
 
-/* ---------- Cabeçalho do card da lista ----------
+/* A sidebar estica até a altura do painel — sem align-items: start no grid — para
+   que a barra vertical que separa as duas colunas acompanhe o conteúdo da direita. */
+.configs-sidebar {
+  padding-right: 2rem;
+  border-right: 1px solid var(--color-border);
+}
+
+/* Quem gruda na rolagem é o conteúdo, não a coluna: o painel da direita costuma
+   ser muito mais alto que a lista de tópicos. */
+.configs-sidebar-sticky {
+  position: sticky;
+  top: calc(var(--navbar-height) + 1.5rem);
+  display: block;
+}
+
+.configs-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Espelha o .nav-dropdown-link da navbar (navbar.css), mas como <button> de
+   largura total — é um seletor de seção, não um link de navegação. */
+.configs-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 11px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: left;
+  color: var(--gray-700);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.configs-nav-link svg {
+  flex-shrink: 0;
+}
+
+.configs-nav-link:hover {
+  background: var(--green-50);
+  color: var(--green-700);
+}
+
+.configs-nav-link.is-active {
+  background: var(--green-50);
+  color: var(--green-700);
+  font-weight: 600;
+}
+
+.configs-panel {
+  min-width: 0;
+}
+
+/* Cabeçalho do card de uma seção.
    approve_form.css força .form-card-header em coluna (é o que aquela página
-   precisa). Aqui o cabeçalho volta a ser uma linha para o botão "Novo usuário"
-   ficar alinhado à direita, ao lado do título. */
-.form-card-header {
+   precisa). A classe extra aqui devolve a linha — para o botão de ação ficar
+   alinhado à direita, ao lado do título — sem vazar para as outras telas. */
+.form-card-header.configs-card-header {
   flex-direction: row;
   align-items: flex-start;
   justify-content: space-between;
 }
+
+/* =============================================
+   2. Seção: Usuários
+   ============================================= */
 
 .users-header-text {
   min-width: 0;
@@ -147,14 +222,16 @@
 .users-table th.is-sorted-asc .sort-indicator::before  { content: '\25B2'; } /* ▲ */
 .users-table th.is-sorted-desc .sort-indicator::before { content: '\25BC'; } /* ▼ */
 
-/* ---------- Formulário de cadastro / edição (agora sempre dentro de modal) ---------- */
+/* =============================================
+   3. Modais (regras genéricas herdadas de users.css)
+   ============================================= */
+
+/* Formulário de cadastro / edição (sempre dentro de modal) */
 .user-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.1rem 1.3rem;
 }
-
-/* ---------- Modais ---------- */
 
 /* Trava a rolagem do fundo enquanto qualquer modal está aberto.
 
@@ -185,8 +262,42 @@ html.modal-open {
   color: var(--color-text);
 }
 
-/* ---------- Responsivo ----------
-   home.css esconde th/td:nth-child(3..6) abaixo de 768px, contando as colunas
+/* =============================================
+   4. Responsivo
+   ============================================= */
+
+@media (max-width: 1024px) {
+  /* Abaixo disso a sidebar rouba largura demais da tabela: ela vira uma faixa
+     de abas no topo, e a barra vertical passa a ser horizontal. */
+  .configs-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+
+  .configs-sidebar {
+    padding-right: 0;
+    padding-bottom: 1rem;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .configs-sidebar-sticky {
+    position: static;
+  }
+
+  .configs-nav {
+    flex-direction: row;
+    gap: 6px;
+    overflow-x: auto;
+  }
+
+  .configs-nav-link {
+    width: auto;
+    white-space: nowrap;
+  }
+}
+
+/* home.css esconde th/td:nth-child(3..6) abaixo de 768px, contando as colunas
    por posição. Na tabela de 5 colunas daqui isso apagaria Cargo/Setor, Status e
    Ações — justamente o que importa. Os seletores abaixo têm a mesma
    especificidade e vêm depois, então devolvem as células e escondem só o CPF,
@@ -206,8 +317,14 @@ html.modal-open {
     min-width: 0;
   }
 
-  .form-card-header {
+  .form-card-header.configs-card-header {
     flex-direction: column;
+  }
+
+  /* com o header em coluna, o container precisa esticar para o botão poder
+     ocupar a largura toda — sem isso o width: 100% abaixo vira no-op */
+  .users-header-actions {
+    width: 100%;
   }
 
   .users-header-actions .btn {

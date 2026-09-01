@@ -359,7 +359,7 @@
    .fichas-list usa overflow: hidden para arredondar os cantos. Reabrir o eixo Y dá a
    altura máxima com rolagem própria (e permite o cabeçalho grudento); reabrir o X dá o
    scroll horizontal como rede de segurança — o equivalente ao .fichas-list--scroll de
-   users.css, que esta página não carrega. */
+   configs.css, que esta página não carrega. */
 .forms-list {
   max-height: 70vh;
   overflow-x: auto;
@@ -442,8 +442,8 @@
 }
 
 /* ---------- Cabeçalhos ordenáveis ----------
-   Mesmo mecanismo da tela de Usuários (users.css), reescrito aqui escopado em
-   .forms-table para não depender de uma folha que esta página não carrega. */
+   Mesmo mecanismo da seção de Usuários em Configurações (configs.css), reescrito
+   aqui escopado em .forms-table para não depender de uma folha que esta página não carrega. */
 .forms-table th.is-sortable {
   cursor: pointer;
   user-select: none;

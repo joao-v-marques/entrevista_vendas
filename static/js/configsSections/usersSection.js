@@ -1,7 +1,7 @@
-import { fetchWithAuth } from "./utils/apiHelper.js";
-import { formatCPF } from "./utils/detailsView.js";
-import { getFormSubmitButton, setSubmitLoading } from "./utils/submitLoading.js";
-import { bindOverlayDismiss } from "./utils/modalOverlay.js";
+import { fetchWithAuth } from "../utils/apiHelper.js";
+import { formatCPF } from "../utils/detailsView.js";
+import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
+import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 
 // mapeia role_name (vindo do backend) para o rótulo exibido e o variant da .pill
 const ROLE_LABELS = {
@@ -367,7 +367,9 @@ function closeDeleteModal() {
     setModalVisible("deleteUserModalOverlay", false);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// Inicializa a seção "Usuários" da página de Configurações. O markup da seção já
+// está no DOM quando esta função roda, então não há nada a adiar.
+export function initUsersSection() {
     populateUsersTable();
 
     // carrega cargos e setores do backend para preencher os selects
@@ -612,7 +614,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             if (!response.ok) {
-                throw new Error(await getErrorMessage(response, "Houve um erroao tentar excluir o usuário"));
+                throw new Error(await getErrorMessage(response, "Houve um erro ao tentar excluir o usuário"));
             }
 
             closeDeleteModal();
@@ -638,4 +640,4 @@ document.addEventListener("DOMContentLoaded", () => {
             closeDeleteModal();
         }
     });
-});
+}
