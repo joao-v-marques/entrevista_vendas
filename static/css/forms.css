@@ -809,3 +809,21 @@
     display: none;
   }
 }
+
+/* =============================================
+   Listagem de fichas reprovadas pelo financeiro (rejected_forms.html)
+
+   Mesma base das demais filas (.forms-list / .forms-table / .beneficiary-cell /
+   .forms-cell-stack / .forms-aging / .forms-tag* / chips e cabeçalhos ordenáveis).
+   6 colunas, sem Plano/Contato: só o que ajuda a decidir reanálise ou encerramento.
+   ============================================= */
+
+.rejected-table {
+  min-width: 1050px;
+}
+
+@media (max-width: 768px) {
+  .rejected-table {
+    min-width: 0;
+  }
+}
