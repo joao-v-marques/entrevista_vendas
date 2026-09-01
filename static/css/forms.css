@@ -827,3 +827,21 @@
     min-width: 0;
   }
 }
+
+/* =============================================
+   Listagem de fichas reprovadas na entrevista (rejected_interview_forms.html)
+
+   Mesmo desenho da listagem de reprovados pelo financeiro logo acima — mesma base
+   .forms-list / .forms-table / .beneficiary-cell / .forms-tag* / chips e
+   cabeçalhos ordenáveis, só troca o status de origem e o endpoint das ações.
+   ============================================= */
+
+.rejected-interview-table {
+  min-width: 1050px;
+}
+
+@media (max-width: 768px) {
+  .rejected-interview-table {
+    min-width: 0;
+  }
+}
