@@ -2,22 +2,7 @@ import { fetchWithAuth } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
 import { escapeHtml, formatCPF } from "./utils/detailsView.js";
 import { openViewFormModal } from "./formsModals/viewFormModal.js";
-
-// mapeia cada form_status.name pra um variant de .pill (ver static/css/global.css)
-const STATUS_PILL_CLASSES = {
-    "Aguardando aprovação financeira": "pill--gray",
-    "Aguardando Agendamento de Entrevista": "pill--blue",
-    "Aguardando Aprovação da Entrevista": "pill--purple",
-    "Aguardando Aprovação da Gerência": "pill--amber",
-    "Aguardando Cadastro no Backoffice": "pill--teal",
-    "Finalizado": "pill--green",
-    "Reprovado Pelo Financeiro": "pill--red",
-    "Negociação Encerrada Financeiro": "pill--gray",
-};
-
-function getStatusPillClass(statusName) {
-    return STATUS_PILL_CLASSES[statusName] || "pill--gray";
-}
+import { getStatusPillClass } from "./utils/statusPill.js";
 
 // guarda a lista completa carregada do backend; os filtros atuam sobre ela sem novo request
 let allForms = [];

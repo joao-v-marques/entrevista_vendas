@@ -770,3 +770,42 @@
     min-width: 0;
   }
 }
+
+/* =============================================
+   Listagem de entrevistas realizadas (completed_interviews.html)
+
+   Quinta e última listagem que reaproveita esta folha. É a única que não é fila e sim
+   histórico: nada de prazo, envelhecimento ou alerta — só busca e leitura. O que é dela
+   são as colunas de Entrevistador e Resultado; a Situação da ficha usa o .status-column
+   já definido acima, que foi dimensionado justamente para nomes longos de status.
+   ============================================= */
+
+.completed-table {
+  min-width: 1120px;
+}
+
+.forms-table .forms-col-interviewer {
+  width: 190px;
+}
+
+/* "Aprovada"/"Reprovada" são curtas: não precisam dos 300px do .status-column */
+.forms-table .forms-col-result {
+  width: 140px;
+}
+
+@media (max-width: 768px) {
+  .completed-table {
+    min-width: 0;
+  }
+
+  /* Consultor já some pela regra compartilhada lá em cima. Entrevistador e Situação da
+     ficha somem só aqui, escopados em .completed-table: o .status-column da /fichas é a
+     informação principal daquela tela e não pode sumir junto. Ficam Beneficiário,
+     Entrevista, Resultado e Ações. */
+  .completed-table th.forms-col-interviewer,
+  .completed-table td.forms-cell-interviewer,
+  .completed-table th.status-column,
+  .completed-table td.status-column {
+    display: none;
+  }
+}

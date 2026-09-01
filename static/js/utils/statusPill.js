@@ -1,0 +1,19 @@
+// Mapa compartilhado de status da ficha para o variant de .pill (ver static/css/global.css).
+// Nasceu dentro de forms.js; foi extraído quando a listagem de entrevistas realizadas passou a
+// exibir a etapa atual da ficha, para as duas telas não manterem cópias do mesmo mapa — se um
+// status novo entrar em form_status, só este arquivo precisa saber.
+
+export const STATUS_PILL_CLASSES = {
+    "Aguardando aprovação financeira": "pill--gray",
+    "Aguardando Agendamento de Entrevista": "pill--blue",
+    "Aguardando Aprovação da Entrevista": "pill--purple",
+    "Aguardando Aprovação da Gerência": "pill--amber",
+    "Aguardando Cadastro no Backoffice": "pill--teal",
+    "Finalizado": "pill--green",
+    "Reprovado Pelo Financeiro": "pill--red",
+    "Negociação Encerrada Financeiro": "pill--gray",
+};
+
+export function getStatusPillClass(statusName) {
+    return STATUS_PILL_CLASSES[statusName] || "pill--gray";
+}
