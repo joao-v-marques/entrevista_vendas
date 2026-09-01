@@ -21,7 +21,7 @@ body {
   width: 100%;
   max-width: 400px;
   background: var(--color-bg-surface);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-card);
   box-shadow: var(--shadow-lg);
   padding: 2.25rem 2rem 2.5rem;
 }

@@ -85,7 +85,9 @@
   font-size: 1rem;
   font-weight: 600;
   color: var(--green-700);
-  background: var(--green-50);
+  /* mesmo tom do título de seção do new_form.css: o --green-50 praticamente
+     desaparecia sobre a superfície branca do card/modal */
+  background: var(--green-100);
   padding: 0.8rem 1rem;
   border-radius: var(--radius-md);
 }
@@ -168,4 +170,352 @@
   font-size: 12px;
   color: var(--color-text-muted);
   white-space: nowrap;
+}
+
+/* =============================================
+   Página de listagem (forms.html)
+
+   Esta folha também é carregada por users.html e completed_interviews.html, então
+   tudo daqui para baixo é escopado em classes próprias (.forms-* / .forms-table)
+   ou depende de uma classe que só forms.html aplica. Nada redefine .main-content,
+   .forms-filters ou .fichas-table de forma que vaze para aquelas telas.
+   ============================================= */
+
+/* 6 colunas com célula composta pedem mais respiro que as outras listagens */
+.main-content--xwide {
+  max-width: 1600px;
+}
+
+/* ---------- Cabeçalho do card ----------
+   approve_form.css força .form-card-header em coluna; a classe extra aqui tem
+   especificidade maior e devolve a linha, com o contador alinhado à direita. */
+.form-card-header.forms-page-header {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.forms-header-text {
+  min-width: 0;
+}
+
+/* contador "X de Y formulários" */
+.forms-count {
+  flex-shrink: 0;
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green-700);
+  background: var(--green-50);
+  border: 1px solid var(--green-100);
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+/* ---------- Painel de filtros ----------
+   A barra .forms-filters (definida acima) continua sendo o corpo; o painel só
+   acrescenta um cabeçalho identificando o bloco e hospedando o botão de limpar. */
+.forms-filters-panel {
+  margin-bottom: 1.25rem;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.forms-filters-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 1.2rem;
+  background: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.forms-filters-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--color-text-muted);
+}
+
+.forms-filters-title svg {
+  color: var(--color-brand);
+}
+
+/* o botão só aparece quando há algo para limpar, para não poluir o estado padrão */
+.forms-filters-clear.is-hidden {
+  display: none;
+}
+
+/* dentro do painel a barra perde a própria moldura — quem molda agora é o painel */
+.forms-filters-panel .forms-filters {
+  margin-bottom: 0;
+  padding: 1.1rem 1.2rem;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+/* ---------- Campo de busca com lupa ---------- */
+.forms-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.forms-search-icon {
+  position: absolute;
+  left: 11px;
+  color: var(--color-text-hint);
+  pointer-events: none;
+}
+
+/* precisa da classe do campo junto para vencer o padding de .forms-filter-field .input */
+.forms-filter-field .forms-search-input {
+  padding-left: 33px;
+}
+
+/* ---------- Período de inclusão (De / Até) ---------- */
+.forms-filter-field--range {
+  min-width: 290px;
+}
+
+.forms-date-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.forms-date-range .input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.forms-date-range-sep {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Atalhos de status ----------
+   Cada chip carrega também as classes .pill/.pill--* de global.css, então a cor do
+   texto e do ponto vem de graça. Aqui só ajustamos o corpo do botão e o estado:
+   inativo fica neutro (fundo da superfície), ativo mantém o fundo da própria pílula. */
+.forms-status-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.forms-status-chip {
+  padding: 6px 13px;
+  font-family: inherit;
+  font-size: 12.5px;
+  border: 1.5px solid transparent;
+  transition: background var(--transition), border-color var(--transition),
+              color var(--transition), box-shadow var(--transition);
+}
+
+.forms-status-chip:not(.is-active) {
+  color: var(--color-text-muted);
+  background: var(--color-bg-surface);
+  border-color: var(--color-border);
+}
+
+.forms-status-chip:not(.is-active):hover {
+  color: var(--color-text);
+  border-color: var(--color-brand);
+}
+
+.forms-status-chip.is-active {
+  font-weight: 600;
+  border-color: currentColor;
+  box-shadow: var(--shadow-sm);
+}
+
+.forms-status-chip:active {
+  transform: scale(0.97);
+}
+
+/* o chip "Todos" não representa um status, então não recebe o ponto colorido */
+.forms-status-chip--all::before {
+  display: none;
+}
+
+.forms-status-chip-count {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.72;
+}
+
+/* ---------- Tabela ----------
+   .fichas-list usa overflow: hidden para arredondar os cantos. Reabrir o eixo Y dá a
+   altura máxima com rolagem própria (e permite o cabeçalho grudento); reabrir o X dá o
+   scroll horizontal como rede de segurança — o equivalente ao .fichas-list--scroll de
+   users.css, que esta página não carrega. */
+.forms-list {
+  max-height: 70vh;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.forms-table {
+  min-width: 900px;
+}
+
+/* 1.5rem por célula (home.css) é caro demais com célula composta; 1.1rem devolve largura */
+.forms-table thead th,
+.forms-table tbody td {
+  padding: 12px 1.1rem;
+}
+
+/* o cabeçalho acompanha a rolagem de listas longas (fundo opaco herdado de home.css) */
+.forms-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.forms-table .forms-col-beneficiary { width: auto; }
+.forms-table .forms-col-type        { width: 170px; }
+.forms-table .forms-col-consultant  { width: 210px; }
+.forms-table .forms-col-date        { width: 165px; }
+.forms-table .status-column         { width: 300px; }
+
+/* os nomes de status são longos; sem isso a pílula quebra em duas linhas e
+   engorda a altura da linha inteira */
+.forms-table .status-column .pill {
+  white-space: nowrap;
+}
+.forms-table .actions-column        { width: 130px; }
+
+/* a linha inteira abre o modal de visualização */
+.forms-table tbody tr {
+  cursor: pointer;
+}
+
+.forms-table tbody tr:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: -2px;
+}
+
+/* a linha de estado (carregando / vazio / erro) não é clicável */
+.forms-table tbody tr.forms-empty-row {
+  cursor: default;
+}
+
+.forms-table .forms-cell-date {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Célula do beneficiário (nome + CPF · #id) ---------- */
+.beneficiary-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.beneficiary-cell-name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text);
+}
+
+.beneficiary-cell-meta {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Cabeçalhos ordenáveis ----------
+   Mesmo mecanismo da tela de Usuários (users.css), reescrito aqui escopado em
+   .forms-table para não depender de uma folha que esta página não carrega. */
+.forms-table th.is-sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transition), background var(--transition);
+}
+
+.forms-table th.is-sortable:hover {
+  color: var(--color-text);
+  background: var(--gray-100);
+}
+
+.forms-table th.is-sortable:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: -2px;
+}
+
+.forms-table .sort-indicator {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--color-text-hint);
+  transition: color var(--transition);
+}
+
+.forms-table .sort-indicator::before {
+  content: '\2195'; /* ↕ — coluna ordenável, mas não é a ordenação ativa */
+}
+
+.forms-table th.is-sorted-asc .sort-indicator,
+.forms-table th.is-sorted-desc .sort-indicator {
+  color: var(--color-brand);
+}
+
+.forms-table th.is-sorted-asc .sort-indicator::before  { content: '\25B2'; } /* ▲ */
+.forms-table th.is-sorted-desc .sort-indicator::before { content: '\25BC'; } /* ▼ */
+
+/* ---------- Estado vazio com ação ---------- */
+.forms-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* ---------- Responsivo ----------
+   home.css esconde th/td:nth-child(3..6) abaixo de 768px contando por posição; nesta
+   tabela de 6 colunas isso apagaria Consultor, Data, Status e Ações. As regras abaixo
+   têm a mesma especificidade e vêm depois, então devolvem as células e escondem só
+   Tipo e Consultor, que são os dados menos consultados no celular. */
+@media (max-width: 768px) {
+  .forms-table th:nth-child(n),
+  .forms-table td:nth-child(n) {
+    display: table-cell;
+  }
+
+  .forms-table th.forms-col-type,
+  .forms-table td.forms-cell-type,
+  .forms-table th.forms-col-consultant,
+  .forms-table td.forms-cell-consultant {
+    display: none;
+  }
+
+  .forms-table {
+    min-width: 0;
+  }
+
+  .form-card-header.forms-page-header {
+    flex-direction: column;
+  }
+
+  .forms-filter-field--range {
+    min-width: 0;
+  }
 }

@@ -2,8 +2,10 @@
    nova_ficha.css — Estilo da página Nova Ficha
    ============================================= */
 
+/* Os halos verdes tinham 12%/8% de opacidade, calibrados contra o fundo bege antigo.
+   Sobre o fundo claro atual eles sumiam, então subiram de opacidade e de alcance. */
 body {
-  background: radial-gradient(circle at top left, rgba(34, 160, 78, 0.12), transparent 28%), radial-gradient(circle at bottom right, rgba(14, 82, 28, 0.08), transparent 22%), var(--color-bg-page);
+  background: radial-gradient(circle at top left, rgba(34, 160, 78, 0.20), transparent 38%), radial-gradient(circle at bottom right, rgba(20, 92, 43, 0.14), transparent 30%), var(--color-bg-page);
 }
 
 .main-content {
@@ -55,15 +57,15 @@ body {
 .form-card {
   background: var(--color-bg-surface);
   border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-xs);
   overflow: hidden;
 }
 
 .form-card-header {
   padding: 2rem 2.2rem 1.5rem;
-  background: linear-gradient(135deg, rgba(34,160,78,0.12), rgba(34,160,78,0.04));
-  border-bottom: 1px solid var(--color-border-light);
+  background: linear-gradient(135deg, var(--green-100), var(--green-50));
+  border-bottom: 1px solid var(--green-200);
 }
 
 .form-card-title {
@@ -94,16 +96,19 @@ body {
   font-size: 1rem;
   font-weight: 600;
   color: var(--green-700);
-  background: var(--green-50);
+  background: var(--green-100);
   padding: 0.8rem 1rem;
   border-radius: var(--radius-md);
 }
 
+/* Os blocos temáticos seguem o mesmo pareamento das pílulas de status
+   (global.css): fundo no tom 100, borda no 500 — o mesmo da bolinha da pílula —
+   e título no 700. Antes eram rgba de 8%/25%, que sumiam sobre o card branco. */
 .form-subsection {
   grid-column: 1 / -1;
   padding: 1.1rem 1rem 0.8rem;
-  background: var(--green-50);
-  border: 1px solid var(--color-border-light);
+  background: var(--green-100);
+  border: 1px solid var(--green-500);
   border-radius: var(--radius-lg);
 }
 
@@ -123,8 +128,8 @@ body {
 }
 
 .form-subsection--amber {
-  background: rgba(245, 158, 11, 0.08);
-  border-color: rgba(245, 158, 11, 0.25);
+  background: var(--amber-100);
+  border-color: var(--amber-500);
 }
 
 .form-subsection--amber .form-subsection-title {
@@ -135,9 +140,13 @@ body {
   grid-template-columns: repeat(3, minmax(200px, 1fr));
 }
 
+/* Exceção ao pareamento 100/500 acima: o --blue-500 é um azul-royal, enquanto o
+   --blue-100 é o Azul Pastel 304c (puxado para petróleo). Como borda de um bloco
+   inteiro esse descasamento fica evidente, então aqui ela usa o --blue-700, que é
+   o tom escuro da mesma família — e também a cor do título. */
 .form-subsection--blue {
-  background: rgba(59, 130, 246, 0.08);
-  border-color: rgba(59, 130, 246, 0.25);
+  background: var(--blue-100);
+  border-color: var(--blue-700);
 }
 
 .form-subsection--blue .form-subsection-title {
