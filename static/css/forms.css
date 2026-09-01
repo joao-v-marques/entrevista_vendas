@@ -344,8 +344,10 @@
   transform: scale(0.97);
 }
 
-/* o chip "Todos" não representa um status, então não recebe o ponto colorido */
-.forms-status-chip--all::before {
+/* o chip "Todos" não representa um status, e os atalhos de triagem da aprovação
+   financeira não representam cor nenhuma: nos dois casos o ponto do .pill sai */
+.forms-status-chip--all::before,
+.forms-status-chip--plain::before {
   display: none;
 }
 
@@ -416,22 +418,28 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Célula do beneficiário (nome + CPF · #id) ---------- */
-.beneficiary-cell {
+/* ---------- Célula composta (linha principal + linha de apoio) ----------
+   Nasceu como a célula de beneficiário da /fichas (nome + CPF · #id). A listagem de
+   aprovação financeira usa o mesmo arranjo em Tipo, Plano e Data, então o seletor
+   ganhou o alias genérico .forms-cell-stack em vez de uma segunda cópia das regras. */
+.beneficiary-cell,
+.forms-cell-stack {
   display: flex;
   flex-direction: column;
   gap: 1px;
   min-width: 0;
 }
 
-.beneficiary-cell-name {
+.beneficiary-cell-name,
+.forms-cell-stack-name {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
   color: var(--color-text);
 }
 
-.beneficiary-cell-meta {
+.beneficiary-cell-meta,
+.forms-cell-stack-meta {
   font-size: 12px;
   line-height: 1.45;
   color: var(--color-text-muted);
@@ -502,8 +510,12 @@
 
   .forms-table th.forms-col-type,
   .forms-table td.forms-cell-type,
+  .forms-table th.forms-col-plan,
+  .forms-table td.forms-cell-plan,
   .forms-table th.forms-col-consultant,
-  .forms-table td.forms-cell-consultant {
+  .forms-table td.forms-cell-consultant,
+  .forms-table th.forms-col-flags,
+  .forms-table td.forms-cell-flags {
     display: none;
   }
 
@@ -516,6 +528,96 @@
   }
 
   .forms-filter-field--range {
+    min-width: 0;
+  }
+}
+
+/* =============================================
+   Listagem de aprovação financeira (approve_form.html)
+
+   A tela reaproveita .forms-list / .forms-table / .beneficiary-cell / os chips e os
+   cabeçalhos ordenáveis definidos acima. Aqui só entra o que é dela: as duas colunas
+   a mais, o envelhecimento da fila e as etiquetas de sinalização.
+
+   Fica neste arquivo, e não em approve_form.css, pelo mesmo motivo do .main-content--wide
+   lá em cima: forms.css é a última folha que a página carrega, então regras de mesma
+   especificidade só vencem as de approve_form.css se estiverem aqui.
+   ============================================= */
+
+/* 7 colunas, duas delas compostas — não cabem nos 900px da listagem geral */
+.approve-table {
+  min-width: 1120px;
+}
+
+.forms-table .forms-col-plan  { width: 190px; }
+.forms-table .forms-col-flags { width: 250px; }
+
+/* ---------- Envelhecimento na fila ---------- */
+.forms-aging {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* passado o limiar de espera (AGING_THRESHOLD_DAYS em approve_form.js, hoje 7 dias) a
+   ficha é o que a fila tem de mais atrasado; o âmbar é o mesmo do chip de atraso */
+.forms-aging--warn {
+  color: var(--amber-700);
+  font-weight: 600;
+}
+
+/* ---------- Etiquetas de sinalização ---------- */
+.forms-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* versão compacta da .pill e sem o ponto colorido dela: são até quatro etiquetas na
+   mesma célula, e quatro pontos ao lado de quatro rótulos viram ruído puro */
+.forms-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+/* mesmos pares de token das pílulas de status (global.css), para as duas famílias de
+   etiqueta não parecerem de aplicações diferentes */
+.forms-tag--discount {
+  background: var(--amber-100);
+  color: var(--amber-700);
+}
+
+.forms-tag--portability {
+  background: var(--blue-100);
+  color: var(--blue-700);
+}
+
+.forms-tag--digital {
+  background: var(--teal-100);
+  color: var(--teal-700);
+}
+
+.forms-tag--aero {
+  background: var(--purple-100);
+  color: var(--purple-700);
+}
+
+.forms-tag-empty {
+  color: var(--color-text-muted);
+}
+
+/* O @media de 768px lá em cima zera o min-width de .forms-table, mas esta seção vem
+   depois dele: sem repetir a regra aqui, os 1120px do .approve-table venceriam por
+   ordem da cascata e devolveriam o scroll horizontal no celular. */
+@media (max-width: 768px) {
+  .approve-table {
     min-width: 0;
   }
 }
