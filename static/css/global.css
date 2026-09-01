@@ -487,12 +487,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .notyf__toast--success,
 .notyf__toast--success .notyf__ripple {
-  background: #15966a !important;
+  background: var(--color-brand) !important;
 }
 
 .notyf__toast--error,
 .notyf__toast--error .notyf__ripple {
-  background: #c94b58 !important;
+  background: var(--red-500) !important;
 }
 
 .notyf__wrapper {
