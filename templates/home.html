@@ -18,13 +18,20 @@
   <!-- ===== NAVBAR ===== -->
   <nav class="navbar" id="navbar">
     <div class="navbar-brand">
+        <div class="brand-logo" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2.5l6.5 2.6v4.4c0 4-2.7 7.1-6.5 8-3.8-.9-6.5-4-6.5-8V5.1L10 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 7v6M7 10h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
         <div class="brand-info">
             <span class="brand-name">Formulário de Adesão</span>
             <span class="brand-sub">Unimed São Sebastião do Paraiso</span>
         </div>
     </div>
 
-    <div class="navbar-right">
+    <button type="button" class="navbar-toggle" id="navbarToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="navbarRight">
+        <span></span><span></span><span></span>
+    </button>
+
+    <div class="navbar-right" id="navbarRight">
     <ul class="navbar-links" id="navLinks">
         <li>
             <a href="{{ url_for('bp_render_home.render_home') }}" class="nav-link" data-page="home">
@@ -155,8 +162,11 @@
     </ul>
 
       <div class="navbar-user" id="navbarUser">
-        <span class="navbar-user-name" id="navbarUserName">Carregando...</span>
-        <span class="navbar-user-role" id="navbarUserRole">Carregando...</span>
+        <span class="navbar-avatar" id="navbarAvatar" aria-hidden="true"></span>
+        <span class="navbar-user-info">
+          <span class="navbar-user-name" id="navbarUserName">Carregando...</span>
+          <span class="navbar-user-role" id="navbarUserRole">Carregando...</span>
+        </span>
       </div>
       <button type="button" class="navbar-logout" id="btnLogout" aria-label="Sair">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 11.5L14 8l-3.5-3.5M14 8H6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>

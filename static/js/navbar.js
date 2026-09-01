@@ -42,6 +42,30 @@
   });
 })();
 
+// navbar.js — menu mobile (hambúrguer)
+(function () {
+  const toggle = document.getElementById('navbarToggle');
+  const panel = document.getElementById('navbarRight');
+  if (!toggle || !panel) return;
+
+  function setOpen(isOpen) {
+    toggle.classList.toggle('open', isOpen);
+    panel.classList.toggle('open', isOpen);
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  }
+
+  toggle.addEventListener('click', function (event) {
+    event.stopPropagation();
+    setOpen(!panel.classList.contains('open'));
+  });
+
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 768 && panel.classList.contains('open')) {
+      setOpen(false);
+    }
+  });
+})();
+
 // navbar.js — logout
 (function () {
   const btnLogout = document.getElementById('btnLogout');
@@ -65,10 +89,18 @@
 (function () {
   const nameEl = document.getElementById('navbarUserName');
   const roleEl = document.getElementById('navbarUserRole');
+  const avatarEl = document.getElementById('navbarAvatar');
 
   let roleName = "INDEFINIDO"
 
   if (!nameEl || !roleEl) return;
+
+  function getInitials(fullName) {
+    const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return '?';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
 
   fetch('/entrevista-adesao/me', {
     method: 'GET',
@@ -87,11 +119,14 @@
         roleName = "INDEFINIDO";
       }
 
-      nameEl.textContent = user.name || user.username || 'Usuário';
+      const displayName = user.name || user.username || 'Usuário';
+      nameEl.textContent = displayName;
       roleEl.textContent = roleName || '—';
+      if (avatarEl) avatarEl.textContent = getInitials(displayName);
     })
     .catch(function () {
       nameEl.textContent = 'Usuário';
       roleEl.textContent = '—';
+      if (avatarEl) avatarEl.textContent = '?';
     });
 })();
