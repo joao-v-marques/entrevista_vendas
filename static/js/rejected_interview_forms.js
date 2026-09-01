@@ -149,6 +149,7 @@ function getSortValue(form, key) {
     }
     if (key === "type") return form.inclusion_type || "";
     if (key === "consultant") return form.consultant_name || "";
+    if (key === "interviewer") return form.interviewer_name || "";
     return form.beneficiary_name || "";
 }
 
@@ -237,13 +238,13 @@ function renderRejectedInterviewFormsTable(forms, filters) {
     if (forms.length === 0) {
         // sem resultado por causa dos filtros é diferente de não haver ficha nenhuma reprovada
         tbodyRejected.innerHTML = hasActiveFilters(filters)
-            ? `<tr class="forms-empty-row"><td colspan="6">
+            ? `<tr class="forms-empty-row"><td colspan="7">
                    <div class="forms-empty-state">
                        <span>Nenhuma ficha encontrada para os filtros selecionados.</span>
                        <button type="button" class="btn btn--outline btn--sm" id="emptyClearFilters">Limpar filtros</button>
                    </div>
                </td></tr>`
-            : `<tr class="forms-empty-row"><td colspan="6">Nenhuma ficha reprovada na entrevista.</td></tr>`;
+            : `<tr class="forms-empty-row"><td colspan="7">Nenhuma ficha reprovada na entrevista.</td></tr>`;
         return;
     }
 
@@ -270,6 +271,7 @@ function renderRejectedInterviewFormsTable(forms, filters) {
                 </div>
             </td>
             <td class="forms-cell-consultant">${escapeHtml(form.consultant_name)}</td>
+            <td class="forms-cell-interviewer">${form.interviewer_name ? escapeHtml(form.interviewer_name) : "—"}</td>
             <td class="forms-cell-date">
                 <div class="forms-cell-stack">
                     <span class="forms-cell-stack-name">${formatDateToBR(form.inclusion_date)}</span>
@@ -337,7 +339,7 @@ export async function populateRejectedInterviewFormsTable() {
         applyFilters();
     } catch (error) {
         // sem isso a tabela ficava presa em "Carregando..." e o erro só aparecia no console
-        tbodyRejected.innerHTML = `<tr class="forms-empty-row"><td colspan="6">Não foi possível carregar os formulários.</td></tr>`;
+        tbodyRejected.innerHTML = `<tr class="forms-empty-row"><td colspan="7">Não foi possível carregar os formulários.</td></tr>`;
         notyf.error(error.message || "Houve um erro ao carregar os formulários");
     }
 }

@@ -833,11 +833,13 @@
 
    Mesmo desenho da listagem de reprovados pelo financeiro logo acima — mesma base
    .forms-list / .forms-table / .beneficiary-cell / .forms-tag* / chips e
-   cabeçalhos ordenáveis, só troca o status de origem e o endpoint das ações.
+   cabeçalhos ordenáveis, só troca o status de origem e o endpoint das ações. A
+   coluna Entrevistador reaproveita .forms-col-interviewer, já definida na seção
+   de entrevistas realizadas — é quem reprovou a entrevista desta ficha.
    ============================================= */
 
 .rejected-interview-table {
-  min-width: 1050px;
+  min-width: 1120px;
 }
 
 @media (max-width: 768px) {
