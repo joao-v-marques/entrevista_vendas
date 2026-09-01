@@ -512,6 +512,8 @@
   .forms-table td.forms-cell-type,
   .forms-table th.forms-col-plan,
   .forms-table td.forms-cell-plan,
+  .forms-table th.forms-col-contact,
+  .forms-table td.forms-cell-contact,
   .forms-table th.forms-col-consultant,
   .forms-table td.forms-cell-consultant,
   .forms-table th.forms-col-flags,
@@ -618,6 +620,153 @@
    ordem da cascata e devolveriam o scroll horizontal no celular. */
 @media (max-width: 768px) {
   .approve-table {
+    min-width: 0;
+  }
+}
+
+/* =============================================
+   Listagem de agendamento de entrevista (schedule_interview.html)
+
+   Mesmo desenho da listagem de aprovação financeira acima: reaproveita .forms-list /
+   .forms-table / .beneficiary-cell / .forms-cell-stack / .forms-aging / .forms-tag* /
+   os chips e os cabeçalhos ordenáveis. A única coluna própria é a de Contato — quem
+   agenda precisa do telefone à mão, e plano/contrato não ajuda a marcar a entrevista.
+   ============================================= */
+
+/* 7 colunas, três delas compostas */
+.schedule-table {
+  min-width: 1120px;
+}
+
+/* cabe "(35) 99999-9999" na primeira linha e o e-mail truncado na segunda */
+.forms-table .forms-col-contact {
+  width: 220px;
+}
+
+/* O @media de 768px lá em cima zera o min-width de .forms-table, mas esta seção vem
+   depois dele: sem repetir a regra aqui, os 1120px do .schedule-table venceriam por
+   ordem da cascata e devolveriam o scroll horizontal no celular. */
+@media (max-width: 768px) {
+  .schedule-table {
+    min-width: 0;
+  }
+}
+
+/* =============================================
+   Listagem de análise de entrevista (analyze_interview.html)
+
+   Mesma base das duas seções acima. O que é só desta tela é a noção de prazo: aqui a
+   data que importa está no futuro e a entrevista não pode vencer, então a urgência
+   aparece em três lugares que se reforçam — etiqueta na célula, faixa na linha e aviso
+   no topo do card. As três saem da mesma classificação (getUrgency, em analyze_interview.js).
+   ============================================= */
+
+/* 7 colunas, quatro delas compostas */
+.interview-table {
+  min-width: 1120px;
+}
+
+.forms-table .forms-col-interview {
+  width: 200px;
+}
+
+/* ---------- Etiquetas de urgência ----------
+   Variantes da .forms-tag já definida acima, com os mesmos pares de token das pílulas
+   de status. Vermelho = já passou, âmbar = é hoje, azul = está chegando. */
+.forms-tag--overdue {
+  background: var(--red-100);
+  color: var(--red-700);
+  font-weight: 600;
+}
+
+.forms-tag--today {
+  background: var(--amber-100);
+  color: var(--amber-700);
+  font-weight: 600;
+}
+
+.forms-tag--soon {
+  background: var(--blue-100);
+  color: var(--blue-700);
+}
+
+/* marcador neutro: avisa que existe observação do agendamento, sem competir com a urgência */
+.forms-tag--note {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+
+/* ---------- Faixa lateral da linha ----------
+   box-shadow em vez de border-left: uma borda declarada no <tr> não é pintada de forma
+   consistente com border-collapse, e colocá-la no primeiro <td> empurraria o conteúdo e
+   desalinharia a coluna em relação ao <th> do cabeçalho. */
+.forms-table tbody tr.is-overdue td:first-child {
+  box-shadow: inset 3px 0 0 var(--red-500);
+}
+
+.forms-table tbody tr.is-today td:first-child {
+  box-shadow: inset 3px 0 0 var(--amber-500);
+}
+
+/* os chips de prazo crítico carregam a cor mesmo desativados: são os dois que o
+   colaborador precisa enxergar antes de escolher qualquer outro recorte */
+.forms-status-chip--overdue:not(.is-active) {
+  color: var(--red-700);
+  border-color: var(--red-100);
+}
+
+.forms-status-chip--today:not(.is-active) {
+  color: var(--amber-700);
+  border-color: var(--amber-100);
+}
+
+.forms-status-chip--overdue.is-active {
+  background: var(--red-100);
+  color: var(--red-700);
+}
+
+.forms-status-chip--today.is-active {
+  background: var(--amber-100);
+  color: var(--amber-700);
+}
+
+/* ---------- Aviso de urgência no topo do card ----------
+   Conta sobre a lista inteira, não sobre a filtrada: serve justamente para o que um
+   filtro ativo pode estar escondendo. */
+.forms-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  padding: 0.7rem 1rem;
+  font-size: 13.5px;
+  font-weight: 500;
+  border: 1px solid var(--color-border-light);
+  border-left: 3px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+
+.forms-alert svg {
+  flex-shrink: 0;
+}
+
+.forms-alert--danger {
+  border-left-color: var(--red-500);
+  background: var(--red-50);
+  color: var(--red-700);
+}
+
+.forms-alert.is-hidden {
+  display: none;
+}
+
+/* Abaixo de 768px esta tela esconde Contato, Tipo, Consultor e Sinalizações (regra
+   compartilhada acima) e mantém a coluna de Entrevista: aqui ela é a informação
+   principal, não um dado de apoio. */
+@media (max-width: 768px) {
+  .interview-table {
     min-width: 0;
   }
 }
