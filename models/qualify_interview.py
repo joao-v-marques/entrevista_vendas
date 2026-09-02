@@ -517,6 +517,41 @@ class QualifyInterviewModel:
             if conn:
                 conn.close()
 
+    # GET de vários forms junto com a entrevista qualificada com base nos id's passados a dto separa form e qualify_interview
+    @staticmethod
+    def get_by_application_form_ids(application_form_ids):
+        if not application_form_ids:
+            return {}
+
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                SELECT qi.*, ai.application_form_id, u.name AS inserted_by_name
+                FROM qualify_interviews qi
+                INNER JOIN application_form_interviews ai ON ai.id = qi.application_form_interview_id
+                LEFT JOIN users u ON u.id = qi.inserted_by
+                WHERE ai.application_form_id = ANY(%s)
+            """
+            values = (list(application_form_ids),)
+
+            cursor.execute(sql_query, values)
+            qualify_interviews_data = cursor.fetchall()
+
+            return {
+                qualify_interview["application_form_id"]: qualify_interview
+                for qualify_interview in qualify_interviews_data
+            }
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     # Executa o INSERT da entrevista qualificada com um cursor externo, sem commit/close.
     # Não abre conexão de propósito: a entrevista qualificada nunca é gravada sozinha, ela sempre
     # participa da transação que grava também a análise da entrevista.

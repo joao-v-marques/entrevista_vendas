@@ -69,6 +69,25 @@ class ApplicationFormService:
         except Exception as e:
             raise Exception(str(e))
 
+    # GET das fichas aguardando aprovação da gerência (status 4) juntamente com as entrevistas qualificadas
+    def get_pending_management_approval():
+        try:
+            application_forms = ApplicationFormModel.get_by_status(4)
+
+            qualify_by_form_id = QualifyInterviewModel.get_by_application_form_ids(
+                [application_form.id for application_form in application_forms]
+            )
+
+            return [
+                {
+                    "form": application_form.to_dict(),
+                    "qualify_interview": qualify_by_form_id.get(application_form.id),
+                }
+                for application_form in application_forms
+            ]
+        except Exception as e:
+            raise Exception(str(e))
+
     # POST ATÔMICO: cria o formulário, seus responsáveis pela inclusão e os documentos
     # anexados numa única transação (tudo ou nada). Os arquivos são gravados em disco e,
     # se qualquer insert falhar, é feito rollback do banco E os arquivos salvos são removidos,

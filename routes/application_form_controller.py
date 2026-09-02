@@ -50,6 +50,20 @@ def get_by_status():
             "message": str(e)
         }), 500
 
+# GET das fichas pendentes de aprovação da gerência (status 4), junto com a entrevista qualificada
+@bp_application_form.route("/application-forms/management-pending", methods=['GET'])
+@token_required
+@role_required("administrator", "employee")
+def get_pending_management_approval():
+    try:
+        pending_forms = ApplicationFormService.get_pending_management_approval()
+
+        return jsonify(pending_forms)
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
 
 # GET agregado com TODOS os dados de um formulário (usado pela tela de visualização)
 @bp_application_form.route("/application-forms/<int:application_form_id>/details", methods=['GET'])
