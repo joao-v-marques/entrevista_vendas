@@ -847,3 +847,52 @@
     min-width: 0;
   }
 }
+
+/* =============================================
+   Listagem de aprovação da gerência (management_approval.html)
+
+   Sexta e última listagem que reaproveita esta folha. O que é só dela são as três colunas
+   da entrevista qualificada — Preexistência, Parecer da Unimed e Saúde — que é o que a
+   gerência precisa ver antes de decidir. O resto (célula de beneficiário, envelhecimento,
+   etiquetas comerciais, chips, cabeçalhos ordenáveis) já vem das seções acima.
+   ============================================= */
+
+/* 8 colunas, três compostas: é a listagem mais larga do sistema */
+.management-table {
+  min-width: 1320px;
+}
+
+.forms-table .forms-col-preexisting { width: 150px; }
+.forms-table .forms-col-parecer     { width: 210px; }
+.forms-table .forms-col-health      { width: 200px; }
+
+/* "Declaração COM preexistências" já vem abreviado do JS, mas ainda assim não pode
+   quebrar em duas linhas e engordar a altura de todas as linhas da tabela */
+.forms-table .forms-col-parecer .pill,
+.forms-table .forms-cell-parecer .pill,
+.forms-table .forms-cell-preexisting .pill {
+  white-space: nowrap;
+}
+
+/* a pílula é um inline-flex dentro de uma célula composta: sem isso ela esticaria
+   para a largura toda da coluna em vez de acompanhar o próprio texto */
+.forms-table .forms-cell-preexisting .forms-cell-stack {
+  align-items: flex-start;
+  gap: 4px;
+}
+
+@media (max-width: 768px) {
+  .management-table {
+    min-width: 0;
+  }
+
+  /* Consultor e Sinalizações já somem pela regra compartilhada lá em cima. Parecer e
+     Saúde somem só aqui, escopados: sobram Beneficiário, Preexistência, Data e Ações —
+     a pergunta que esta tela existe para responder continua legível em 360px. */
+  .management-table th.forms-col-parecer,
+  .management-table td.forms-cell-parecer,
+  .management-table th.forms-col-health,
+  .management-table td.forms-cell-health {
+    display: none;
+  }
+}

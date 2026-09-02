@@ -8,30 +8,18 @@ import {
     renderEmptySection,
 } from "../utils/detailsView.js";
 import { QUALIFY_INTERVIEW_GROUPS } from "../analyzeInterviewModals/qualifyInterviewQuestions.js";
+import {
+    ESCOLHA_MEDICO_ORIENTADOR_LABELS,
+    PARECER_UNIMED_LABELS,
+    QUALIFY_QUESTIONS,
+    formatImc,
+} from "../utils/qualifyInterview.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 
 const overlay = document.getElementById("viewInterviewModalOverlay");
 const idLabel = document.getElementById("viewInterviewModalId");
 const body = document.getElementById("viewInterviewModalBody");
 const closeButton = document.getElementById("viewInterviewModalClose");
-
-/* ============================================================
-   Rótulos dos campos de escolha única
-   ============================================================ */
-
-// versões curtas dos textos longos exibidos no modal de análise (templates/analyze_interview.html)
-const ESCOLHA_MEDICO_ORIENTADOR_LABELS = {
-    medico_unimed: "Com o médico orientador indicado pela Unimed",
-    medico_proprio: "Médico de livre escolha, com ônus do proponente",
-    dispensou_orientador: "Dispensou o médico orientador da operadora",
-};
-
-const PARECER_UNIMED_LABELS = {
-    sem_preexistencias: "Declaração SEM preexistências",
-    com_preexistencias_aceitou_cpt: "Declaração COM preexistências — aceitou cumprir a CPT",
-    com_preexistencias_recusou_cpt: "Declaração COM preexistências — recusou a CPT (cancelamento)",
-    recusou_pericia_exames: "Recusou a perícia médica e/ou os exames solicitados (cancelamento)",
-};
 
 /* ============================================================
    Definição dos campos por seção
@@ -90,32 +78,6 @@ const CONSULTANT_FIELDS = [
 /* ============================================================
    Entrevista qualificada
    ============================================================ */
-
-// itens de peso/altura ficam fora da contagem: não são perguntas Sim/Não
-const QUALIFY_QUESTIONS = QUALIFY_INTERVIEW_GROUPS.flatMap(
-    group => group.items.filter(item => item.type !== "measure")
-);
-
-// mesmas faixas usadas no modal de análise (analyzeInterviewModals/analyzeInterviewModal.js)
-function classifyImc(imc) {
-    if (imc < 18.5) return "Abaixo do peso";
-    if (imc < 25) return "Normal";
-    if (imc < 30) return "Sobrepeso";
-    if (imc < 35) return "Obesidade Grau I";
-    if (imc < 40) return "Obesidade Grau II";
-    return "Obesidade Grau III";
-}
-
-function formatImc(pesoKg, alturaCm) {
-    const peso = Number(pesoKg);
-    const altura = Number(alturaCm);
-    if (!peso || !altura) return "—";
-
-    const alturaM = altura / 100;
-    const imc = peso / (alturaM * alturaM);
-
-    return `${imc.toFixed(1).replace(".", ",")} — ${classifyImc(imc)}`;
-}
 
 function formatMeasure(value, unit) {
     if (value === null || value === undefined || value === "") return "—";

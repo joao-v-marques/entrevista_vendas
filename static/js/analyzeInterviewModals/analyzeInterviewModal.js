@@ -5,6 +5,7 @@ import { populateAnalyzeInterviewTable } from "../analyze_interview.js";
 import { QUALIFY_INTERVIEW_GROUPS, QUALIFY_INTERVIEW_TOTAL_ITEMS } from "./qualifyInterviewQuestions.js";
 import { setSubmitLoading } from "../utils/submitLoading.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { classifyImc } from "../utils/qualifyInterview.js";
 
 const overlay = document.getElementById("analyzeInterviewModalOverlay");
 const formIdLabel = document.getElementById("analyzeInterviewModalFormId");
@@ -171,16 +172,6 @@ function buildImcRow() {
         </div>
     `;
     return row;
-}
-
-// faixas conforme o formulário original da Unimed
-function classifyImc(imc) {
-    if (imc < 18.5) return "Abaixo do peso";
-    if (imc < 25) return "Normal";
-    if (imc < 30) return "Sobrepeso";
-    if (imc < 35) return "Obesidade Grau I";
-    if (imc < 40) return "Obesidade Grau II";
-    return "Obesidade Grau III";
 }
 
 function updateImcDisplay() {
