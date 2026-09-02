@@ -896,3 +896,22 @@
     display: none;
   }
 }
+
+/* =============================================
+   Listagem de fichas reprovadas pela gerência (rejected_management_forms.html)
+
+   Aqui o trabalho é rápido: achar a ficha, solicitar a reanálise (anexando o laudo quando
+   for o caso) ou encerrar a negociação. Por isso ela repete o conjunto enxuto da
+   /aprovar-ficha e NÃO traz as colunas da entrevista qualificada da /aprovar-gerencia —
+   ninguém faz análise clínica nesta tela.
+   ============================================= */
+
+.rejected-management-table {
+  min-width: 1120px;
+}
+
+@media (max-width: 768px) {
+  .rejected-management-table {
+    min-width: 0;
+  }
+}

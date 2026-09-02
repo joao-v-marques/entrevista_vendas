@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/approve_form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" />
 </head>
 
 <body>
@@ -252,29 +253,88 @@
     </nav>
 
     <!-- ===== MAIN ===== -->
-    <main class="main-content">
+    <main class="main-content main-content--xwide">
         <section class="section">
             <div class="form-card">
-                <div class="form-card-header">
-                    <h2 class="form-card-title">Fichas Reprovadas pela Gerência</h2>
-                    <p class="form-card-description">Solicite uma reanálise da gerência ou encerre a negociação das fichas reprovadas.</p>
+                <div class="form-card-header forms-page-header">
+                    <div class="forms-header-text">
+                        <h2 class="form-card-title">Fichas Reprovadas pela Gerência</h2>
+                        <p class="form-card-description">
+                            Solicite uma reanálise da gerência ou encerre a negociação das fichas reprovadas. Clique no cabeçalho para ordenar e na linha para solicitar reanálise.
+                        </p>
+                    </div>
+                    <span class="forms-count" id="rejectedCount"></span>
                 </div>
 
+                <!-- Filtros -->
+                <div class="forms-filters-panel">
+                    <div class="forms-filters-panel-head">
+                        <span class="forms-filters-title">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 3.5h12l-4.6 5.2v3.6l-2.8 1.4V8.7L2 3.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                            Filtros
+                        </span>
+                        <button type="button" class="btn btn--ghost btn--sm forms-filters-clear is-hidden" id="filterClear">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                            Limpar filtros
+                        </button>
+                    </div>
+
+                    <div class="forms-filters">
+                        <div class="forms-filter-field forms-filter-field--grow">
+                            <label for="filterBeneficiary">Buscar</label>
+                            <div class="forms-search">
+                                <svg class="forms-search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                <input type="text" id="filterBeneficiary" class="input forms-search-input" placeholder="Buscar por nome, CPF ou número da ficha..." autocomplete="off" />
+                            </div>
+                        </div>
+                        <div class="forms-filter-field">
+                            <label for="filterConsultant">Consultor</label>
+                            <select id="filterConsultant" class="select">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="forms-filter-field">
+                            <label for="filterInclusionType">Tipo de inclusão</label>
+                            <select id="filterInclusionType" class="select">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="forms-filter-field">
+                            <label for="filterPlan">Plano</label>
+                            <select id="filterPlan" class="select">
+                                <option value="">Todos</option>
+                            </select>
+                        </div>
+                        <div class="forms-filter-field forms-filter-field--range">
+                            <label for="filterDateFrom">Data de inclusão</label>
+                            <div class="forms-date-range">
+                                <input type="date" id="filterDateFrom" class="input" aria-label="Data de inclusão inicial" />
+                                <span class="forms-date-range-sep">até</span>
+                                <input type="date" id="filterDateTo" class="input" aria-label="Data de inclusão final" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Atalhos de triagem (renderizados por rejected_management_forms.js a partir dos dados carregados) -->
+                <div class="forms-status-chips" id="triageChips" role="group" aria-label="Filtrar por sinalização"></div>
+
                 <!-- Lista de Fichas -->
-                <div class="fichas-list">
-                    <table class="fichas-table">
+                <div class="fichas-list forms-list">
+                    <table class="fichas-table forms-table rejected-management-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Beneficiário</th>
-                                <th>Tipo</th>
-                                <th>Consultor</th>
-                                <th>Data de inclusão</th>
+                                <th class="forms-col-beneficiary is-sortable" data-sort="beneficiary" role="button" tabindex="0" aria-sort="none">Beneficiário<span class="sort-indicator" aria-hidden="true"></span></th>
+                                <th class="forms-col-type is-sortable" data-sort="type" role="button" tabindex="0" aria-sort="none">Tipo<span class="sort-indicator" aria-hidden="true"></span></th>
+                                <th class="forms-col-plan is-sortable" data-sort="plan" role="button" tabindex="0" aria-sort="none">Plano<span class="sort-indicator" aria-hidden="true"></span></th>
+                                <th class="forms-col-consultant is-sortable" data-sort="consultant" role="button" tabindex="0" aria-sort="none">Consultor<span class="sort-indicator" aria-hidden="true"></span></th>
+                                <th class="forms-col-date is-sortable" data-sort="date" role="button" tabindex="0" aria-sort="ascending">Data de inclusão<span class="sort-indicator" aria-hidden="true"></span></th>
+                                <th class="forms-col-flags">Sinalizações</th>
                                 <th class="actions-column">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyRejectedManagementForms">
-
+                            <tr class="forms-empty-row"><td colspan="7">Carregando formulários...</td></tr>
                         </tbody>
                     </table>
                 </div>
