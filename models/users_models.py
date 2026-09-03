@@ -38,7 +38,7 @@ class UserModel:
             conn, cursor = get_db_connection()
 
             sql = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.cpf, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.cpf, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, u.is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id
@@ -70,7 +70,7 @@ class UserModel:
             conn, cursor = get_db_connection()
 
             sql = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.cpf, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.cpf, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, u.is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id
@@ -105,7 +105,7 @@ class UserModel:
             conn, cursor = get_db_connection()
 
             sql = """
-                SELECT u.id, u.username, u.name, u.password_hash, u.cpf, u.email, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, is_active
+                SELECT u.id, u.username, u.name, u.password_hash, u.cpf, u.email, u.role_id, r.name AS role_name, u.sector_id, s.name AS sector_name, u.is_active
                 FROM users u
                 INNER JOIN roles r ON r.id = u.role_id
                 INNER JOIN sectors s ON s.id = u.sector_id
@@ -142,7 +142,7 @@ class UserModel:
             conn, cursor = get_db_connection()
 
             sql = """
-                SELECT id, username, name, password_hash, email, cpf, role_id, sector_id, is_active
+                SELECT id, username, name, password_hash, email, cpf, role_id, sector_id, u.is_active
                 FROM users
                 WHERE cpf = %s
             """
