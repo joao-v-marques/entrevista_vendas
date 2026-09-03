@@ -24,11 +24,12 @@ class RoleModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 SELECT id, name, description, is_active
                 FROM roles
                 ORDER BY name
-            """)
+            """
+            cursor.execute(sql_query)
             
             roleData = cursor.fetchall()
             
@@ -53,11 +54,13 @@ class RoleModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 SELECT id, name, description, is_active
                 FROM roles
                 WHERE id = %s
-            """, (role_id,))
+            """
+            values = (role_id,)
+            cursor.execute(sql_query, values)
             
             role_data = cursor.fetchone()
             
@@ -82,11 +85,13 @@ class RoleModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 SELECT id, name, description, is_active
                 FROM roles
                 WHERE name = %s
-            """, (name,))
+            """
+            values = (name,)
+            cursor.execute(sql_query, values)
             role_data = cursor.fetchone()
             
             return [
@@ -110,11 +115,13 @@ class RoleModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 INSERT INTO roles (name, description)
                 VALUES (%s, %s)
                 RETURNING id, is_active
-            """, (role.name, role.description))
+            """
+            values = (role.name, role.description)
+            cursor.execute(sql_query, values)
             created_data = cursor.fetchone()
             conn.commit()
             role.id = created_data["id"]
@@ -136,11 +143,13 @@ class RoleModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 UPDATE roles
                 SET name = %s, description = %s, is_active = %s
                 WHERE id = %s
-            """, (role.name, role.description, role.is_active, role.id))
+            """
+            values = (role.name, role.description, role.is_active, role.id)
+            cursor.execute(sql_query, values)
             conn.commit()
             return role
         
@@ -159,11 +168,13 @@ class RoleModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 UPDATE roles
                 SET is_active = FALSE
                 WHERE id = %s
-            """, (role_id,))
+            """
+            values = (role_id,)
+            cursor.execute(sql_query, values)
             conn.commit()
         except Exception as e:
             raise Exception(str(e))
@@ -179,11 +190,13 @@ class RoleModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 UPDATE roles
                 SET is_active = TRUE
                 WHERE id = %s
-            """, (role_id,))
+            """
+            values = (role_id,)
+            cursor.execute(sql_query, values)
             conn.commit()
         except Exception as e:
             raise Exception(str(e))

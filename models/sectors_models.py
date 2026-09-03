@@ -22,12 +22,13 @@ class SectorModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 SELECT id, name, is_active
                 FROM sectors
                 WHERE is_active = TRUE
                 ORDER BY name
-            """)
+            """
+            cursor.execute(sql_query)
             
             sector_data = cursor.fetchone()
             
@@ -50,11 +51,13 @@ class SectorModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 SELECT id, name, is_active
                 FROM sectors
                 WHERE id = %s
-            """, (sector_id,))
+            """
+            values = (sector_id,)
+            cursor.execute(sql_query, values)
             sector_data = cursor.fetchone()
             return [
                 Sector(**sector_data) 
@@ -75,11 +78,13 @@ class SectorModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 SELECT id, name, is_active
                 FROM sectors
                 WHERE name = %s
-            """, (name,))
+            """
+            values = (name,)
+            cursor.execute(sql_query, values)
             sector_data = cursor.fetchone()
             return [
                 Sector(**sector_data) 
@@ -100,11 +105,13 @@ class SectorModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 INSERT INTO sectors (name)
                 VALUES (%s)
                 RETURNING id, is_active
-            """, (sector.name,))
+            """
+            values = (sector.name,)
+            cursor.execute(sql_query, values)
             created_data = cursor.fetchone()
             conn.commit()
             sector.id = created_data["id"]
@@ -124,11 +131,13 @@ class SectorModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 UPDATE sectors
                 SET name = %s, is_active = %s
                 WHERE id = %s
-            """, (sector.name, sector.is_active, sector.id))
+            """
+            values = (sector.name, sector.is_active, sector.id)
+            cursor.execute(sql_query, values)
             conn.commit()
             return sector
         except Exception as e:
@@ -145,11 +154,13 @@ class SectorModel:
         cursor = None
         try:
             conn, cursor = get_db_connection()
-            cursor.execute("""
+            sql_query = """
                 UPDATE sectors
                 SET is_active = FALSE
                 WHERE id = %s
-            """, (sector_id,))
+            """
+            values = (sector_id,)
+            cursor.execute(sql_query, values)
             conn.commit()
         except Exception as e:
             raise Exception(str(e))
