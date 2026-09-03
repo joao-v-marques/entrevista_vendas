@@ -28,7 +28,16 @@ class SectorModel:
                 WHERE is_active = TRUE
                 ORDER BY name
             """)
-            return [Sector(**sector) for sector in cursor.fetchall()]
+            
+            sector_data = cursor.fetchone()
+            
+            return [
+                Sector(**sector)
+                for sector in sector_data
+            ]
+            
+        except Exception as e:
+            raise Exception(str(e))
         finally:
             if cursor:
                 cursor.close()
@@ -47,7 +56,13 @@ class SectorModel:
                 WHERE id = %s
             """, (sector_id,))
             sector_data = cursor.fetchone()
-            return Sector(**sector_data) if sector_data else None
+            return [
+                Sector(**sector_data) 
+                if sector_data 
+                else None
+            ]
+        except Exception as e:
+            raise Exception(str(e))
         finally:
             if cursor:
                 cursor.close()
@@ -66,7 +81,13 @@ class SectorModel:
                 WHERE name = %s
             """, (name,))
             sector_data = cursor.fetchone()
-            return Sector(**sector_data) if sector_data else None
+            return [
+                Sector(**sector_data) 
+                if sector_data 
+                else None
+            ]
+        except Exception as e:
+            raise Exception(str(e))
         finally:
             if cursor:
                 cursor.close()
@@ -89,6 +110,8 @@ class SectorModel:
             sector.id = created_data["id"]
             sector.is_active = created_data["is_active"]
             return sector
+        except Exception as e:
+            raise Exception(str(e))
         finally:
             if cursor:
                 cursor.close()
@@ -108,6 +131,8 @@ class SectorModel:
             """, (sector.name, sector.is_active, sector.id))
             conn.commit()
             return sector
+        except Exception as e:
+            raise Exception(str(e))
         finally:
             if cursor:
                 cursor.close()
@@ -126,6 +151,8 @@ class SectorModel:
                 WHERE id = %s
             """, (sector_id,))
             conn.commit()
+        except Exception as e:
+            raise Exception(str(e))
         finally:
             if cursor:
                 cursor.close()

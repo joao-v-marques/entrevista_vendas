@@ -13,10 +13,15 @@ class SectorService:
 
     @staticmethod
     def get_by_id(sector_id):
-        sector = SectorModel.get_by_id(sector_id)
-        if not sector:
-            raise NotFoundError("Nenhum setor encontrado com o ID informado")
-        return sector
+        try:
+            sector = SectorModel.get_by_id(sector_id)
+            if not sector:
+                raise NotFoundError("Nenhum setor encontrado com o ID informado")
+            return sector
+        except AppError:
+            raise
+        except Exception as e:
+            raise Exception(str(e))
 
     @staticmethod
     def create(data):
@@ -30,10 +35,12 @@ class SectorService:
                 raise ConflictError("Já existe um setor cadastrado com esse nome")
 
             return SectorModel.create(Sector(name=name))
+        
         except AppError:
-            raise
+                    raise
         except Exception as e:
             raise Exception(str(e))
+        
 
     @staticmethod
     def update(sector_id, data):

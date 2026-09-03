@@ -27,10 +27,20 @@ class RoleModel:
             cursor.execute("""
                 SELECT id, name, description, is_active
                 FROM roles
-                WHERE is_active = TRUE
                 ORDER BY name
             """)
-            return [Role(**role) for role in cursor.fetchall()]
+            
+            roleData = cursor.fetchall()
+            
+            return [
+                Role(**role) 
+                for role in roleData
+            ]
+            
+        except Exception as e:
+            raise Exception(str(e))
+        
+            
         finally:
             if cursor:
                 cursor.close()
@@ -48,8 +58,18 @@ class RoleModel:
                 FROM roles
                 WHERE id = %s
             """, (role_id,))
+            
             role_data = cursor.fetchone()
-            return Role(**role_data) if role_data else None
+            
+            return [
+                Role(**role_data) 
+                if role_data 
+                else None
+            ]
+            
+        except Exception as e:
+            raise Exception(str(e))
+        
         finally:
             if cursor:
                 cursor.close()
@@ -68,7 +88,16 @@ class RoleModel:
                 WHERE name = %s
             """, (name,))
             role_data = cursor.fetchone()
-            return Role(**role_data) if role_data else None
+            
+            return [
+                Role(**role_data) 
+                if role_data 
+                else None
+            ]
+            
+        except Exception as e:
+            raise Exception(str(e))
+        
         finally:
             if cursor:
                 cursor.close()
@@ -91,6 +120,10 @@ class RoleModel:
             role.id = created_data["id"]
             role.is_active = created_data["is_active"]
             return role
+        
+        except Exception as e:
+            raise Exception(str(e))
+        
         finally:
             if cursor:
                 cursor.close()
@@ -110,6 +143,10 @@ class RoleModel:
             """, (role.name, role.description, role.is_active, role.id))
             conn.commit()
             return role
+        
+        except Exception as e:
+            raise Exception(str(e))
+        
         finally:
             if cursor:
                 cursor.close()
@@ -117,7 +154,7 @@ class RoleModel:
                 conn.close()
 
     @staticmethod
-    def delete(role_id):
+    def deactivate(role_id):
         conn = None
         cursor = None
         try:
@@ -128,6 +165,28 @@ class RoleModel:
                 WHERE id = %s
             """, (role_id,))
             conn.commit()
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+                
+    @staticmethod
+    def reactivate(role_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+            cursor.execute("""
+                UPDATE roles
+                SET is_active = TRUE
+                WHERE id = %s
+            """, (role_id,))
+            conn.commit()
+        except Exception as e:
+            raise Exception(str(e))
         finally:
             if cursor:
                 cursor.close()
