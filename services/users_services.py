@@ -70,11 +70,13 @@ class UserService:
             senha = validate_password(data)
             cpf = normalize_cpf(data.get('cpf'))
 
-            if not RoleModel.get_by_id(role_id):
-                raise ValidationError("O cargo informado não existe")
+            role = RoleModel.get_by_id(role_id)
+            if not role or not role.is_active:
+                raise ValidationError("O cargo informado não existe ou está inativo")
 
-            if not SectorModel.get_by_id(sector_id):
-                raise ValidationError("O setor informado não existe")
+            sector = SectorModel.get_by_id(sector_id)
+            if not sector or not sector.is_active:
+                raise ValidationError("O setor informado não existe ou está inativo")
 
             existing_user = UserModel.get_by_username(username)
 
@@ -132,11 +134,13 @@ class UserService:
             is_active = to_bool(data.get('is_active', existing_user.is_active))
 
             # mesma checagem do create: sem cargo e setor válidos o usuário some dos GETs
-            if not RoleModel.get_by_id(role_id):
-                raise ValidationError("O cargo informado não existe")
+            role = RoleModel.get_by_id(role_id)
+            if not role or not role.is_active:
+                raise ValidationError("O cargo informado não existe ou está inativo")
 
-            if not SectorModel.get_by_id(sector_id):
-                raise ValidationError("O setor informado não existe")
+            sector = SectorModel.get_by_id(sector_id)
+            if not sector or not sector.is_active:
+                raise ValidationError("O setor informado não existe ou está inativo")
 
             # impede usar um username ou um CPF que já pertence a outro usuário
             user_with_username = UserModel.get_by_username(username)
