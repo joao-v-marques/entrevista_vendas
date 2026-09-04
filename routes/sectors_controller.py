@@ -62,14 +62,30 @@ def update(sector_id):
         return jsonify({"message": str(e)}), 500
 
 
-@bp_sectors.route("/sectors/<int:sector_id>", methods=["DELETE"])
+@bp_sectors.route("/sectors/<int:sector_id>/deactivate", methods=["DELETE"])
 @token_required
 @role_required("administrator")
-def delete(sector_id):
+def deactivate(sector_id):
     try:
-        SectorService.delete(sector_id)
+        SectorService.deactivate(sector_id)
         return jsonify({"message": "Setor desativado com sucesso"}), 200
     except NotFoundError as e:
         return jsonify({"message": str(e)}), 404
     except Exception as e:
         return jsonify({"message": str(e)}), 500
+
+@bp_sectors.route("/sectors/<int:sector_id>/reactivate", methods=['PATCH'])
+@token_required
+@role_required("administrator")
+def reactivate(sector_id):
+    try:
+        SectorService.reactivate(sector_id)
+        return jsonify({
+            "message": "Setor reativado com sucesso"
+        }), 200
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except Exception as e:
+        raise Exception(str(e))

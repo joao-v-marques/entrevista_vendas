@@ -67,9 +67,27 @@ class SectorService:
             raise Exception(str(e))
 
     @staticmethod
-    def delete(sector_id):
-        sector = SectorModel.get_by_id(sector_id)
-        if not sector:
-            raise NotFoundError("Nenhum setor encontrado com o ID informado")
+    def deactivate(sector_id):
+        try:
+            sector = SectorModel.get_by_id(sector_id)
+            if not sector:
+                raise NotFoundError("Nenhum setor encontrado com o ID informado")
+    
+            SectorModel.deactivate(sector_id)
+        except AppError:
+            raise
+        except Exception as e:
+            raise Exception(str(e))
 
-        SectorModel.delete(sector_id)
+    @staticmethod
+    def reactivate(sector_id):
+        try:
+            sector = SectorModel.get_by_id(sector_id)
+            if not sector:
+                raise NotFoundError("Nenhum setor encontrado com o ID informado")
+    
+            SectorModel.reactivate(sector_id)
+        except AppError:
+            raise
+        except Exception as e:
+            raise Exception(str(e))

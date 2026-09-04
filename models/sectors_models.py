@@ -25,12 +25,11 @@ class SectorModel:
             sql_query = """
                 SELECT id, name, is_active
                 FROM sectors
-                WHERE is_active = TRUE
                 ORDER BY name
             """
             cursor.execute(sql_query)
             
-            sector_data = cursor.fetchone()
+            sector_data = cursor.fetchall()
             
             return [
                 Sector(**sector)
@@ -153,7 +152,7 @@ class SectorModel:
                 conn.close()
 
     @staticmethod
-    def delete(sector_id):
+    def deactivate(sector_id):
         conn = None
         cursor = None
         try:
@@ -164,6 +163,30 @@ class SectorModel:
                 WHERE id = %s
             """
             values = (sector_id,)
+            cursor.execute(sql_query, values)
+            conn.commit()
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    @staticmethod
+    def reactivate(sector_id):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                UPDATE sectors
+                SET is_active = true
+                WHERE id = %s
+            """
+            values = (sector_id,)
+
             cursor.execute(sql_query, values)
             conn.commit()
         except Exception as e:
