@@ -67,9 +67,27 @@ class RoleService:
             raise Exception(str(e))
 
     @staticmethod
-    def delete(role_id):
-        role = RoleModel.get_by_id(role_id)
-        if not role:
-            raise NotFoundError("Nenhum cargo encontrado com o ID informado")
+    def deactivate(role_id):
+        try:
+            role = RoleModel.get_by_id(role_id)
+            if not role:
+                raise NotFoundError("Nenhum cargo encontrado com o ID informado")
 
-        RoleModel.delete(role_id)
+            RoleModel.deactivate(role_id)
+        except AppError:
+            raise
+        except Exception as e:
+            raise Exception(str(e))
+
+    @staticmethod
+    def rectivate(role_id):
+        try:
+            role = RoleModel.get_by_id(role_id)
+            if not role:
+                raise NotFoundError("Nenhum cargo encontrado com o ID informado")
+
+            RoleModel.reactivate(role_id)
+        except AppError:
+            raise
+        except Exception as e:
+            raise Exception(str(e))

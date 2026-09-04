@@ -61,14 +61,33 @@ def update(role_id):
         return jsonify({"message": str(e)}), 500
 
 
-@bp_roles.route("/roles/<int:role_id>", methods=["DELETE"])
+@bp_roles.route("/roles/<int:role_id>/deactivate", methods=["DELETE"])
 @token_required
 @role_required("administrator")
-def delete(role_id):
+def deactivate(role_id):
     try:
-        RoleService.delete(role_id)
+        RoleService.deactivate(role_id)
         return jsonify({"message": "Cargo desativado com sucesso"}), 200
     except NotFoundError as e:
         return jsonify({"message": str(e)}), 404
     except Exception as e:
         return jsonify({"message": str(e)}), 500
+
+@bp_roles.route("/roles/<int:role_id>/reactivate", methods=["PATCH"])
+@token_required
+@role_required("administrator")
+def reactivate(role_id):
+    try:
+        RoleService.rectivate(role_id)
+
+        return jsonify({
+            "message": "Cargo reativado com sucesso"
+        }), 200
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500

@@ -37,11 +37,8 @@ class RoleModel:
                 Role(**role) 
                 for role in roleData
             ]
-            
         except Exception as e:
             raise Exception(str(e))
-        
-            
         finally:
             if cursor:
                 cursor.close()
@@ -63,16 +60,15 @@ class RoleModel:
             cursor.execute(sql_query, values)
             
             role_data = cursor.fetchone()
+
+            if not role_data:
+                return None
+
+            role = Role(**role_data)
             
-            return [
-                Role(**role_data) 
-                if role_data 
-                else None
-            ]
-            
+            return role
         except Exception as e:
             raise Exception(str(e))
-        
         finally:
             if cursor:
                 cursor.close()
@@ -93,16 +89,15 @@ class RoleModel:
             values = (name,)
             cursor.execute(sql_query, values)
             role_data = cursor.fetchone()
+
+            if not role_data:
+                return None
+
+            role = Role(**role_data)
             
-            return [
-                Role(**role_data) 
-                if role_data 
-                else None
-            ]
-            
+            return role
         except Exception as e:
             raise Exception(str(e))
-        
         finally:
             if cursor:
                 cursor.close()
@@ -126,11 +121,10 @@ class RoleModel:
             conn.commit()
             role.id = created_data["id"]
             role.is_active = created_data["is_active"]
+
             return role
-        
         except Exception as e:
             raise Exception(str(e))
-        
         finally:
             if cursor:
                 cursor.close()
@@ -151,11 +145,10 @@ class RoleModel:
             values = (role.name, role.description, role.is_active, role.id)
             cursor.execute(sql_query, values)
             conn.commit()
+
             return role
-        
         except Exception as e:
             raise Exception(str(e))
-        
         finally:
             if cursor:
                 cursor.close()
