@@ -1,6 +1,8 @@
 import { fetchWithAuth } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
 import { escapeHtml, formatCPF, formatBeneficiaryType } from "./utils/detailsView.js";
+import { openCloseNegotiationModal } from "./rejectedInterviewFormsModals/closeNegotiationModal.js";
+import { openRequestReanalysisModal } from "./rejectedInterviewFormsModals/requestReanalysisModal.js";
 
 // guarda a lista completa carregada do backend; os filtros atuam sobre ela sem novo request
 let allRejectedInterviewForms = [];
@@ -344,26 +346,20 @@ export async function populateRejectedInterviewFormsTable() {
     }
 }
 
-async function requestReanalysis(formId) {
-    const response = await fetchWithAuth(`/entrevista-adesao/application-form-interviews/${formId}/request-reanalysis`, {
-        method: "POST",
-    });
+// abre o modal de solicitar reanálise a partir do id da linha/botão
+function openReanalysisById(applicationFormId) {
+    const applicationForm = allRejectedInterviewForms.find(f => f.id === applicationFormId);
+    if (!applicationForm) return;
 
-    if (!response.ok) {
-        const errorJSON = await response.json().catch(() => null);
-        throw new Error(errorJSON?.message || `Erro ${response.status} ao solicitar reanálise`);
-    }
+    openRequestReanalysisModal(applicationForm);
 }
 
-async function closeNegotiation(formId) {
-    const response = await fetchWithAuth(`/entrevista-adesao/application-form-interviews/${formId}/close-negotiation`, {
-        method: "POST",
-    });
+// abre o modal de encerrar negociação a partir do id da linha/botão
+function openCloseNegotiationById(applicationFormId) {
+    const applicationForm = allRejectedInterviewForms.find(f => f.id === applicationFormId);
+    if (!applicationForm) return;
 
-    if (!response.ok) {
-        const errorJSON = await response.json().catch(() => null);
-        throw new Error(errorJSON?.message || `Erro ${response.status} ao encerrar a negociação`);
-    }
+    openCloseNegotiationModal(applicationForm);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -438,31 +434,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const reanalysisButton = event.target.closest("[data-reanalysis-id]");
         if (reanalysisButton) {
             const formId = Number(reanalysisButton.dataset.reanalysisId);
-
-            try {
-                await requestReanalysis(formId);
-                notyf.success("Reanálise solicitada com sucesso");
-                populateRejectedInterviewFormsTable();
-            } catch (error) {
-                notyf.error(error.message || "Houve um erro ao solicitar a reanálise");
-            }
+            // a confirmação e o pedido em si acontecem no modal, que também recarrega a tabela
+            openReanalysisById(formId);
             return;
         }
 
         const closeButton = event.target.closest("[data-close-id]");
         if (closeButton) {
             const formId = Number(closeButton.dataset.closeId);
-
-            const confirmed = confirm(`Tem certeza que deseja encerrar a negociação da ficha #${formId}? Essa ação não poderá ser desfeita.`);
-            if (!confirmed) return;
-
-            try {
-                await closeNegotiation(formId);
-                notyf.success("Negociação encerrada com sucesso");
-                populateRejectedInterviewFormsTable();
-            } catch (error) {
-                notyf.error(error.message || "Houve um erro ao encerrar a negociação");
-            }
+            // a confirmação e o encerramento em si acontecem no modal, que também recarrega a tabela
+            openCloseNegotiationById(formId);
         }
     });
 })

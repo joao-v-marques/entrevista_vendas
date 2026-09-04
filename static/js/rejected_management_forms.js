@@ -2,6 +2,7 @@ import { fetchWithAuth } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
 import { escapeHtml, formatCPF, formatBeneficiaryType } from "./utils/detailsView.js";
 import { openRequestReanalysisModal } from "./managementModals/requestReanalysisModal.js";
+import { openCloseNegotiationModal } from "./managementModals/closeNegotiationModal.js";
 
 // guarda os dados completos de cada ficha reprovada, pra abrir o modal de reanálise sem precisar de uma nova requisição
 const rejectedFormsById = new Map();
@@ -360,23 +361,20 @@ export async function populateRejectedManagementFormsTable() {
     }
 }
 
-async function closeNegotiation(formId) {
-    const response = await fetchWithAuth(`/entrevista-adesao/application_form_management/${formId}/close-negotiation`, {
-        method: "POST",
-    });
-
-    if (!response.ok) {
-        const errorJSON = await response.json().catch(() => null);
-        throw new Error(errorJSON?.message || `Erro ${response.status} ao encerrar a negociação`);
-    }
-}
-
 // abre o modal de reanálise a partir do id da linha/botão, reaproveitando o cache da listagem
 function openReanalysisById(applicationFormId) {
     const applicationForm = rejectedFormsById.get(Number(applicationFormId));
     if (!applicationForm) return;
 
     openRequestReanalysisModal(applicationForm);
+}
+
+// idem, para o modal de encerrar negociação
+function openCloseNegotiationById(applicationFormId) {
+    const applicationForm = rejectedFormsById.get(Number(applicationFormId));
+    if (!applicationForm) return;
+
+    openCloseNegotiationModal(applicationForm);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -473,11 +471,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (action === "close") {
-                const confirmed = confirm(`Tem certeza que deseja encerrar a negociação da ficha #${formId}? Essa ação não poderá ser desfeita.`);
-                if (!confirmed) return;
-
-                await closeNegotiation(formId);
-                notyf.success("Negociação encerrada com sucesso");
+                // a confirmação e o encerramento em si acontecem no modal, que também recarrega a tabela
+                openCloseNegotiationById(formId);
+                return;
             }
 
             populateRejectedManagementFormsTable();

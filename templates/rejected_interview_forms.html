@@ -341,9 +341,66 @@
         <span>© 2026 Unimed SS Paraíso — Sistema de Fichas de Adesão</span>
     </footer>
 
+    <!-- ===== MODAL: ENCERRAR NEGOCIAÇÃO ===== -->
+    <div class="modal-overlay" id="closeNegotiationModalOverlay" hidden>
+        <div class="modal modal--sm" role="dialog" aria-modal="true" aria-labelledby="closeNegotiationModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="closeNegotiationModalTitle">Encerrar Negociação da Ficha #<span id="closeNegotiationModalFormId"></span>
+                </h2>
+                <button type="button" class="modal-close" id="closeNegotiationModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <section class="modal-section">
+                    <h3 class="form-section-title">Beneficiário</h3>
+                    <p class="form-card-description" id="closeNegotiationBeneficiaryName"></p>
+                </section>
+
+                <p class="close-negotiation-warning">
+                    Essa ação encerra definitivamente a negociação desta ficha e não poderá ser desfeita.
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" id="closeNegotiationModalCancel">Cancelar</button>
+                <button type="button" class="btn btn--danger" id="closeNegotiationModalConfirm">Encerrar Negociação</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: SOLICITAR REANÁLISE ===== -->
+    <div class="modal-overlay" id="requestReanalysisModalOverlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="requestReanalysisModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="requestReanalysisModalTitle">Solicitar Reanálise da Ficha #<span id="requestReanalysisModalFormId"></span>
+                </h2>
+                <button type="button" class="modal-close" id="requestReanalysisModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body" id="requestReanalysisModalBody"></div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" id="requestReanalysisModalCancel">Cancelar</button>
+                <button type="button" class="btn btn--primary" id="requestReanalysisModalConfirm">Solicitar Reanálise</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/rejectedInterviewFormsModals/closeNegotiationModal.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/rejectedInterviewFormsModals/requestReanalysisModal.js') }}"></script>
     <script type="module" src="{{ url_for('static', filename='js/rejected_interview_forms.js') }}"></script>
 </body>
 

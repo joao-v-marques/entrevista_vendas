@@ -949,3 +949,21 @@
   background: var(--color-brand);
   color: #fff;
 }
+
+/* ---------- Modal: Encerrar Negociação ---------- */
+/* modal de confirmação simples (sem os grids de dados do modal de análise) */
+.modal--sm {
+  max-width: 480px;
+}
+
+.close-negotiation-warning {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--red-100);
+  border-left: 3px solid var(--red-500);
+  border-radius: var(--radius-md);
+  background: var(--red-50);
+  color: var(--red-700);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
