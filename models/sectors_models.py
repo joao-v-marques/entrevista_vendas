@@ -59,11 +59,13 @@ class SectorModel:
             values = (sector_id,)
             cursor.execute(sql_query, values)
             sector_data = cursor.fetchone()
-            return [
-                Sector(**sector_data) 
-                if sector_data 
-                else None
-            ]
+
+            if not sector_data:
+                return None
+
+            sector = Sector(**sector_data)
+
+            return sector
         except Exception as e:
             raise Exception(str(e))
         finally:
@@ -86,11 +88,13 @@ class SectorModel:
             values = (name,)
             cursor.execute(sql_query, values)
             sector_data = cursor.fetchone()
-            return [
-                Sector(**sector_data) 
-                if sector_data 
-                else None
-            ]
+
+            if not sector_data:
+                return None
+
+            sector = Sector(**sector_data)
+
+            return sector
         except Exception as e:
             raise Exception(str(e))
         finally:
