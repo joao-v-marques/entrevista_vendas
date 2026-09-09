@@ -14,7 +14,7 @@ bp_form_interviews = Blueprint("bp_form_interviews", __name__)
 
 @bp_form_interviews.route("/application-form-interviews", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee", "interview_employee")
 def get_all():
     try:
         form_interviews = ApplicationFormInterviewService.get_all()
@@ -31,7 +31,7 @@ def get_all():
 # GET das entrevistas já realizadas (analisadas), para a tela de Entrevistas Realizadas
 @bp_form_interviews.route("/application-form-interviews/completed", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee", "interview_employee")
 def get_completed():
     try:
         completed_interviews = ApplicationFormInterviewService.get_completed()
@@ -48,7 +48,7 @@ def get_completed():
 # GET que gera e devolve o documento da entrevista em PDFs
 @bp_form_interviews.route("/application-form-interviews/<int:application_form_id>/document", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee", "interview_employee")
 def download_document(application_form_id):
     try:
         context = InterviewDocumentService.build_context(application_form_id)
@@ -76,7 +76,7 @@ def download_document(application_form_id):
 
 @bp_form_interviews.route("/application-form-interviews", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee", "interview_employee")
 def schedule_interview():
     try:
         data = request.get_json()
@@ -96,7 +96,7 @@ def schedule_interview():
     
 @bp_form_interviews.route("/application-form-interviews", methods=['DELETE'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee", "interview_employee")
 def reschedule_interview():
     try:
         application_form_id = request.args.get("application-form-id")
@@ -126,7 +126,7 @@ def reschedule_interview():
 # PUT que grava a análise da entrevista e a entrevista qualificada juntas, numa transação só
 @bp_form_interviews.route("/application-form-interviews", methods=['PUT'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "interview_employee")
 def analyze_interview():
     try:
         data = request.get_json()
@@ -162,7 +162,7 @@ def analyze_interview():
 # POST para solicitar reanálise de uma ficha reprovada na entrevista
 @bp_form_interviews.route("/application-form-interviews/<int:application_form_id>/request-reanalysis", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def request_reanalysis(application_form_id):
     try:
         ApplicationFormInterviewService.request_reanalysis(application_form_id)
@@ -184,7 +184,7 @@ def request_reanalysis(application_form_id):
 # POST para encerrar a negociação de uma ficha reprovada na entrevista
 @bp_form_interviews.route("/application-form-interviews/<int:application_form_id>/close-negotiation", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def close_negotiation(application_form_id):
     try:
         ApplicationFormInterviewService.close_negotiation(application_form_id)

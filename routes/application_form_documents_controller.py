@@ -10,7 +10,7 @@ bp_application_form_documents = Blueprint("bp_application_form_documents", __nam
 
 @bp_application_form_documents.route("/application-form-documents", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def get_all():
     try:
         application_form_documents = ApplicationFormDocumentService.get_all()
@@ -27,7 +27,7 @@ def get_all():
 # GET que baixa, em um único .zip, todos os documentos anexados a um formulário
 @bp_application_form_documents.route("/application-form-documents/<int:application_form_id>/download", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "finance_employee", "sales_employee", "interview_employee")
 def download_all(application_form_id):
     try:
         zip_bytes, zip_filename = ApplicationFormDocumentService.build_documents_zip(application_form_id)
@@ -51,7 +51,7 @@ def download_all(application_form_id):
 # permite visualizar o laudo médico da reanálise; com ?download=true força o download.
 @bp_application_form_documents.route("/application-form-documents/<int:document_id>/file", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def download_file(document_id):
     try:
         absolute_path, document = ApplicationFormDocumentService.get_document_file(document_id)
@@ -77,7 +77,7 @@ def download_file(document_id):
 
 @bp_application_form_documents.route("/application-form-documents", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def create():
     try:
         application_form_id = request.form.get("application_form_id")

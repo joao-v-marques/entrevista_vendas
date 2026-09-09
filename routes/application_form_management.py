@@ -10,7 +10,7 @@ bp_application_form_management = Blueprint("bp_application_form_management", __n
 # GET de todos cadastrados no sistema
 @bp_application_form_management.route("/application_form_management", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def get_all():
     try:
         management_forms = ApplicationFormManagementService.get_all()
@@ -27,7 +27,7 @@ def get_all():
 # POST de um novo formulário de aprovação da gerência
 @bp_application_form_management.route("/application_form_management", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director")
 def create():
     try:
         data = request.get_json()
@@ -65,7 +65,7 @@ def create():
 # anexado junto da observação extra.
 @bp_application_form_management.route("/application_form_management/<int:application_form_id>/request-reanalysis", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def request_reanalysis(application_form_id):
     try:
         reanalysis_observation = request.form.get("reanalysis_observation")
@@ -108,7 +108,7 @@ def request_reanalysis(application_form_id):
 # POST para encerrar a negociação de uma ficha reprovada pela gerência
 @bp_application_form_management.route("/application_form_management/<int:application_form_id>/close-negotiation", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def close_negotiation(application_form_id):
     try:
         ApplicationFormManagementService.close_negotiation(application_form_id)

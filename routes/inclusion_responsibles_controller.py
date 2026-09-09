@@ -8,7 +8,7 @@ bp_inclusion_responsibles = Blueprint("bp_inclusion_responsibles", __name__)
 
 @bp_inclusion_responsibles.route("/inclusion-responsibles", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def get_all():
     try:
         inclusion_responsibles = InclusionResponsiblesService.get_all()
@@ -24,7 +24,7 @@ def get_all():
 
 @bp_inclusion_responsibles.route("/inclusion-responsibles", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def create():
     try:
         data = request.get_json()

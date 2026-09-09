@@ -10,7 +10,7 @@ bp_application_form = Blueprint("bp_application_form", __name__)
 
 @bp_application_form.route("/application-forms", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "finance_employee", "sales_employee", "interview_employee")
 def get_all():
     try:
         application_forms = ApplicationFormService.get_all()
@@ -27,7 +27,7 @@ def get_all():
 # GET de todos por status (USANDO QUERY PARAMS, VARIÁVEL É status_id)
 @bp_application_form.route("/application-forms/status", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "finance_employee", "sales_employee", "interview_employee")
 def get_by_status():
     try:
         status_id = request.args.get('status_id')
@@ -53,7 +53,7 @@ def get_by_status():
 # GET das fichas pendentes de aprovação da gerência (status 4), junto com a entrevista qualificada
 @bp_application_form.route("/application-forms/management-pending", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def get_pending_management_approval():
     try:
         pending_forms = ApplicationFormService.get_pending_management_approval()
@@ -68,7 +68,7 @@ def get_pending_management_approval():
 # GET agregado com TODOS os dados de um formulário (usado pela tela de visualização)
 @bp_application_form.route("/application-forms/<int:application_form_id>/details", methods=['GET'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "finance_employee", "sales_employee", "interview_employee")
 def get_full_details(application_form_id):
     try:
         details = ApplicationFormService.get_full_details(application_form_id)
@@ -89,7 +89,7 @@ def get_full_details(application_form_id):
 # obrigatórios. Recebe multipart/form-data: "form" (JSON), "responsibles" (JSON) e os arquivos.
 @bp_application_form.route("/application-forms/complete", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def create_form_complete():
     try:
         form_data = json.loads(request.form.get("form") or "{}")
@@ -117,7 +117,7 @@ def create_form_complete():
 # POST para solicitar reanálise financeira de uma ficha reprovada
 @bp_application_form.route("/application-forms/<int:application_form_id>/request-reanalysis", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def request_reanalysis(application_form_id):
     try:
         ApplicationFormService.request_reanalysis(application_form_id)
@@ -139,7 +139,7 @@ def request_reanalysis(application_form_id):
 # POST para encerrar a negociação de uma ficha reprovada pelo financeiro
 @bp_application_form.route("/application-forms/<int:application_form_id>/close-negotiation", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def close_negotiation(application_form_id):
     try:
         ApplicationFormService.close_negotiation(application_form_id)
@@ -161,7 +161,7 @@ def close_negotiation(application_form_id):
 # POST para finalizar o cadastro (status 5 -> 6. Finalizado)
 @bp_application_form.route("/application-forms/<int:application_form_id>/finalize", methods=['POST'])
 @token_required
-@role_required("administrator", "employee")
+@role_required("administrator", "director", "sales_employee")
 def finalize_registration(application_form_id):
     try:
         ApplicationFormService.finalize_registration(application_form_id)
