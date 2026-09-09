@@ -12,6 +12,12 @@ export const STATUS_PILL_CLASSES = {
     "Finalizado": "pill--green",
     "Reprovado Pelo Financeiro": "pill--red",
     "Negociação Encerrada Financeiro": "pill--gray",
+    // os quatro status de entrevista e gerência faltavam no mapa e caíam no cinza do
+    // fallback, o que apagava a diferença entre "reprovado" e "negociação encerrada"
+    "Reprovado na Entrevista": "pill--red",
+    "Negociação Encerrada Entrevista": "pill--gray",
+    "Reprovado pela Gerência": "pill--red",
+    "Negociação Encerrada Gerência": "pill--gray",
 };
 
 export function getStatusPillClass(statusName) {

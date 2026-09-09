@@ -176,245 +176,61 @@
   </nav>
 
   <!-- ===== MAIN ===== -->
+  <!-- Os painéis nascem vazios: cada módulo de dashboardTabs/ monta o próprio
+       esqueleto na primeira vez que a aba é exibida. -->
   <main class="main-content dashboard-main">
 
-    <!-- Cabeçalho -->
-    <div class="dash-header">
-      <div>
-        <h1 class="dash-header-title">Painel de Vendas &amp; Adesões</h1>
-        <p class="dash-header-sub">Acompanhamento de formulários, conversão e desempenho da equipe</p>
-      </div>
-      <span class="dash-updated" id="dashUpdated">Atualizado agora</span>
-    </div>
-
-    <!-- Filtros -->
-    <div class="dash-filters">
-      <div class="dash-filter-presets" id="filterPresets">
-        <button type="button" class="preset-btn" data-preset="7">7 dias</button>
-        <button type="button" class="preset-btn" data-preset="30">30 dias</button>
-        <button type="button" class="preset-btn" data-preset="90">90 dias</button>
-        <button type="button" class="preset-btn" data-preset="year">Este ano</button>
-        <button type="button" class="preset-btn active" data-preset="all">Todo período</button>
-      </div>
-      <div class="dash-filter-range">
-        <div class="dash-filter-field">
-          <label for="filterStart">De</label>
-          <input type="date" id="filterStart" class="input" />
+    <!-- Cabeçalho + controles (fixos no topo ao rolar) -->
+    <div class="dash-topbar">
+      <div class="dash-header">
+        <div>
+          <h1 class="dash-header-title">Painel de Vendas &amp; Adesões</h1>
+          <p class="dash-header-sub">Formulários, pipeline, entrevistas e desempenho da equipe</p>
         </div>
-        <div class="dash-filter-field">
-          <label for="filterEnd">Até</label>
-          <input type="date" id="filterEnd" class="input" />
+        <div class="dash-header-actions">
+          <span class="dash-updated" id="dashUpdated">Atualizado agora</span>
+          <button type="button" class="btn btn--outline btn--sm" id="dashRefresh">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M13.5 2.5V5H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Atualizar
+          </button>
         </div>
-        <button type="button" class="btn btn--primary dash-filter-apply" id="filterApply">Aplicar</button>
-      </div>
-    </div>
-
-    <!-- KPIs -->
-    <div class="kpi-grid" id="kpiGrid">
-      <div class="kpi-card kpi-card--total">
-        <div class="kpi-top">
-          <span class="kpi-label">Total de Formulários</span>
-          <span class="kpi-icon"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="2.5" width="14" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 6.5h7M6.5 10h7M6.5 13.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
-        </div>
-        <div class="kpi-value skeleton" id="kpiTotal">000</div>
-        <div class="kpi-foot" id="kpiTotalFoot">no período selecionado</div>
       </div>
 
-      <div class="kpi-card kpi-card--done">
-        <div class="kpi-top">
-          <span class="kpi-label">Finalizados</span>
-          <span class="kpi-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l3.5 3.5L16 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="dash-controls">
+        <div class="dash-tabs" id="dashTabs" role="tablist" aria-label="Seções do painel">
+          <button type="button" class="dash-tab is-active" data-tab="visao-geral" role="tab" aria-selected="true" aria-controls="panel-visao-geral" id="tab-visao-geral">Visão Geral</button>
+          <button type="button" class="dash-tab" data-tab="vendas" role="tab" aria-selected="false" aria-controls="panel-vendas" id="tab-vendas" tabindex="-1">Vendas</button>
+          <button type="button" class="dash-tab" data-tab="pipeline" role="tab" aria-selected="false" aria-controls="panel-pipeline" id="tab-pipeline" tabindex="-1">Pipeline</button>
+          <button type="button" class="dash-tab" data-tab="entrevistas" role="tab" aria-selected="false" aria-controls="panel-entrevistas" id="tab-entrevistas" tabindex="-1">Entrevistas &amp; Saúde</button>
+          <button type="button" class="dash-tab" data-tab="colaboradores" role="tab" aria-selected="false" aria-controls="panel-colaboradores" id="tab-colaboradores" tabindex="-1">Colaboradores</button>
         </div>
-        <div class="kpi-value skeleton" id="kpiDone">000</div>
-        <div class="kpi-foot" id="kpiDoneFoot">adesões concluídas</div>
-      </div>
 
-      <div class="kpi-card kpi-card--active">
-        <div class="kpi-top">
-          <span class="kpi-label">Em Andamento</span>
-          <span class="kpi-icon"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4l2.7 1.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
-        </div>
-        <div class="kpi-value skeleton" id="kpiActive">000</div>
-        <div class="kpi-foot" id="kpiActiveFoot">no pipeline</div>
-      </div>
-
-      <div class="kpi-card kpi-card--lost">
-        <div class="kpi-top">
-          <span class="kpi-label">Reprov./Encerr.</span>
-          <span class="kpi-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
-        </div>
-        <div class="kpi-value skeleton" id="kpiLost">000</div>
-        <div class="kpi-foot" id="kpiLostFoot">fora do funil</div>
-      </div>
-
-      <div class="kpi-card kpi-card--conv">
-        <div class="kpi-top">
-          <span class="kpi-label">Taxa de Conversão</span>
-          <span class="kpi-icon"><svg viewBox="0 0 20 20" fill="none"><path d="M3 14l4.5-4.5 3 3L17 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M13 5h4v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </div>
-        <div class="kpi-value skeleton" id="kpiConv">00%</div>
-        <div class="kpi-foot" id="kpiConvFoot">finalizados / total</div>
-      </div>
-    </div>
-
-    <!-- Gráficos -->
-    <div class="charts-grid">
-      <!-- Evolução temporal -->
-      <div class="chart-card chart-card--span8">
-        <div class="chart-head">
-          <div>
-            <div class="chart-title">Evolução de Formulários</div>
-            <div class="chart-desc" id="trendDesc">Formulários criados ao longo do tempo</div>
+        <div class="dash-filters">
+          <div class="dash-filter-presets" id="filterPresets">
+            <button type="button" class="preset-btn" data-preset="7">7d</button>
+            <button type="button" class="preset-btn" data-preset="30">30d</button>
+            <button type="button" class="preset-btn" data-preset="90">90d</button>
+            <button type="button" class="preset-btn" data-preset="year">Ano</button>
+            <button type="button" class="preset-btn active" data-preset="all">Tudo</button>
           </div>
-        </div>
-        <div class="chart-canvas-wrap chart-canvas-wrap--tall">
-          <canvas id="chartTrend"></canvas>
-        </div>
-      </div>
-
-      <!-- Distribuição por status -->
-      <div class="chart-card chart-card--span4">
-        <div class="chart-head">
-          <div>
-            <div class="chart-title">Distribuição por Status</div>
-            <div class="chart-desc">Onde estão os formulários hoje</div>
+          <div class="dash-filter-range">
+            <label class="sr-only" for="filterStart">Data inicial</label>
+            <input type="date" id="filterStart" class="input" aria-label="Data inicial" />
+            <span class="dash-filter-sep">até</span>
+            <label class="sr-only" for="filterEnd">Data final</label>
+            <input type="date" id="filterEnd" class="input" aria-label="Data final" />
+            <button type="button" class="btn btn--primary btn--sm" id="filterApply">Aplicar</button>
           </div>
-        </div>
-        <div class="chart-canvas-wrap">
-          <canvas id="chartStatus"></canvas>
-        </div>
-        <div class="chart-legend" id="statusLegend"></div>
-      </div>
-
-      <!-- Funil de conversão -->
-      <div class="chart-card chart-card--span6">
-        <div class="chart-head">
-          <div>
-            <div class="chart-title">Funil de Conversão</div>
-            <div class="chart-desc">Avanço dos formulários pelas etapas de aprovação</div>
-          </div>
-        </div>
-        <div class="funnel" id="funnel"></div>
-      </div>
-
-      <!-- Desempenho por consultor -->
-      <div class="chart-card chart-card--span6">
-        <div class="chart-head">
-          <div>
-            <div class="chart-title">Volume por Consultor</div>
-            <div class="chart-desc">Formulários registrados por cada consultor</div>
-          </div>
-        </div>
-        <div class="chart-canvas-wrap">
-          <canvas id="chartConsultants"></canvas>
-        </div>
-      </div>
-
-      <!-- Mix de planos -->
-      <div class="chart-card chart-card--span6">
-        <div class="chart-head">
-          <div>
-            <div class="chart-title">Mix de Planos</div>
-            <div class="chart-desc">Distribuição por tipo de plano</div>
-          </div>
-        </div>
-        <div class="chart-canvas-wrap">
-          <canvas id="chartPlans"></canvas>
-        </div>
-      </div>
-
-      <!-- Tipo de contrato -->
-      <div class="chart-card chart-card--span6">
-        <div class="chart-head">
-          <div>
-            <div class="chart-title">Tipo de Contrato &amp; Inclusão</div>
-            <div class="chart-desc">Composição das adesões do período</div>
-          </div>
-        </div>
-        <div class="chart-canvas-wrap">
-          <canvas id="chartContract"></canvas>
         </div>
       </div>
     </div>
 
-    <!-- Mini indicadores -->
-    <div class="mini-grid" style="margin-bottom: 1.5rem;">
-      <div class="mini-tile">
-        <span class="mini-icon mini-icon--teal"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <div class="mini-body">
-          <span class="mini-value" id="miniPort">—</span>
-          <span class="mini-label">Com portabilidade</span>
-        </div>
-      </div>
-      <div class="mini-tile">
-        <span class="mini-icon mini-icon--amber"><svg viewBox="0 0 20 20" fill="none"><path d="M6 14L14 6M7.5 7.5h.01M12.5 12.5h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.4"/></svg></span>
-        <div class="mini-body">
-          <span class="mini-value" id="miniDisc">—</span>
-          <span class="mini-label">Com desconto concedido</span>
-        </div>
-      </div>
-      <div class="mini-tile">
-        <span class="mini-icon mini-icon--blue"><svg viewBox="0 0 20 20" fill="none"><rect x="5" y="2.5" width="10" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8.5 15h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
-        <div class="mini-body">
-          <span class="mini-value" id="miniPa">—</span>
-          <span class="mini-label">Via PA Digital</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabelas -->
-    <div class="charts-grid">
-      <!-- Ranking de consultores -->
-      <div class="chart-card chart-card--span7">
-        <div class="chart-head">
-          <div>
-            <div class="chart-title">Ranking de Consultores</div>
-            <div class="chart-desc">Volume, conversão e situação dos formulários</div>
-          </div>
-        </div>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Consultor</th>
-                <th class="num-cell">Total</th>
-                <th class="num-cell">Finalizados</th>
-                <th class="num-cell">Andamento</th>
-                <th>Conversão</th>
-              </tr>
-            </thead>
-            <tbody id="rankBody">
-              <tr class="table-empty-row"><td colspan="5">Carregando...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Formulários recentes -->
-      <div class="chart-card chart-card--span5">
-        <div class="chart-head">
-          <div>
-            <div class="chart-title">Formulários Recentes</div>
-            <div class="chart-desc">Últimos registros do período</div>
-          </div>
-          <a href="{{ url_for('bp_render_forms.render_fichas') }}" class="table-card-link">Ver todos</a>
-        </div>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Beneficiário</th>
-                <th>Data</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="recentBody">
-              <tr class="table-empty-row"><td colspan="3">Carregando...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    <!-- Painéis das abas -->
+    <section class="dash-panel" data-tab="visao-geral" id="panel-visao-geral" role="tabpanel" aria-labelledby="tab-visao-geral"></section>
+    <section class="dash-panel" data-tab="vendas" id="panel-vendas" role="tabpanel" aria-labelledby="tab-vendas" hidden></section>
+    <section class="dash-panel" data-tab="pipeline" id="panel-pipeline" role="tabpanel" aria-labelledby="tab-pipeline" hidden></section>
+    <section class="dash-panel" data-tab="entrevistas" id="panel-entrevistas" role="tabpanel" aria-labelledby="tab-entrevistas" hidden></section>
+    <section class="dash-panel" data-tab="colaboradores" id="panel-colaboradores" role="tabpanel" aria-labelledby="tab-colaboradores" hidden></section>
 
   </main>
 

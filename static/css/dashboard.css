@@ -1,516 +1,615 @@
-/* =============================================
-   dashboard.css — Painel gerencial de indicadores
-   ============================================= */
+/* ============================================================
+   Dashboard — layout em abas, largura total e densidade alta.
 
-/* ---------- Container mais largo que o padrão ---------- */
+   home.css define .main-content com max-width 960px e padding 2.5rem 2rem.
+   Aqui o painel ocupa a janela inteira: com 5 abas e muitos cards por aba,
+   margem larga e espaçamento generoso custam dados visíveis por tela.
+   ============================================================ */
+
 .dashboard-main {
-  max-width: 1320px;
+    max-width: none;
+    padding: 0 1.25rem 1.5rem;
 }
 
-/* ---------- Cabeçalho da página ---------- */
+/* ============================================================
+   Barra fixa: cabeçalho, abas e filtro de período
+   ============================================================ */
+
+/* gruda logo abaixo da navbar (que é sticky, 62px, z-index 100) */
+.dash-topbar {
+    position: sticky;
+    top: var(--navbar-height);
+    z-index: 90;
+    background: var(--color-bg-page);
+    padding: 1rem 0 0.6rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
 .dash-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
 }
 
 .dash-header-title {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--color-text);
-  line-height: 1.15;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.2;
 }
 
 .dash-header-sub {
-  font-size: 0.95rem;
-  color: var(--color-text-muted);
-  margin-top: 2px;
+    font-size: 12.5px;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+}
+
+.dash-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .dash-updated {
-  font-size: 12px;
-  color: var(--color-text-hint);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    color: var(--color-text-muted);
+    white-space: nowrap;
 }
 
 .dash-updated::before {
-  content: '';
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--green-500);
-  box-shadow: 0 0 0 3px var(--green-100);
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green-500);
+    box-shadow: 0 0 0 3px var(--green-50);
 }
 
-/* ---------- Barra de filtros ---------- */
+.dash-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* --- abas --- */
+
+.dash-tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 3px;
+}
+
+.dash-tab {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    padding: 6px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition);
+}
+
+.dash-tab:hover {
+    color: var(--color-text);
+}
+
+.dash-tab.is-active {
+    background: var(--color-bg-surface);
+    color: var(--green-700);
+    font-weight: 600;
+    box-shadow: var(--shadow-xs);
+}
+
+.dash-tab:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 1px;
+}
+
+/* --- filtro de período --- */
+
 .dash-filters {
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-xs);
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .dash-filter-presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+    display: flex;
+    gap: 2px;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 3px;
 }
 
 .preset-btn {
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--color-text-muted);
-  background: var(--color-bg-secondary);
-  border: 1.5px solid var(--color-border);
-  border-radius: 99px;
-  padding: 6px 14px;
-  cursor: pointer;
-  transition: background var(--transition), color var(--transition), border-color var(--transition);
-  white-space: nowrap;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    padding: 5px 11px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: var(--transition);
 }
 
 .preset-btn:hover {
-  background: var(--green-50);
-  color: var(--green-700);
-  border-color: var(--green-200);
+    color: var(--color-text);
 }
 
 .preset-btn.active {
-  background: var(--color-brand);
-  color: #fff;
-  border-color: var(--color-brand);
+    background: var(--color-bg-surface);
+    color: var(--green-700);
+    font-weight: 600;
+    box-shadow: var(--shadow-xs);
 }
 
 .dash-filter-range {
-  display: flex;
-  align-items: flex-end;
-  gap: 10px;
-  margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.dash-filter-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.dash-filter-range .input {
+    width: auto;
+    padding: 5px 9px;
+    font-size: 12.5px;
 }
 
-.dash-filter-field label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-text-muted);
+.dash-filter-sep {
+    font-size: 12px;
+    color: var(--color-text-hint);
 }
 
-.dash-filter-field .input {
-  padding: 8px 11px;
-  font-size: 13px;
-  min-width: 148px;
+/* ============================================================
+   Painel da aba
+   ============================================================ */
+
+.dash-block-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--color-text-muted);
+    margin: 1.1rem 0 0.5rem;
 }
 
-.dash-filter-apply {
-  padding: 9px 18px;
-  font-size: 13px;
+.dash-panel > .dash-block-title:first-child {
+    margin-top: 0;
 }
 
-/* ---------- Grid de KPIs ---------- */
+/* ============================================================
+   KPIs
+   ============================================================ */
+
 .kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .kpi-card {
-  position: relative;
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-xs);
-  padding: 1.15rem 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow: hidden;
-  transition: box-shadow var(--transition), transform var(--transition);
+    position: relative;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xs);
+    padding: 0.7rem 0.85rem 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+    --kpi-accent: var(--green-500);
 }
 
-.kpi-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
+/* barra lateral de acento — a cor carrega o significado da métrica */
 .kpi-card::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--kpi-accent, var(--green-500));
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--kpi-accent);
 }
 
-.kpi-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
+.kpi-card--total { --kpi-accent: var(--blue-500); }
+.kpi-card--done { --kpi-accent: var(--green-500); }
+.kpi-card--active { --kpi-accent: var(--amber-500); }
+.kpi-card--lost { --kpi-accent: var(--red-500); }
+.kpi-card--conv { --kpi-accent: var(--purple-500); }
+.kpi-card--neutral { --kpi-accent: var(--gray-300); }
 
 .kpi-label {
-  font-size: 11.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
 }
-
-.kpi-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  background: var(--kpi-icon-bg, var(--green-100));
-  color: var(--kpi-accent, var(--green-600));
-}
-
-.kpi-icon svg { width: 18px; height: 18px; }
 
 .kpi-value {
-  font-size: 30px;
-  font-weight: 700;
-  color: var(--color-text);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--gray-900);
+    font-variant-numeric: tabular-nums;
 }
 
 .kpi-foot {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12.5px;
-  color: var(--color-text-muted);
+    font-size: 11px;
+    color: var(--color-text-hint);
 }
 
-.kpi-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 99px;
-}
+/* ============================================================
+   Grid de cards (12 colunas)
+   ============================================================ */
 
-.kpi-badge--green { background: var(--green-100); color: var(--green-700); }
-.kpi-badge--amber { background: var(--amber-100); color: var(--amber-700); }
-.kpi-badge--red   { background: var(--red-100);   color: var(--red-700); }
-.kpi-badge--gray  { background: var(--gray-100);  color: var(--gray-700); }
-
-/* accents por card */
-.kpi-card--total  { --kpi-accent: var(--blue-500);  --kpi-icon-bg: var(--blue-100); }
-.kpi-card--total  .kpi-icon { color: var(--blue-600); }
-.kpi-card--done   { --kpi-accent: var(--green-500);  --kpi-icon-bg: var(--green-100); }
-.kpi-card--active { --kpi-accent: var(--amber-500);  --kpi-icon-bg: var(--amber-100); }
-.kpi-card--active .kpi-icon { color: var(--amber-600); }
-.kpi-card--lost   { --kpi-accent: var(--red-500);    --kpi-icon-bg: var(--red-100); }
-.kpi-card--lost   .kpi-icon { color: var(--red-500); }
-.kpi-card--conv   { --kpi-accent: var(--purple-500); --kpi-icon-bg: var(--purple-100); }
-.kpi-card--conv   .kpi-icon { color: var(--purple-700); }
-
-/* ---------- Grid de gráficos ---------- */
 .charts-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .chart-card {
-  background: var(--color-bg-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-xs);
-  padding: 1.25rem 1.35rem 1.35rem;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xs);
+    padding: 0.75rem 0.9rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* deixa o canvas encolher junto com a coluna */
 }
 
-.chart-card--span8 { grid-column: span 8; }
-.chart-card--span7 { grid-column: span 7; }
-.chart-card--span6 { grid-column: span 6; }
-.chart-card--span5 { grid-column: span 5; }
+.chart-card--span3 { grid-column: span 3; }
 .chart-card--span4 { grid-column: span 4; }
+.chart-card--span5 { grid-column: span 5; }
+.chart-card--span6 { grid-column: span 6; }
+.chart-card--span7 { grid-column: span 7; }
+.chart-card--span8 { grid-column: span 8; }
+.chart-card--span9 { grid-column: span 9; }
 .chart-card--span12 { grid-column: span 12; }
 
 .chart-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
 }
 
 .chart-title {
-  font-size: 14.5px;
-  font-weight: 600;
-  color: var(--color-text);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-800);
+    line-height: 1.3;
 }
 
 .chart-desc {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  margin-top: 2px;
+    font-size: 11px;
+    color: var(--color-text-hint);
+    margin-top: 1px;
 }
 
 .chart-canvas-wrap {
-  position: relative;
-  flex: 1;
-  min-height: 260px;
+    position: relative;
+    flex: 1;
+    min-height: 200px;
 }
 
-.chart-canvas-wrap--tall { min-height: 300px; }
+.chart-canvas-wrap--tall {
+    min-height: 250px;
+}
 
-/* ---------- Funil de conversão (HTML puro) ---------- */
+.chart-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12.5px;
+    color: var(--color-text-hint);
+}
+
+/* display:flex acima vence o [hidden] do user agent — sem esta regra a mensagem de
+   vazio fica visível por cima de um gráfico que tem dados */
+.chart-empty[hidden] {
+    display: none;
+}
+
+.card-body {
+    flex: 1;
+}
+
+/* tabelas dentro do painel: home.css usa 13px/1.4rem, largo demais aqui */
+.dashboard-main thead th {
+    padding: 7px 0.85rem;
+    font-size: 10.5px;
+}
+
+.dashboard-main tbody td {
+    padding: 8px 0.85rem;
+    font-size: 12.5px;
+}
+
+.dashboard-main .table-empty-row td {
+    padding: 1.5rem;
+    font-size: 12.5px;
+}
+
+.num-cell {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   Funil
+   ============================================================ */
+
 .funnel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 4px;
-}
-
-.funnel-row {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
 }
 
 .funnel-row-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 3px;
 }
 
 .funnel-stage {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--color-text);
+    font-size: 12px;
+    color: var(--color-text);
 }
 
 .funnel-meta {
-  font-size: 12.5px;
-  color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
+    font-size: 11.5px;
+    color: var(--color-text-muted);
+    white-space: nowrap;
 }
 
 .funnel-meta strong {
-  color: var(--color-text);
-  font-weight: 700;
-  font-size: 14px;
+    color: var(--gray-900);
+    font-variant-numeric: tabular-nums;
 }
 
 .funnel-track {
-  height: 22px;
-  background: var(--gray-100);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
+    height: 8px;
+    background: var(--color-bg-secondary);
+    border-radius: 99px;
+    overflow: hidden;
 }
 
 .funnel-fill {
-  height: 100%;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, var(--green-600), var(--green-400));
-  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  min-width: 2px;
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-500), var(--green-600));
+    border-radius: 99px;
+    transition: width 0.4s ease;
 }
 
 .funnel-drop {
-  align-self: flex-end;
-  font-size: 11px;
-  color: var(--red-500);
-  font-weight: 500;
+    display: inline-block;
+    margin-top: 3px;
+    font-size: 10.5px;
+    color: var(--red-500);
 }
 
-/* ---------- Mini stat tiles ---------- */
+/* ============================================================
+   Tiles compactos
+   ============================================================ */
+
 .mini-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
 }
 
 .mini-tile {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 1rem 1.15rem;
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+    padding: 0.55rem 0.7rem;
 }
-
-.mini-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.mini-icon svg { width: 20px; height: 20px; }
-.mini-icon--teal  { background: var(--teal-100);  color: var(--teal-700); }
-.mini-icon--blue  { background: var(--blue-100);  color: var(--blue-600); }
-.mini-icon--amber { background: var(--amber-100); color: var(--amber-600); }
-
-.mini-body { display: flex; flex-direction: column; }
 
 .mini-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--color-text);
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
+    display: block;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gray-900);
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
 }
 
 .mini-label {
-  font-size: 12px;
-  color: var(--color-text-muted);
+    display: block;
+    font-size: 11px;
+    color: var(--color-text-muted);
+    margin-top: 1px;
 }
 
-/* ---------- Legenda customizada (status) ---------- */
+/* ============================================================
+   Legenda e listas de barras
+   ============================================================ */
+
 .chart-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  margin-top: 1rem;
-  padding-top: 0.85rem;
-  border-top: 1px solid var(--color-border-light);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    margin-top: 0.6rem;
 }
 
 .legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-.legend-swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    color: var(--color-text-muted);
 }
 
 .legend-item strong {
-  color: var(--color-text);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+    color: var(--gray-800);
+    font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Ranking / tabelas ---------- */
+.legend-swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+/* lista de barras em HTML — cabe muito mais categoria por altura que um gráfico */
+.bar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.bar-row {
+    display: grid;
+    grid-template-columns: minmax(90px, 40%) 1fr auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.bar-label {
+    font-size: 11.5px;
+    color: var(--color-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bar-track {
+    height: 7px;
+    background: var(--color-bg-secondary);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    display: block;
+    height: 100%;
+    background: var(--green-500);
+    border-radius: 99px;
+}
+
+.bar-value {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--gray-800);
+    font-variant-numeric: tabular-nums;
+    min-width: 28px;
+    text-align: right;
+}
+
+/* ============================================================
+   Tabelas: ranking
+   ============================================================ */
+
 .rank-name {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 7px;
 }
 
 .rank-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--green-700);
-  background: var(--green-100);
-  flex-shrink: 0;
-  text-transform: uppercase;
-}
-
-.rank-bar-cell { min-width: 160px; }
-
-.rank-bar {
-  height: 8px;
-  border-radius: 99px;
-  background: var(--gray-100);
-  overflow: hidden;
-  margin-top: 4px;
-}
-
-.rank-bar-fill {
-  height: 100%;
-  border-radius: 99px;
-  background: linear-gradient(90deg, var(--green-600), var(--green-400));
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--green-50);
+    color: var(--green-700);
+    font-size: 9.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .conv-tag {
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
 }
 
-.num-cell { font-variant-numeric: tabular-nums; text-align: center; }
+/* ============================================================
+   Estados
+   ============================================================ */
 
-/* estado de carregamento / vazio */
-.dash-loading,
 .dash-empty {
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: 14px;
-  padding: 3rem 1.5rem;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--color-text-hint);
 }
 
-.skeleton {
-  color: transparent !important;
-  background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-200) 37%, var(--gray-100) 63%);
-  background-size: 400% 100%;
-  border-radius: var(--radius-sm);
-  animation: shimmer 1.4s ease infinite;
+/* ============================================================
+   Responsivo
+   ============================================================ */
+
+@media (max-width: 1400px) {
+    .chart-card--span3 { grid-column: span 6; }
+    .chart-card--span5,
+    .chart-card--span7,
+    .chart-card--span8,
+    .chart-card--span9 { grid-column: span 12; }
 }
 
-@keyframes shimmer {
-  0%   { background-position: 100% 50%; }
-  100% { background-position: 0 50%; }
+@media (max-width: 900px) {
+    .dashboard-main { padding: 0 1rem 1.25rem; }
+
+    .chart-card--span3,
+    .chart-card--span4,
+    .chart-card--span5,
+    .chart-card--span6,
+    .chart-card--span7,
+    .chart-card--span8,
+    .chart-card--span9 { grid-column: span 12; }
+
+    .dash-controls { align-items: stretch; }
+
+    .dash-tabs,
+    .dash-filter-presets {
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .dash-tabs::-webkit-scrollbar,
+    .dash-filter-presets::-webkit-scrollbar { display: none; }
 }
 
-/* ---------- Responsivo ---------- */
-@media (max-width: 1100px) {
-  .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .chart-card--span8,
-  .chart-card--span7,
-  .chart-card--span6,
-  .chart-card--span5,
-  .chart-card--span4 { grid-column: span 12; }
-}
+@media (max-width: 600px) {
+    .dashboard-main { padding: 0 0.75rem 1rem; }
 
-@media (max-width: 720px) {
-  .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .mini-grid { grid-template-columns: 1fr; }
-  .dash-filters { flex-direction: column; align-items: stretch; }
-  .dash-filter-range { margin-left: 0; flex-wrap: wrap; }
-  .dash-filter-field .input { min-width: 0; flex: 1; }
-}
+    .dash-topbar { position: static; }
 
-@media (max-width: 480px) {
-  .kpi-grid { grid-template-columns: 1fr; }
+    .dash-header-title { font-size: 1.15rem; }
+
+    .dash-filter-range { width: 100%; }
+
+    .dash-filter-range .input { flex: 1; min-width: 0; }
+
+    .bar-row { grid-template-columns: minmax(70px, 45%) 1fr auto; }
 }
