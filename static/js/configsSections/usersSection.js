@@ -1,7 +1,8 @@
-import { fetchWithAuth } from "../utils/apiHelper.js";
+import { fetchWithAuth, getErrorMessage } from "../utils/apiHelper.js";
 import { formatCPF } from "../utils/detailsView.js";
 import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
-import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { escapeHtml } from "../utils/htmlEscape.js";
+import { setModalVisible, registerModalDismiss } from "../utils/modalControl.js";
 
 // mapeia role_name (vindo do backend) para o rótulo exibido e o variant da .pill
 const ROLE_LABELS = {
@@ -14,34 +15,12 @@ const ROLE_PILL_CLASSES = {
     employee: "pill--gray",
 };
 
-// HELPER PARA PEGAR AS MENSAGENS DE ERRO (Tratamento de Exceptions)
-async function getErrorMessage(response, fallback) {
-    const rawBody = await response.text();
-    try {
-        const json = JSON.parse(rawBody);
-        return json?.message || fallback;
-    } catch {
-        return rawBody || fallback;
-    }
-}
-
 function getRoleLabel(roleName) {
     return ROLE_LABELS[roleName] || (roleName || "—");
 }
 
 function getRolePillClass(roleName) {
     return ROLE_PILL_CLASSES[roleName] || "pill--gray";
-}
-
-// pequeno helper para não injetar HTML a partir de dados do backend sem escapar
-function escapeHtml(value) {
-    if (value == null) return "";
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
 }
 
 // aplica a máscara 000.000.000-00 conforme o usuário digita
@@ -111,7 +90,7 @@ async function loadRoles() {
 }
 
 // carrega os setores do backend e preenche os selects de setor (cadastro e edição)
-async function loadSectors() {
+export async function loadSectors() {
     const response = await fetchWithAuth("/entrevista-adesao/sectors");
 
     if (!response.ok) {
@@ -301,28 +280,6 @@ async function populateUsersTable() {
         console.log(error);
         tbody.innerHTML = `<tr class="forms-empty-row"><td colspan="5">Não foi possível carregar os usuários.</td></tr>`;
     }
-}
-
-// ---------- Controle dos modais ----------
-// Enquanto houver algum modal aberto o fundo não pode rolar. A trava é derivada do
-// estado real dos overlays (e não de um contador), então qualquer caminho de
-// fechamento — X, Cancelar, Esc ou clique fora — chega ao mesmo resultado.
-function syncBodyScrollLock() {
-    const anyOpen = [...document.querySelectorAll(".modal-overlay")].some(overlay => !overlay.hidden);
-    const root = document.documentElement;
-
-    if (anyOpen === root.classList.contains("modal-open")) return;
-
-    // mede a barra de rolagem ANTES de travar; depois de travar ela já sumiu
-    const scrollbarWidth = window.innerWidth - root.clientWidth;
-
-    root.classList.toggle("modal-open", anyOpen);
-    root.style.paddingRight = anyOpen && scrollbarWidth > 0 ? `${scrollbarWidth}px` : "";
-}
-
-function setModalVisible(overlayId, visible) {
-    document.getElementById(overlayId).hidden = !visible;
-    syncBodyScrollLock();
 }
 
 // ---------- Modal de cadastro ----------
@@ -625,19 +582,8 @@ export function initUsersSection() {
         }
     });
 
-    // fecha os modais ao clicar fora do conteúdo ou pressionar Esc
-    document.querySelectorAll(".modal-overlay").forEach(overlay => {
-        bindOverlayDismiss(overlay, () => {
-            overlay.hidden = true;
-            syncBodyScrollLock();
-        });
-    });
-
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-            closeCreateModal();
-            closeEditModal();
-            closeDeleteModal();
-        }
-    });
+    // fecha os modais desta seção ao clicar fora do conteúdo ou pressionar Esc
+    registerModalDismiss("createUserModalOverlay", closeCreateModal);
+    registerModalDismiss("editUserModalOverlay", closeEditModal);
+    registerModalDismiss("deleteUserModalOverlay", closeDeleteModal);
 }

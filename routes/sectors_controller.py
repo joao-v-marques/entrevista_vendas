@@ -88,4 +88,6 @@ def reactivate(sector_id):
             "message": str(e)
         }), 404
     except Exception as e:
-        raise Exception(str(e))
+        return jsonify({
+            "message": str(e)
+        }), 500

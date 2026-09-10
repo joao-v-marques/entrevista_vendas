@@ -1,9 +1,11 @@
 import { initUsersSection } from "./configsSections/usersSection.js";
+import { initSectorsSection } from "./configsSections/sectorsSection.js";
 
 // Cada seção da página registra aqui o seu inicializador. A chave é o data-section
 // usado tanto no botão da sidebar quanto no painel correspondente.
 const SECTION_INITIALIZERS = {
     usuarios: initUsersSection,
+    setores: initSectorsSection,
 };
 
 document.addEventListener("DOMContentLoaded", () => {

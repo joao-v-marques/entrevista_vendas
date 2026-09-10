@@ -126,7 +126,9 @@
 /* 1.5rem de padding lateral por célula (home.css) é caro demais numa tabela com
    coluna de identidade composta; 1.1rem mantém o respiro e devolve largura. */
 .users-table thead th,
-.users-table tbody td {
+.users-table tbody td,
+.sectors-table thead th,
+.sectors-table tbody td {
   padding: 12px 1.1rem;
 }
 
@@ -190,13 +192,15 @@
 }
 
 /* ---------- Cabeçalhos ordenáveis ---------- */
-.users-table th.is-sortable {
+.users-table th.is-sortable,
+.sectors-table th.is-sortable {
   cursor: pointer;
   user-select: none;
   transition: color var(--transition), background var(--transition);
 }
 
-.users-table th.is-sortable:hover {
+.users-table th.is-sortable:hover,
+.sectors-table th.is-sortable:hover {
   color: var(--color-text);
   background: var(--gray-100);
 }
@@ -215,12 +219,49 @@
 }
 
 .users-table th.is-sorted-asc .sort-indicator,
-.users-table th.is-sorted-desc .sort-indicator {
+.users-table th.is-sorted-desc .sort-indicator,
+.sectors-table th.is-sorted-asc .sort-indicator,
+.sectors-table th.is-sorted-desc .sort-indicator {
   color: var(--color-brand);
 }
 
 .users-table th.is-sorted-asc .sort-indicator::before  { content: '\25B2'; } /* ▲ */
 .users-table th.is-sorted-desc .sort-indicator::before { content: '\25BC'; } /* ▼ */
+.sectors-table th.is-sorted-asc .sort-indicator::before  { content: '\25B2'; }
+.sectors-table th.is-sorted-desc .sort-indicator::before { content: '\25BC'; }
+
+/* ---------- Tabela de setores ---------- */
+/* Só três colunas e nenhuma delas larga: o min-width da tabela de usuários
+   forçaria scroll horizontal à toa. */
+.sectors-table {
+  min-width: 420px;
+}
+
+.sectors-table .sectors-col-sector { width: auto; }
+.sectors-table .status-column      { width: 120px; }
+.sectors-table .actions-column     { width: 110px; }
+
+/* nome + #id logo abaixo, no mesmo desenho da coluna de identidade do usuário */
+.sector-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.sector-cell-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.sector-cell-meta {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
 
 /* =============================================
    3. Modais (regras genéricas herdadas de users.css)
@@ -314,6 +355,17 @@ html.modal-open {
   }
 
   .users-table {
+    min-width: 0;
+  }
+
+  /* mesma armadilha do nth-child aqui: na tabela de 3 colunas o seletor de
+     home.css apagaria a coluna de Ações */
+  .sectors-table th:nth-child(n),
+  .sectors-table td:nth-child(n) {
+    display: table-cell;
+  }
+
+  .sectors-table {
     min-width: 0;
   }
 

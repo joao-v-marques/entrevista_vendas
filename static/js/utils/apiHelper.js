@@ -23,3 +23,15 @@ export async function getLoggedUser() {
         console.log(error);
     }
 }
+
+// Extrai a mensagem de erro de uma resposta: o backend responde {"message": "..."}
+// nos erros tratados, mas um 500 não tratado devolve HTML — daí o fallback.
+export async function getErrorMessage(response, fallback) {
+    const rawBody = await response.text();
+    try {
+        const json = JSON.parse(rawBody);
+        return json?.message || fallback;
+    } catch {
+        return rawBody || fallback;
+    }
+}
