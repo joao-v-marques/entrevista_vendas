@@ -181,7 +181,7 @@
       <h1 class="hero-title">Formulários de Adesão<br/><em>Unimed São Sebastião do Paraíso</em></h1>
       <p class="hero-desc">Gerencie as formulários de beneficiários de forma ágil,<br/>do preenchimento ao envio final.</p>
       <div class="hero-actions">
-        <a href="{{ url_for('bp_render_new_form.render_nova_ficha') }}" class="btn btn--primary">
+        <a href="{{ url_for('bp_render_new_form.render_nova_ficha') }}" class="btn btn--primary" data-page="nova">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           Inserir nova ficha
         </a>
@@ -223,7 +223,7 @@
       <h2 class="section-label">Acesso rápido</h2>
       <div class="quick-grid">
 
-        <a href="{{ url_for('bp_render_new_form.render_nova_ficha') }}" class="quick-card quick-card--green">
+        <a href="{{ url_for('bp_render_new_form.render_nova_ficha') }}" class="quick-card quick-card--green" data-page="nova">
           <div class="quick-card-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 4v14M4 11h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </div>
@@ -245,7 +245,7 @@
           <span class="quick-card-tag">Acompanhar</span>
         </a>
 
-        <a href="{{ url_for('bp_render_dashboard.render_dashboard') }}" class="quick-card quick-card--blue">
+        <a href="{{ url_for('bp_render_dashboard.render_dashboard') }}" class="quick-card quick-card--blue" data-page="dashboard">
           <div class="quick-card-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 19V3M3 19h16M7 15V10M11 15V6M15 15V8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>

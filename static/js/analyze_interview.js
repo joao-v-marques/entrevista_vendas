@@ -1,4 +1,4 @@
-import { fetchWithAuth } from "./utils/apiHelper.js";
+import { fetchWithAuth, getLoggedUser } from "./utils/apiHelper.js";
 import { formatDateTimeToBR } from "./utils/dateUtils.js";
 import { escapeHtml, formatCPF, formatPhone, formatBeneficiaryType } from "./utils/detailsView.js";
 import { openRescheduleInterviewModal } from "./scheduleModals/rescheduleInterviewModal.js";
@@ -9,6 +9,13 @@ const pendingFormsById = new Map();
 
 // guarda a lista completa carregada do backend; os filtros atuam sobre ela sem novo request
 let allInterviews = [];
+
+// quem analisa a entrevista — espelha o @role_required de
+// PUT /application-form-interviews. Vendas apenas acompanha a fila desta tela.
+const ROLES_ANALYZE = ["administrator", "director", "interview_employee"];
+
+// resolvido antes da primeira renderização, já que os filtros re-renderizam as linhas
+let canAnalyze = false;
 
 // esta é a única listagem em que a data que importa está no futuro: a entrevista não pode
 // vencer. Por isso a ordem padrão é crescente pela data da entrevista — o que já venceu no
@@ -329,6 +336,15 @@ function renderAnalyzeInterviewTable(forms, filters) {
 
         const cpf = form.beneficiary_cpf ? formatCPF(form.beneficiary_cpf) : "";
         const phone = form.beneficiary_phone ? formatPhone(form.beneficiary_phone) : "";
+
+        // sem permissão para analisar, a role só acompanha a fila
+        const rowActions = canAnalyze ? `
+                    <button class="icon-btn" title="Reagendar Entrevista" aria-label="Reagendar Entrevista" data-reschedule-form-id="${form.id}">
+                        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="12" height="11" rx="1.3" stroke="currentColor" stroke-width="1.4"/><path d="M2 6h12" stroke="currentColor" stroke-width="1.4"/><path d="M5 1.5v2M11 1.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M8 8.3a2 2 0 1 0 1.9 1.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9.7 8.2v1.5H8.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button class="icon-btn icon-btn--primary" title="Analisar Entrevista" aria-label="Analisar Entrevista" data-analyze-form-id="${form.id}">
+                        <svg viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 10l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    </button>` : "";
         const interviewDate = form.interview_date ? formatDateTimeToBR(form.interview_date) : "—";
 
         trPendingForm.innerHTML = `
@@ -359,14 +375,7 @@ function renderAnalyzeInterviewTable(forms, filters) {
             <td class="forms-cell-consultant">${escapeHtml(form.consultant_name)}</td>
             <td class="forms-cell-flags">${renderFormTags(form)}</td>
             <td class="actions-column">
-                <div class="table-actions">
-                    <button class="icon-btn" title="Reagendar Entrevista" aria-label="Reagendar Entrevista" data-reschedule-form-id="${form.id}">
-                        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2.5" width="12" height="11" rx="1.3" stroke="currentColor" stroke-width="1.4"/><path d="M2 6h12" stroke="currentColor" stroke-width="1.4"/><path d="M5 1.5v2M11 1.5v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M8 8.3a2 2 0 1 0 1.9 1.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9.7 8.2v1.5H8.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    <button class="icon-btn icon-btn--primary" title="Analisar Entrevista" aria-label="Analisar Entrevista" data-analyze-form-id="${form.id}">
-                        <svg viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10 10l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-                    </button>
-                </div>
+                <div class="table-actions">${rowActions}</div>
             </td>
         `;
 
@@ -429,13 +438,19 @@ export async function populateAnalyzeInterviewTable() {
 
 // abre o modal de análise a partir do id da linha/botão, reaproveitando o cache da listagem
 function openAnalyzeById(applicationFormId) {
+    // barra também o clique na linha, que abre o mesmo modal do botão escondido
+    if (!canAnalyze) return;
+
     const applicationForm = pendingFormsById.get(Number(applicationFormId));
     if (!applicationForm) return;
 
     openAnalyzeInterviewModal(applicationForm);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    const user = await getLoggedUser();
+    canAnalyze = ROLES_ANALYZE.includes(user?.role_name);
+
     populateAnalyzeInterviewTable();
 
     // ---------- Filtros ----------

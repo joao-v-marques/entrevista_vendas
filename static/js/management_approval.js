@@ -1,4 +1,4 @@
-import { fetchWithAuth } from "./utils/apiHelper.js";
+import { fetchWithAuth, getLoggedUser } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
 import { escapeHtml, formatCPF } from "./utils/detailsView.js";
 import {
@@ -18,6 +18,13 @@ const pendingFormsById = new Map();
 // guarda a lista completa carregada do backend; os filtros atuam sobre ela sem novo request.
 // Cada item é uma linha { form, qualify_interview }.
 let allRows = [];
+
+// quem aprova na gerência — espelha o @role_required de
+// POST /application_form_management. Vendas apenas acompanha a fila.
+const ROLES_ANALYZE = ["administrator", "director"];
+
+// resolvido antes da primeira renderização, já que os filtros re-renderizam as linhas
+let canAnalyze = false;
 
 // é uma fila de trabalho: a ficha que está esperando há mais tempo aparece primeiro
 let currentSort = { key: "date", dir: "asc" };
@@ -357,6 +364,12 @@ function renderManagementTable(rows, filters) {
 
         const cpf = form.beneficiary_cpf ? formatCPF(form.beneficiary_cpf) : "";
         const days = getDaysWaiting(form);
+
+        // sem permissão para analisar, a role só acompanha a fila
+        const analyzeButton = canAnalyze ? `
+                    <button class="icon-btn icon-btn--primary" title="Realizar Análise" aria-label="Realizar Análise" data-form-id="${form.id}">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>` : "";
         const isAging = days !== null && days > AGING_THRESHOLD_DAYS;
 
         trPendingForm.innerHTML = `
@@ -378,11 +391,7 @@ function renderManagementTable(rows, filters) {
             </td>
             <td class="forms-cell-flags">${renderFormTags(form)}</td>
             <td class="actions-column">
-                <div class="table-actions">
-                    <button class="icon-btn icon-btn--primary" title="Realizar Análise" aria-label="Realizar Análise" data-form-id="${form.id}">
-                        <svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                </div>
+                <div class="table-actions">${analyzeButton}</div>
             </td>
         `;
 
@@ -445,13 +454,19 @@ export async function populateManagementApproveTable() {
 
 // abre o modal de análise a partir do id da linha/botão, reaproveitando o cache da listagem
 function openAnalyzeById(applicationFormId) {
+    // barra também o clique na linha, que abre o mesmo modal do botão escondido
+    if (!canAnalyze) return;
+
     const applicationForm = pendingFormsById.get(Number(applicationFormId));
     if (!applicationForm) return;
 
     openAnalyzeManagementModal(applicationForm);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    const user = await getLoggedUser();
+    canAnalyze = ROLES_ANALYZE.includes(user?.role_name);
+
     populateManagementApproveTable();
 
     // ---------- Filtros ----------

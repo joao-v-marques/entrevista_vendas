@@ -1,4 +1,4 @@
-import { fetchWithAuth } from "./utils/apiHelper.js";
+import { fetchWithAuth, getLoggedUser } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
 import { escapeHtml, formatCPF } from "./utils/detailsView.js";
 import { openViewFormModal } from "./formsModals/viewFormModal.js";
@@ -6,6 +6,13 @@ import { getStatusPillClass } from "./utils/statusPill.js";
 
 // guarda a lista completa carregada do backend; os filtros atuam sobre ela sem novo request
 let allForms = [];
+
+// quem finaliza o cadastro no backoffice — espelha o @role_required de
+// POST /application-forms/<id>/finalize. Financeiro e Entrevistas só visualizam e baixam.
+const ROLES_FINALIZE = ["administrator", "director", "sales_employee"];
+
+// resolvido antes da primeira renderização, já que os filtros re-renderizam as linhas
+let canFinalize = false;
 
 // ordenação atual da tabela: a mais recente primeiro, que é o que se espera de uma
 // listagem de fichas. O desempate cai no id, que segue a ordem de inclusão.
@@ -200,8 +207,9 @@ function renderFormsTable(forms, filters) {
         trForms.dataset.id = form.id;
         trForms.tabIndex = 0;
 
-        // botão exibido apenas quando o formulário está aguardando cadastro no Backoffice (status 5)
-        const finalizeButton = form.form_status_id === 5 ? `
+        // botão exibido apenas quando o formulário está aguardando cadastro no Backoffice
+        // (status 5) e a role do usuário permite finalizar
+        const finalizeButton = (form.form_status_id === 5 && canFinalize) ? `
                     <button class="icon-btn icon-btn--primary btn-finalize" data-id="${form.id}" title="Finalizar Cadastro" aria-label="Finalizar Cadastro">
                         <svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </button>` : "";
@@ -351,7 +359,10 @@ async function finalizeRegistration(applicationFormId, button) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    const user = await getLoggedUser();
+    canFinalize = ROLES_FINALIZE.includes(user?.role_name);
+
     populateFormsTable();
 
     // ---------- Filtros ----------

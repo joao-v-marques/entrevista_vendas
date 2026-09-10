@@ -65,6 +65,14 @@
   gap: 1.25rem;
 }
 
+/* Os itens do menu só podem aparecer depois que o navbar.js souber a role do
+   usuário e esconder o que ela não acessa; sem isso, um item proibido pisca na
+   tela antes do /me responder. O navbar.js marca .is-ready quando termina. */
+.navbar-right:not(.is-ready) .navbar-links,
+.navbar-right:not(.is-ready) .navbar-user {
+  visibility: hidden;
+}
+
 /* ---------- Links ---------- */
 .navbar-links {
   display: flex;

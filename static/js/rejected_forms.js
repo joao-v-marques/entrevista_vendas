@@ -1,4 +1,4 @@
-import { fetchWithAuth } from "./utils/apiHelper.js";
+import { fetchWithAuth, getLoggedUser } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
 import { escapeHtml, formatCPF, formatBeneficiaryType } from "./utils/detailsView.js";
 import { openCloseNegotiationModal } from "./rejectedFormsModals/closeNegotiationModal.js";
@@ -6,6 +6,13 @@ import { openRequestReanalysisModal } from "./rejectedFormsModals/requestReanaly
 
 // guarda a lista completa carregada do backend; os filtros atuam sobre ela sem novo request
 let allRejectedForms = [];
+
+// quem pede reanálise ou encerra a negociação é o consultor de vendas, conforme os
+// status 8/10/12 da V1__form_status.sql. O setor que reprovou apenas acompanha.
+const ROLES_NEGOTIATION = ["administrator", "director", "sales_employee"];
+
+// resolvido antes da primeira renderização, já que os filtros re-renderizam as linhas
+let canActOnNegotiation = false;
 
 // esta tela é uma fila de trabalho, e não um histórico: o que interessa primeiro é a ficha
 // que está esperando há mais tempo. Por isso abre em ordem crescente de data, ao contrário
@@ -255,6 +262,15 @@ function renderRejectedFormsTable(forms, filters) {
         const trRejected = document.createElement("tr");
 
         const cpf = form.beneficiary_cpf ? formatCPF(form.beneficiary_cpf) : "";
+
+        // sem permissão de ação, a role só acompanha a lista
+        const rowActions = canActOnNegotiation ? `
+                    <button class="icon-btn icon-btn--primary" title="Solicitar reanálise" aria-label="Solicitar reanálise" data-reanalysis-id="${form.id}">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M13.5 8A5.5 5.5 0 1 1 11 3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M11 1v3h-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button class="icon-btn icon-btn--danger" title="Encerrar negociação" aria-label="Encerrar negociação" data-close-id="${form.id}">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                    </button>` : "";
         const days = getDaysWaiting(form);
         const isAging = days !== null && days > AGING_THRESHOLD_DAYS;
 
@@ -280,14 +296,7 @@ function renderRejectedFormsTable(forms, filters) {
             </td>
             <td class="forms-cell-flags">${renderFormTags(form)}</td>
             <td class="actions-column">
-                <div class="table-actions">
-                    <button class="icon-btn icon-btn--primary" title="Solicitar reanálise" aria-label="Solicitar reanálise" data-reanalysis-id="${form.id}">
-                        <svg viewBox="0 0 16 16" fill="none"><path d="M13.5 8A5.5 5.5 0 1 1 11 3.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M11 1v3h-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    <button class="icon-btn icon-btn--danger" title="Encerrar negociação" aria-label="Encerrar negociação" data-close-id="${form.id}">
-                        <svg viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                    </button>
-                </div>
+                <div class="table-actions">${rowActions}</div>
             </td>
         `;
 
@@ -346,6 +355,8 @@ export async function populateRejectedFormsTable() {
 
 // abre o modal de solicitar reanálise a partir do id da linha/botão
 function openReanalysisById(applicationFormId) {
+    if (!canActOnNegotiation) return;
+
     const applicationForm = allRejectedForms.find(f => f.id === applicationFormId);
     if (!applicationForm) return;
 
@@ -354,13 +365,18 @@ function openReanalysisById(applicationFormId) {
 
 // abre o modal de encerrar negociação a partir do id da linha/botão
 function openCloseNegotiationById(applicationFormId) {
+    if (!canActOnNegotiation) return;
+
     const applicationForm = allRejectedForms.find(f => f.id === applicationFormId);
     if (!applicationForm) return;
 
     openCloseNegotiationModal(applicationForm);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    const user = await getLoggedUser();
+    canActOnNegotiation = ROLES_NEGOTIATION.includes(user?.role_name);
+
     populateRejectedFormsTable();
 
     // ---------- Filtros ----------
