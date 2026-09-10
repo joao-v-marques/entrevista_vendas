@@ -142,8 +142,8 @@ class UserModel:
             conn, cursor = get_db_connection()
 
             sql = """
-                SELECT id, username, name, password_hash, email, cpf, role_id, sector_id, u.is_active
-                FROM users
+                SELECT u.id, u.username, u.name, u.password_hash, u.email, u.cpf, u.role_id, u.sector_id, u.is_active
+                FROM users u
                 WHERE cpf = %s
             """
             values = (cpf,)
