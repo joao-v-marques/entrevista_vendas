@@ -125,10 +125,8 @@
 
 /* 1.5rem de padding lateral por célula (home.css) é caro demais numa tabela com
    coluna de identidade composta; 1.1rem mantém o respiro e devolve largura. */
-.users-table thead th,
-.users-table tbody td,
-.sectors-table thead th,
-.sectors-table tbody td {
+.configs-table thead th,
+.configs-table tbody td {
   padding: 12px 1.1rem;
 }
 
@@ -192,15 +190,13 @@
 }
 
 /* ---------- Cabeçalhos ordenáveis ---------- */
-.users-table th.is-sortable,
-.sectors-table th.is-sortable {
+.configs-table th.is-sortable {
   cursor: pointer;
   user-select: none;
   transition: color var(--transition), background var(--transition);
 }
 
-.users-table th.is-sortable:hover,
-.sectors-table th.is-sortable:hover {
+.configs-table th.is-sortable:hover {
   color: var(--color-text);
   background: var(--gray-100);
 }
@@ -218,17 +214,13 @@
   content: '\2195'; /* ↕ — coluna ordenável, mas não é a ordenação ativa */
 }
 
-.users-table th.is-sorted-asc .sort-indicator,
-.users-table th.is-sorted-desc .sort-indicator,
-.sectors-table th.is-sorted-asc .sort-indicator,
-.sectors-table th.is-sorted-desc .sort-indicator {
+.configs-table th.is-sorted-asc .sort-indicator,
+.configs-table th.is-sorted-desc .sort-indicator {
   color: var(--color-brand);
 }
 
-.users-table th.is-sorted-asc .sort-indicator::before  { content: '\25B2'; } /* ▲ */
-.users-table th.is-sorted-desc .sort-indicator::before { content: '\25BC'; } /* ▼ */
-.sectors-table th.is-sorted-asc .sort-indicator::before  { content: '\25B2'; }
-.sectors-table th.is-sorted-desc .sort-indicator::before { content: '\25BC'; }
+.configs-table th.is-sorted-asc .sort-indicator::before  { content: '\25B2'; } /* ▲ */
+.configs-table th.is-sorted-desc .sort-indicator::before { content: '\25BC'; } /* ▼ */
 
 /* ---------- Tabela de setores ---------- */
 /* Só três colunas e nenhuma delas larga: o min-width da tabela de usuários
@@ -261,6 +253,72 @@
   line-height: 1.45;
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Tabela de cargos ---------- */
+.roles-table {
+  min-width: 640px;
+}
+
+.roles-table .roles-col-role        { width: 230px; }
+.roles-table .roles-col-description { width: auto; }
+.roles-table .status-column         { width: 120px; }
+.roles-table .actions-column        { width: 110px; }
+
+/* nome técnico + #id logo abaixo, no mesmo desenho das outras duas tabelas */
+.role-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.role-cell-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.role-cell-meta {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* a descrição de um cargo passa de 180 caracteres; duas linhas dão o contexto e
+   o resto fica no title, sem esticar a altura da linha da tabela */
+.role-description-cell {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Aviso dentro de um modal de formulário ---------- */
+.form-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 1.25rem;
+  padding: 10px 12px;
+  border: 1px solid var(--amber-500);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--amber-50, #fffbeb);
+  color: var(--color-text);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.form-warning svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--amber-500);
 }
 
 /* =============================================
@@ -339,34 +397,29 @@ html.modal-open {
 }
 
 /* home.css esconde th/td:nth-child(3..6) abaixo de 768px, contando as colunas
-   por posição. Na tabela de 5 colunas daqui isso apagaria Cargo/Setor, Status e
-   Ações — justamente o que importa. Os seletores abaixo têm a mesma
-   especificidade e vêm depois, então devolvem as células e escondem só o CPF,
-   que é o dado menos consultado no celular. */
+   por posição. Isso apagaria Cargo/Setor, Status e Ações na tabela de usuários,
+   Ações na de setores e Status/Ações na de cargos — justamente o que importa.
+   Os seletores abaixo têm a mesma especificidade e vêm depois, então devolvem
+   as células para as três e escondem só o que é dispensável no celular. */
 @media (max-width: 768px) {
-  .users-table th:nth-child(n),
-  .users-table td:nth-child(n) {
+  .configs-table th:nth-child(n),
+  .configs-table td:nth-child(n) {
     display: table-cell;
   }
 
+  .configs-table {
+    min-width: 0;
+  }
+
+  /* devolvidas as células, cada tabela esconde só a sua coluna mais dispensável */
   .users-table th.users-col-cpf,
   .users-table td.user-cpf {
     display: none;
   }
 
-  .users-table {
-    min-width: 0;
-  }
-
-  /* mesma armadilha do nth-child aqui: na tabela de 3 colunas o seletor de
-     home.css apagaria a coluna de Ações */
-  .sectors-table th:nth-child(n),
-  .sectors-table td:nth-child(n) {
-    display: table-cell;
-  }
-
-  .sectors-table {
-    min-width: 0;
+  .roles-table th.roles-col-description,
+  .roles-table td.roles-col-description {
+    display: none;
   }
 
   .form-card-header.configs-card-header {

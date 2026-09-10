@@ -3,25 +3,7 @@ import { formatCPF } from "../utils/detailsView.js";
 import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
 import { escapeHtml } from "../utils/htmlEscape.js";
 import { setModalVisible, registerModalDismiss } from "../utils/modalControl.js";
-
-// mapeia role_name (vindo do backend) para o rótulo exibido e o variant da .pill
-const ROLE_LABELS = {
-    administrator: "Administrador",
-    employee: "Funcionário",
-};
-
-const ROLE_PILL_CLASSES = {
-    administrator: "pill--purple",
-    employee: "pill--gray",
-};
-
-function getRoleLabel(roleName) {
-    return ROLE_LABELS[roleName] || (roleName || "—");
-}
-
-function getRolePillClass(roleName) {
-    return ROLE_PILL_CLASSES[roleName] || "pill--gray";
-}
+import { getRoleLabel, getRolePillClass } from "../utils/roleLabels.js";
 
 // aplica a máscara 000.000.000-00 conforme o usuário digita
 function maskCpf(digits) {
@@ -72,7 +54,7 @@ function fillSelectOptions(select, items, getValue, getLabel) {
 }
 
 // carrega os cargos do backend e preenche os selects de cargo (cadastro e edição)
-async function loadRoles() {
+export async function loadRoles() {
     const response = await fetchWithAuth("/entrevista-adesao/roles");
 
     if (!response.ok) {

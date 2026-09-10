@@ -78,7 +78,7 @@ def deactivate(role_id):
 @role_required("administrator")
 def reactivate(role_id):
     try:
-        RoleService.rectivate(role_id)
+        RoleService.reactivate(role_id)
 
         return jsonify({
             "message": "Cargo reativado com sucesso"

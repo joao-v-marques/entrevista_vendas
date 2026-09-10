@@ -80,7 +80,7 @@ class RoleService:
             raise Exception(str(e))
 
     @staticmethod
-    def rectivate(role_id):
+    def reactivate(role_id):
         try:
             role = RoleModel.get_by_id(role_id)
             if not role:

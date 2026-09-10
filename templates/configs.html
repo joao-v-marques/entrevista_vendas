@@ -198,6 +198,12 @@
                                     Setores
                                 </button>
                             </li>
+                            <li>
+                                <button type="button" class="configs-nav-link" data-section="cargos">
+                                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 5.5h12v8H2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 5.5V4a1 1 0 011-1h2a1 1 0 011 1v1.5" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 9h12" stroke="currentColor" stroke-width="1.4"/></svg>
+                                    Cargos
+                                </button>
+                            </li>
                         </ul>
                     </nav>
                 </aside>
@@ -254,7 +260,7 @@
 
                             <!-- Tabela de usuários -->
                             <div class="fichas-list fichas-list--scroll">
-                                <table class="fichas-table users-table">
+                                <table class="fichas-table configs-table users-table">
                                     <thead>
                                         <tr>
                                             <th class="users-col-user is-sortable" data-sort="name" aria-sort="ascending">Usuário<span class="sort-indicator" aria-hidden="true"></span></th>
@@ -310,7 +316,7 @@
 
                             <!-- Tabela de setores -->
                             <div class="fichas-list fichas-list--scroll">
-                                <table class="fichas-table sectors-table">
+                                <table class="fichas-table configs-table sectors-table">
                                     <thead>
                                         <tr>
                                             <th class="sectors-col-sector is-sortable" data-sort="name" aria-sort="ascending">Setor<span class="sort-indicator" aria-hidden="true"></span></th>
@@ -320,6 +326,61 @@
                                     </thead>
                                     <tbody id="tbodySectors">
                                         <tr class="forms-empty-row"><td colspan="3">Carregando setores...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== SEÇÃO: CARGOS ===== -->
+                    <section class="configs-section" data-section="cargos" hidden>
+                        <div class="form-card">
+                            <div class="form-card-header configs-card-header">
+                                <div class="users-header-text">
+                                    <h2 class="form-card-title">Cargos cadastrados</h2>
+                                    <p class="form-card-description">
+                                        Cargos disponíveis para vínculo com os usuários do sistema.
+                                        <span class="users-count" id="rolesCount"></span>
+                                    </p>
+                                </div>
+                                <div class="users-header-actions">
+                                    <button type="button" class="btn btn--primary" id="btnOpenCreateRole">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                        Novo cargo
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Filtros -->
+                            <div class="forms-filters">
+                                <div class="forms-filter-field forms-filter-field--grow">
+                                    <label for="filterRoleName">Buscar</label>
+                                    <input type="text" id="filterRoleName" class="input" placeholder="Buscar por nome, descrição ou código do cargo..." autocomplete="off" />
+                                </div>
+                                <div class="forms-filter-field">
+                                    <label for="filterRoleStatus">Status</label>
+                                    <select id="filterRoleStatus" class="select">
+                                        <option value="">Todos</option>
+                                        <option value="1">Ativos</option>
+                                        <option value="0">Inativos</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="btn btn--ghost forms-filter-clear" id="filterRoleClear">Limpar</button>
+                            </div>
+
+                            <!-- Tabela de cargos -->
+                            <div class="fichas-list fichas-list--scroll">
+                                <table class="fichas-table configs-table roles-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="roles-col-role is-sortable" data-sort="name" aria-sort="ascending">Cargo<span class="sort-indicator" aria-hidden="true"></span></th>
+                                            <th class="roles-col-description">Descrição</th>
+                                            <th class="status-column is-sortable" data-sort="status" aria-sort="none">Status<span class="sort-indicator" aria-hidden="true"></span></th>
+                                            <th class="actions-column">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyRoles">
+                                        <tr class="forms-empty-row"><td colspan="4">Carregando cargos...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -552,6 +613,98 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn--ghost" id="toggleSectorCancel">Cancelar</button>
                 <button type="button" class="btn btn--danger" id="toggleSectorConfirm">Desativar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: CADASTRAR CARGO ===== -->
+    <div class="modal-overlay" id="createRoleModalOverlay" hidden>
+        <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="createRoleModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="createRoleModalTitle">Cadastrar novo cargo</h2>
+                <button type="button" class="modal-close" id="createRoleModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+                </button>
+            </div>
+
+            <form id="createRoleForm" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label required" for="createRoleName">Nome do cargo</label>
+                        <input type="text" id="createRoleName" name="name" class="input" placeholder="Ex.: sales_employee" maxlength="155" autocomplete="off" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="createRoleDescription">Descrição</label>
+                        <textarea id="createRoleDescription" name="description" class="input" rows="3" placeholder="O que este cargo acessa no sistema"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn--ghost">Limpar</button>
+                    <button type="submit" class="btn btn--primary" id="btnCreateRole">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        Cadastrar cargo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: EDITAR CARGO ===== -->
+    <div class="modal-overlay" id="editRoleModalOverlay" hidden>
+        <div class="modal modal--form" role="dialog" aria-modal="true" aria-labelledby="editRoleModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="editRoleModalTitle">Editar cargo</h2>
+                <button type="button" class="modal-close" id="editRoleModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+                </button>
+            </div>
+
+            <form id="editRoleForm" novalidate>
+                <div class="modal-body">
+                    <p class="form-warning">
+                        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2.5l6 11H2l6-11z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M8 6.5v3M8 11.5v.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <span>Este nome é usado no controle de acesso do sistema. Alterá-lo pode remover o acesso dos usuários que têm este cargo, e quem já está logado só sente a mudança quando a sessão expira (até 8 horas).</span>
+                    </p>
+                    <input type="hidden" id="editRoleId" name="id" />
+                    <div class="form-group">
+                        <label class="form-label required" for="editRoleNameInput">Nome do cargo</label>
+                        <input type="text" id="editRoleNameInput" name="name" class="input" maxlength="155" autocomplete="off" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editRoleDescription">Descrição</label>
+                        <textarea id="editRoleDescription" name="description" class="input" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="editRoleStatus">Status</label>
+                        <select id="editRoleStatus" name="is_active" class="select">
+                            <option value="1">Ativo</option>
+                            <option value="0">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn--ghost" id="editRoleCancel">Cancelar</button>
+                    <button type="submit" class="btn btn--primary">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: ATIVAR / DESATIVAR CARGO ===== -->
+    <div class="modal-overlay" id="toggleRoleModalOverlay" hidden>
+        <div class="modal modal--confirm" role="dialog" aria-modal="true" aria-labelledby="toggleRoleTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="toggleRoleTitle">Desativar cargo</h2>
+                <button type="button" class="modal-close" id="toggleRoleModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="toggleRoleText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" id="toggleRoleCancel">Cancelar</button>
+                <button type="button" class="btn btn--danger" id="toggleRoleConfirm">Desativar</button>
             </div>
         </div>
     </div>
