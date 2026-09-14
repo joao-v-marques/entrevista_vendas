@@ -7,7 +7,7 @@ import { loadForms, loadInterviews } from "./dashboardData.js";
 import {
     FINALIZED_ID, isActive, isFinalized, isRejected, isClosed,
     parseDate, bucketDates, keyOfDate, filterByPeriod,
-    percentOf, countBy, sortedEntries, ageInDays, formatDays,
+    percentOf, countBy, groupBy, sortedEntries, ageInDays, formatDays,
 } from "./aggregations.js";
 import { makeChart, barOptions, doughnutOptions, statusColor, BAR_STYLE, GREEN } from "./chartFactory.js";
 import {
@@ -264,6 +264,19 @@ function renderConsultants(panel, forms) {
 
     if (setChartEmpty(panel, "ovConsultants", entries.length === 0)) return;
 
+    // quebra por status de cada consultor, na mesma ordem das barras — vai para o tooltip
+    const byConsultant = groupBy(forms, (form) => form.consultant_name || "—");
+    const statusLines = entries.map(([name, total]) => {
+        const statusCounts = countBy(byConsultant.get(name), (form) => form.form_status_name || `Status ${form.form_status_id}`);
+        return sortedEntries(statusCounts).map(([status, count]) => `${status}: ${count} (${percentOf(count, total)})`);
+    });
+
+    const options = barOptions({ horizontal: true });
+    options.plugins.tooltip.callbacks = {
+        label: (ctx) => ` Total de formulários: ${ctx.parsed.x}`,
+        afterLabel: (ctx) => statusLines[ctx.dataIndex],
+    };
+
     makeChart(`${TAB}:consultants`, canvas, {
         type: "bar",
         data: {
@@ -275,6 +288,6 @@ function renderConsultants(panel, forms) {
                 ...BAR_STYLE,
             }],
         },
-        options: barOptions({ horizontal: true }),
+        options,
     });
 }
