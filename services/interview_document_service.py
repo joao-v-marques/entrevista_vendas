@@ -174,7 +174,8 @@ class InterviewDocumentService:
                 # chaves cruas: o renderizador marca o "( X )" na opção correspondente
                 "escolha_medico_orientador": qualify.get("escolha_medico_orientador"),
                 "parecer_unimed": qualify.get("parecer_unimed"),
-                "observacao": _texto(qualify.get("observation")),
+                # observação da análise da entrevista: vai no campo "Observações" do parecer
+                "observacao_parecer": _texto(interview.get("interview_observation")),
                 "registrado_por": _texto(qualify.get("inserted_by_name")),
                 "registrado_em": _data_hora(qualify.get("created_at")),
             },

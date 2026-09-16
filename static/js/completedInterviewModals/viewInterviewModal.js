@@ -212,8 +212,8 @@ function renderConsultantAndObservations(form, interview, qualifyInterview) {
             value: interview?.schedule_observation,
         },
         {
-            label: "Observação interna da análise",
-            hint: "uso interno — não vai para o contrato do beneficiário",
+            label: "Observação do parecer Unimed",
+            hint: "vai para o documento, na página do parecer reservado à Unimed",
             value: interview?.interview_observation,
         },
         {
