@@ -98,6 +98,11 @@ def _imc(peso_kg, altura_cm):
     return "%s — %s" % (("%.1f" % imc).replace(".", ","), _classifica_imc(imc))
 
 
+# o rótulo da tela é uma pergunta ("Osteoporose?"); na lista da CPT ele vira o nome da doença
+def _nome_doenca(label):
+    return (label or "").strip().rstrip("?").strip() + "."
+
+
 def _slug(value):
     normalizado = unicodedata.normalize("NFKD", value or "sem_nome").encode("ascii", "ignore").decode("ascii")
     return re.sub(r"[^a-zA-Z0-9]+", "_", normalizado).strip("_").lower()
@@ -229,7 +234,7 @@ class InterviewDocumentService:
 
         return [
             {
-                "doenca": item["document_label"],
+                "doenca": _nome_doenca(item["label"]),
                 "especificacao": especificacoes.get(item["key"], ""),
             }
             for item in QUALIFY_INTERVIEW_QUESTIONS
