@@ -42,7 +42,9 @@ def _numero(value):
     return str(value).replace(".", ",")
 
 
-# a idade não é armazenada; o documento pede, e a data de nascimento permite derivar
+# A idade não é armazenada; o documento pede, e a data de nascimento permite derivar.
+# Vai em anos e meses completos, separados por "\n": a coluna de resposta é estreita e o
+# renderizador troca a quebra por <br/>, deixando os meses na linha de baixo.
 def _idade(nascimento, referencia):
     if not isinstance(nascimento, (datetime, date)):
         return VAZIO
@@ -50,11 +52,19 @@ def _idade(nascimento, referencia):
     if isinstance(nascimento, datetime):
         nascimento = nascimento.date()
 
-    anos = referencia.year - nascimento.year
-    if (referencia.month, referencia.day) < (nascimento.month, nascimento.day):
-        anos -= 1
+    total_meses = (referencia.year - nascimento.year) * 12 + (referencia.month - nascimento.month)
+    if referencia.day < nascimento.day:
+        total_meses -= 1
 
-    return "%d anos" % anos if anos >= 0 else VAZIO
+    if total_meses < 0:
+        return VAZIO
+
+    anos, meses = divmod(total_meses, 12)
+
+    return "%d %s\n%d %s" % (
+        anos, "ano" if anos == 1 else "anos",
+        meses, "mês" if meses == 1 else "meses",
+    )
 
 
 # mesmas faixas do documento e do modal de análise

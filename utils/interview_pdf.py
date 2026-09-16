@@ -590,8 +590,9 @@ def _linha_item(linha):
     declarada = linha["declarada"]
 
     letra = Paragraph(_esc(linha["letra"]), S.ITEM_LETRA)
+    # a idade vem com "\n" entre anos e meses; a quebra só entra depois do escape
     resposta = Paragraph(
-        _esc(linha["resposta"]),
+        _esc(linha["resposta"]).replace("\n", "<br/>"),
         S.ITEM_RESPOSTA_DECLARADA if declarada else S.ITEM_RESPOSTA,
     )
     estilo_texto = S.ITEM_TEXTO_DECLARADO if declarada else S.ITEM_TEXTO
