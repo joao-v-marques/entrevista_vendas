@@ -203,7 +203,7 @@ function renderInterview(interview) {
     return renderSection("Dados da Entrevista", inner);
 }
 
-// as três observações da entrevista, cada uma identificada pela etapa em que foi escrita
+// as observações da entrevista, cada uma identificada pela etapa em que foi escrita
 function renderConsultantAndObservations(form, interview, qualifyInterview) {
     const observations = [
         {
@@ -220,6 +220,11 @@ function renderConsultantAndObservations(form, interview, qualifyInterview) {
             label: "Observação da entrevista qualificada",
             hint: "vai para o contrato: o beneficiário lê e confirma antes de assinar",
             value: qualifyInterview?.observation,
+        },
+        {
+            label: "Comentários do beneficiário",
+            hint: "vão para o documento, logo após o questionário de saúde",
+            value: qualifyInterview?.beneficiary_comments,
         },
     ];
 

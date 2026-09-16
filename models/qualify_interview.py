@@ -64,7 +64,9 @@ class QualifyInterview:
                  is_traumatismos_fraturas=False, is_sequelas_acidentes_congenitas=False, is_cirurgia_previa=False,
                  is_internacao_tratamento_outro=False, is_radioterapia_quimioterapia_dialise=False,
                  is_indicacao_cirurgia_futura=False, is_protese_ortese=False,
-                 observation=None, id=None, created_at=None, inserted_by_name=None):
+                 observation=None, id=None, created_at=None, inserted_by_name=None,
+
+                 beneficiary_comments=None):
         # 1. Doenças infecciosas ou parasitárias
         self.is_hiv = is_hiv
         self.is_chagas = is_chagas
@@ -253,6 +255,9 @@ class QualifyInterview:
         self.observation = observation
         self.application_form_interview_id = application_form_interview_id
         self.inserted_by = inserted_by
+
+        self.beneficiary_comments = beneficiary_comments
+
         # vem do JOIN com users; None quando a linha é lida sem o join
         self.inserted_by_name = inserted_by_name
         self.id = id
@@ -448,6 +453,7 @@ class QualifyInterview:
             "escolha_medico_orientador": self.escolha_medico_orientador,
             "parecer_unimed": self.parecer_unimed,
             "observation": self.observation,
+            "beneficiary_comments": self.beneficiary_comments,
             "application_form_interview_id": self.application_form_interview_id,
             "inserted_by": self.inserted_by,
             "inserted_by_name": self.inserted_by_name,
@@ -644,7 +650,7 @@ class QualifyInterviewModel:
                 is_indicacao_cirurgia_futura, is_protese_ortese,
 
                 -- Parecer da Unimed, observação e vínculos
-                escolha_medico_orientador, parecer_unimed, observation, application_form_interview_id,
+                escolha_medico_orientador, parecer_unimed, observation, beneficiary_comments, application_form_interview_id,
                 inserted_by
             ) VALUES (
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
@@ -653,7 +659,7 @@ class QualifyInterviewModel:
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s, %s, %s
             )
             RETURNING id, created_at
         """
@@ -845,6 +851,7 @@ class QualifyInterviewModel:
             qualify_interview.escolha_medico_orientador,
             qualify_interview.parecer_unimed,
             qualify_interview.observation,
+            qualify_interview.beneficiary_comments,
             qualify_interview.application_form_interview_id,
             qualify_interview.inserted_by
         )

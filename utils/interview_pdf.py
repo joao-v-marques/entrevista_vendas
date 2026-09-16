@@ -661,8 +661,8 @@ def _pagina_declaracao(ctx):
     # últimos grupos dividem a folha com ele
     return [
         Spacer(1, 3 * mm),
-        # sai em branco por enquanto: o campo próprio para esses comentários ainda não existe
-        _campo_de_observacao(T.COMENTARIOS_TITULO, S.CORPO, "", 32 * mm),
+        _campo_de_observacao(T.COMENTARIOS_TITULO, S.CORPO,
+                             ctx["declaracao"]["comentarios_beneficiario"], 32 * mm),
         Spacer(1, 6 * mm),
         Paragraph(_rico(T.DECLARACAO_FINAL_TITULO), S.BLOCO_SUBTITULO),
         Spacer(1, 3 * mm),

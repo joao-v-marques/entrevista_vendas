@@ -72,6 +72,8 @@ class QualifyInterviewService:
             # A observação vai para o contrato, então é opcional mas nunca string vazia
             observation = (data.get('observation') or '').strip() or None
 
+            beneficiary_comments = (data.get('beneficiary_comments') or '').strip() or None
+
             qualify_interview = QualifyInterview(
                 # 1. Doenças infecciosas ou parasitárias
                 is_hiv=to_bool(data.get('is_hiv')),
@@ -260,6 +262,7 @@ class QualifyInterviewService:
                 escolha_medico_orientador=escolha_medico_orientador,
                 parecer_unimed=parecer_unimed,
                 observation=observation,
+                beneficiary_comments=beneficiary_comments,
                 application_form_interview_id=None,
                 inserted_by=inserted_by
             )

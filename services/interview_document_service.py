@@ -181,6 +181,8 @@ class InterviewDocumentService:
                 "parecer_unimed": qualify.get("parecer_unimed"),
                 # observação da análise da entrevista: vai no campo "Observações" do parecer
                 "observacao_parecer": _texto(interview.get("interview_observation")),
+                # comentários do beneficiário sobre as perguntas: vão na caixa logo após o questionário
+                "comentarios_beneficiario": _texto(qualify.get("beneficiary_comments")),
                 "registrado_por": _texto(qualify.get("inserted_by_name")),
                 "registrado_em": _data_hora(qualify.get("created_at")),
             },

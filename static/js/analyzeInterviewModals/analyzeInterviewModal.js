@@ -32,6 +32,7 @@ const PARECER_SEM_PREEXISTENCIA = ["sem_preexistencias"];
 const PARECER_COM_PREEXISTENCIA = ["com_preexistencias_aceitou_cpt", "com_preexistencias_recusou_cpt"];
 // observação da entrevista qualificada (vai pro contrato); separada da observação interna acima
 const qualifyObservationTextarea = document.getElementById("qualifyInterviewObservation");
+const beneficiaryCommentsTextarea = document.getElementById("qualifyBeneficiaryComments");
 
 // mapa key -> label, usado pra anexar/atualizar a linha de detalhe na observação da entrevista qualificada
 const QUALIFY_ITEM_LABELS = new Map(
@@ -449,10 +450,11 @@ function submitForm() {
         }
 
         // monta o payload (remove as entradas soltas dos radios do questionário, da escolha do médico orientador
-        // e do parecer, já consolidadas acima, e a observação da entrevista qualificada — vai tudo aninhado
-        // dentro de qualify_interview)
+        // e do parecer, já consolidadas acima, a observação da entrevista qualificada e os comentários do
+        // beneficiário — vai tudo aninhado dentro de qualify_interview)
         QUALIFY_ITEM_LABELS.forEach((_, key) => formData.delete(key));
         formData.delete("qualify_interview_observation");
+        formData.delete("qualify_beneficiary_comments");
         formData.delete("escolha_medico_orientador");
         formData.delete("parecer_unimed");
 
@@ -466,6 +468,7 @@ function submitForm() {
             escolha_medico_orientador: orientadorChecked.value,
             parecer_unimed: parecerChecked.value,
             observation: qualifyObservationTextarea.value.trim(),
+            beneficiary_comments: beneficiaryCommentsTextarea.value.trim(),
         };
 
         // trava o botão durante o envio: a constraint UNIQUE já barra a duplicata no banco,
