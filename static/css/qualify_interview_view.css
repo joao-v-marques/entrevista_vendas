@@ -1,8 +1,10 @@
 /* =============================================
-   completed_interviews.css — modal de visualização da entrevista.
+   qualify_interview_view.css — entrevista qualificada em modo leitura, gerada por
+   static/js/utils/qualifyInterviewView.js. Usado pela visualização da entrevista
+   (completed_interviews.html) e pela análise da gerência (management_approval.html).
    A casca do modal (.modal, .modal-body, .info-grid, .pill, .empty-section...) vem de
-   approve_form.css e forms.css, que esta página já carrega. Aqui ficam só as partes que
-   não existiam: o questionário de saúde em accordions e o bloco de observações.
+   approve_form.css e forms.css, que essas páginas já carregam. Aqui ficam só o
+   questionário de saúde em accordions e o bloco de observações.
    ============================================= */
 
 /* ---------- Questionário de saúde (somente leitura) ---------- */

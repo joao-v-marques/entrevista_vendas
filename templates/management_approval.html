@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/approve_form.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/qualify_interview_view.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/management_approval.css') }}" />
 </head>
 
 <body>
@@ -350,7 +352,9 @@
     <div class="modal-overlay" id="analyzeManagementModalOverlay" hidden>
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="analyzeManagementModalTitle">
             <div class="modal-header">
-                <h2 class="modal-title" id="analyzeManagementModalTitle">Análise da Gerência da Ficha #<span id="analyzeManagementModalFormId"></span>
+                <h2 class="modal-title" id="analyzeManagementModalTitle">
+                    Análise da Gerência da Ficha #<span id="analyzeManagementModalFormId"></span>
+                    <span class="mgmt-modal-subtitle" id="analyzeManagementModalSubtitle"></span>
                 </h2>
                 <button type="button" class="modal-close" id="analyzeManagementModalClose" aria-label="Fechar">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -360,66 +364,108 @@
                 </button>
             </div>
 
-            <div class="modal-body">
-                <!-- Seção 1: Informações do beneficiário (somente leitura) -->
-                <section class="modal-section">
-                    <h3 class="form-section-title">Informações do Beneficiário</h3>
-                    <div class="info-grid" id="managementBeneficiaryInfoGrid"></div>
-                </section>
+            <!-- Abas: o Resumo concentra a decisão; as demais detalham cada assunto -->
+            <div class="mgmt-tabs" role="tablist" aria-label="Seções da análise" id="managementTabs">
+                <button type="button" class="mgmt-tab is-active" role="tab" data-tab="summary" id="mgmt-tab-summary" aria-controls="mgmt-panel-summary" aria-selected="true">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                    Resumo
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="beneficiary" id="mgmt-tab-beneficiary" aria-controls="mgmt-panel-beneficiary" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="2.8" stroke="currentColor" stroke-width="1.3"/><path d="M2.8 14c.6-2.7 2.7-4.2 5.2-4.2s4.6 1.5 5.2 4.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Info. do Beneficiário
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="contract" id="mgmt-tab-contract" aria-controls="mgmt-panel-contract" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M4 1.5h5L13 5.5V14a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 3 14V2a.5.5 0 0 1 .5-.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.5 8.5h5M5.5 11h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Plano e Contrato
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="interview" id="mgmt-tab-interview" aria-controls="mgmt-panel-interview" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 13.8S2.2 10.4 2.2 6.2A3 3 0 0 1 8 4.6a3 3 0 0 1 5.8 1.6c0 4.2-5.8 7.6-5.8 7.6z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                    Info. da Entrevista
+                    <span class="mgmt-tab-count" data-tab-count="interview" hidden></span>
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="history" id="mgmt-tab-history" aria-controls="mgmt-panel-history" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.8" stroke="currentColor" stroke-width="1.3"/><path d="M8 4.8V8l2.2 1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Histórico e Reanálises
+                    <span class="mgmt-tab-count" data-tab-count="history" hidden></span>
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="documents" id="mgmt-tab-documents" aria-controls="mgmt-panel-documents" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M13.5 7.6l-5.2 5.2a3.2 3.2 0 0 1-4.5-4.5l5.4-5.4a2.1 2.1 0 0 1 3 3L6.9 11.2a1 1 0 0 1-1.5-1.5l4.9-4.9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Documentos
+                    <span class="mgmt-tab-count" data-tab-count="documents" hidden></span>
+                </button>
+            </div>
 
-                <!-- Seção 2: Resultado da entrevista (somente leitura) -->
-                <section class="modal-section">
-                    <h3 class="form-section-title">Informações da Entrevista</h3>
-                    <div id="managementInterviewContent"></div>
-                </section>
+            <div class="modal-body" id="analyzeManagementModalBody">
+                <!-- Aba 1: Resumo (visão consolidada + decisão da gerência) -->
+                <section class="mgmt-panel" role="tabpanel" data-tab="summary" id="mgmt-panel-summary" aria-labelledby="mgmt-tab-summary">
+                    <div class="mgmt-panel-content" id="managementSummaryContent"></div>
 
-                <!-- Seção 3: Reanálise solicitada (só aparece em fichas que já foram reprovadas) -->
-                <section class="modal-section" id="managementReanalysisSection" hidden>
-                    <h3 class="form-section-title">Reanálise Solicitada</h3>
-                    <div id="managementReanalysisContent"></div>
-                </section>
+                    <section class="mgmt-decision">
+                        <h3 class="form-section-title">Aprovação da Gerência</h3>
+                        <p class="mgmt-decision-hint">Revise o resumo acima (e as demais abas, se precisar de detalhes) antes de decidir.</p>
 
-                <!-- Seção 4: Aprovação da gerência -->
-                <section class="modal-section">
-                    <h3 class="form-section-title">Aprovação da Gerência</h3>
+                        <div class="approval-status" id="managementApprovalStatusBanner"></div>
 
-                    <div class="approval-status" id="managementApprovalStatusBanner"></div>
+                        <form id="managementApprovalForm" class="form-grid">
+                            <!-- ID do application_forms (formulário principal) que estamos enviando -->
+                            <input type="hidden" id="management_application_form_id" name="application_form_id">
+                            <!-- ID do usuário que está logado, ou seja, quem está realizando a aprovação/reprova -->
+                            <input type="hidden" id="manager_id_input" name="manager_id">
 
-                    <form id="managementApprovalForm" class="form-grid">
-                        <!-- ID do application_forms (formulário principal) que estamos enviando -->
-                        <input type="hidden" id="management_application_form_id" name="application_form_id">
-                        <!-- ID do usuário que está logado, ou seja, quem está realizando a aprovação/reprova -->
-                        <input type="hidden" id="manager_id_input" name="manager_id">
+                            <div class="form-group full-width">
+                                <label class="form-label">Decisão</label>
+                                <div class="decision-group">
 
-                        <div class="form-group full-width">
-                            <label class="form-label">Decisão</label>
-                            <div class="decision-group">
+                                    <label class="decision-option decision-option--approve">
+                                        <input type="radio" name="management_approved" value="true" id="managementApproveRadio" required>
+                                        <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                                            <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <span>Aprovar</span>
+                                    </label>
 
-                                <label class="decision-option decision-option--approve">
-                                    <input type="radio" name="management_approved" value="true" id="managementApproveRadio" required>
-                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-                                        <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Aprovar</span>
-                                </label>
+                                    <label class="decision-option decision-option--reject">
+                                        <input type="radio" name="management_approved" value="false" id="managementRejectRadio" required>
+                                        <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                                            <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                                        </svg>
+                                        <span>Reprovar</span>
+                                    </label>
 
-                                <label class="decision-option decision-option--reject">
-                                    <input type="radio" name="management_approved" value="false" id="managementRejectRadio" required>
-                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-                                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                                    </svg>
-                                    <span>Reprovar</span>
-                                </label>
-
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group full-width">
+                            <div class="form-group full-width">
+                                <label class="form-label" for="managementObservation">Observações</label>
+                                <textarea class="textarea" id="managementObservation" name="management_observation" placeholder="Observações da análise da gerência..." required></textarea>
+                            </div>
+                        </form>
+                    </section>
+                </section>
 
-                            <label class="form-label" for="managementObservation">Observações</label>
-                            <textarea class="textarea" id="managementObservation" name="management_observation" placeholder="Observações da análise da gerência..." required></textarea>
-                        </div>
-                    </form>
+                <!-- Aba 2: Beneficiário e responsável pela inclusão -->
+                <section class="mgmt-panel" role="tabpanel" data-tab="beneficiary" id="mgmt-panel-beneficiary" aria-labelledby="mgmt-tab-beneficiary" hidden>
+                    <div class="mgmt-panel-content" id="managementBeneficiaryContent"></div>
+                </section>
+
+                <!-- Aba 3: Plano, contrato, desconto e portabilidade -->
+                <section class="mgmt-panel" role="tabpanel" data-tab="contract" id="mgmt-panel-contract" aria-labelledby="mgmt-tab-contract" hidden>
+                    <div class="mgmt-panel-content" id="managementContractContent"></div>
+                </section>
+
+                <!-- Aba 4: Entrevista e entrevista qualificada (questionário de saúde) -->
+                <section class="mgmt-panel" role="tabpanel" data-tab="interview" id="mgmt-panel-interview" aria-labelledby="mgmt-tab-interview" hidden>
+                    <div class="mgmt-panel-content" id="managementInterviewContent"></div>
+                </section>
+
+                <!-- Aba 5: Etapas anteriores e reanálises -->
+                <section class="mgmt-panel" role="tabpanel" data-tab="history" id="mgmt-panel-history" aria-labelledby="mgmt-tab-history" hidden>
+                    <div class="mgmt-panel-content" id="managementHistoryContent"></div>
+                </section>
+
+                <!-- Aba 6: Documentos anexados -->
+                <section class="mgmt-panel" role="tabpanel" data-tab="documents" id="mgmt-panel-documents" aria-labelledby="mgmt-tab-documents" hidden>
+                    <div class="mgmt-panel-content" id="managementDocumentsContent"></div>
                 </section>
             </div>
 

@@ -67,7 +67,8 @@ class ApplicationFormInterviewService:
 
         form_interview = ApplicationFormInterview(
             interviewer_id=data['interviewer_id'],
-            interview_approved=data['interview_approved'],
+            # regra de negócio: toda entrevista analisada é aprovada, independente do que vier no payload
+            interview_approved=True,
             interview_observation=data['interview_observation'],
             interview_reviewed_at=data['interview_reviewed_at'],
             application_form_id=data['application_form_id']

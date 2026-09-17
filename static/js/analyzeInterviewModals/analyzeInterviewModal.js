@@ -15,7 +15,6 @@ const interviewAnalysisForm = document.getElementById("interviewAnalysisForm");
 const closeButton = document.getElementById("analyzeInterviewModalClose");
 const cancelButton = document.getElementById("analyzeInterviewModalCancel");
 const submitButton = document.getElementById("analyzeInterviewModalSubmit");
-const decisionGroup = interviewAnalysisForm.querySelector(".decision-group");
 const applicationFormIdInput = document.getElementById("analyze_interview_application_form_id");
 const interviewerIdInput = document.getElementById("analyze_interview_interviewer_id");
 const observationTextarea = document.getElementById("interviewObservation");
@@ -344,10 +343,6 @@ parecerGroup.addEventListener("change", () => {
     parecerGroup.classList.remove("choice-group--missing");
 });
 
-decisionGroup.addEventListener("change", () => {
-    decisionGroup.classList.remove("decision-group--missing");
-});
-
 renderQualifyInterviewGroups();
 updateParecerOptions();
 
@@ -359,7 +354,6 @@ export function openAnalyzeInterviewModal(applicationForm) {
     resetQualifyInterviewUI();
     orientadorGroup.classList.remove("choice-group--missing");
     parecerGroup.classList.remove("choice-group--missing");
-    decisionGroup.classList.remove("decision-group--missing");
 
     // preenche os campos ocultos que vão junto no envio pro backend
     applicationFormIdInput.value = applicationForm.id;
@@ -428,17 +422,6 @@ function submitForm() {
             return;
         }
 
-        // exige a decisão da análise. Sem isso o formData não traz interview_approved, a
-        // comparação com "true" daria false e a ficha seria reprovada silenciosamente — agora
-        // num commit atômico junto com o questionário
-        const decisionChecked = decisionGroup.querySelector('input[name="interview_approved"]:checked');
-        if (!decisionChecked) {
-            notyf.error("Informe se a entrevista foi aprovada ou reprovada.");
-            decisionGroup.classList.add("decision-group--missing");
-            decisionGroup.scrollIntoView({ behavior: "smooth", block: "center" });
-            return;
-        }
-
         // pega os dados do formulário
         const formData = new FormData(interviewAnalysisForm);
 
@@ -461,7 +444,8 @@ function submitForm() {
         const data = Object.fromEntries(formData.entries());
         data.application_form_id = Number(data.application_form_id);
         data.interviewer_id = Number(data.interviewer_id);
-        data.interview_approved = decisionChecked.value === "true";
+        // regra de negócio: toda entrevista analisada é aprovada (o backend também força true)
+        data.interview_approved = true;
         data.interview_reviewed_at = new Date().toISOString();
         data.qualify_interview = {
             ...qualifyInterviewAnswers,

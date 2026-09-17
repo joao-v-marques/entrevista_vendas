@@ -232,10 +232,10 @@
   cursor: not-allowed;
 }
 
-/* ---------- Decisão (aprovada / reprovada) ---------- */
+/* ---------- Decisão (sempre aprovada) ---------- */
 .decision-group {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 0.85rem;
 }
 
@@ -271,11 +271,6 @@
   background: #fff;
 }
 
-.decision-option--reject:hover {
-  border-color: var(--red-500);
-  background: #fff;
-}
-
 .decision-option--approve:has(input:checked) {
   border-color: var(--green-500);
   background: var(--green-50);
@@ -283,16 +278,9 @@
   box-shadow: 0 0 0 3px rgba(34, 160, 78, 0.12);
 }
 
-.decision-option--reject:has(input:checked) {
-  border-color: var(--red-500);
-  background: var(--red-50);
-  color: var(--red-700);
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
-}
-
-/* decisão de aprovação não escolhida no envio (espelha .choice-group--missing) */
-.decision-group--missing .decision-option {
-  border-color: var(--red-500);
+/* opção travada: não tem o que escolher, então não deve parecer clicável */
+.decision-option:has(input:disabled) {
+  cursor: default;
 }
 
 /* ---------- Questionário de saúde ---------- */
