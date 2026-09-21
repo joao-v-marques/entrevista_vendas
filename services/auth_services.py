@@ -21,6 +21,9 @@ class AuthService:
         if not verify_password(user.password_hash, data['password']):
             raise AuthError("Usuário ou senha inválidos")
 
+        if not user.is_active:
+            raise AuthError("Não é possível fazer login com um usuário inativo. Contate o suporte")
+
         token = generated_token(user)
 
         return token
