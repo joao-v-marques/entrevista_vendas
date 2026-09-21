@@ -285,11 +285,74 @@ function openEditModal(user) {
     document.getElementById("editSector").value = user.sector_id ?? "";
     document.getElementById("editStatus").value = user.is_active ? "1" : "0";
 
+    // o modal de alterar senha sempre age sobre o usuário que está sendo editado
+    userToChangePassword = user;
+
     setModalVisible("editUserModalOverlay", true);
 }
 
 function closeEditModal() {
+    // o modal de senha fica por cima do de edição, então não pode sobrar aberto sozinho
+    if (!document.getElementById("changePasswordModalOverlay").hidden) closeChangePasswordModal();
+
     setModalVisible("editUserModalOverlay", false);
+}
+
+// ---------- Modal de alterar senha ----------
+const SENHA_TAMANHO_MINIMO = 8; // mesmo valor do backend (users_services.py)
+
+let userToChangePassword = null;
+
+// volta os campos para "oculto" ao abrir/fechar, para a senha não ficar exposta na próxima vez
+function resetPasswordToggles() {
+    document.querySelectorAll("#changePasswordForm .password-toggle").forEach(button => {
+        document.getElementById(button.dataset.target).type = "password";
+        button.setAttribute("aria-pressed", "false");
+        button.setAttribute("aria-label", "Mostrar senha");
+    });
+}
+
+// marca as regras atendidas e só libera o botão quando as duas estão ok
+function updatePasswordChecklist() {
+    const password = document.getElementById("changePassword").value;
+    const confirm = document.getElementById("changePasswordConfirm").value;
+
+    const rules = {
+        length: password.length >= SENHA_TAMANHO_MINIMO,
+        match: confirm !== "" && password === confirm
+    };
+
+    document.querySelectorAll(".password-checklist li").forEach(li => {
+        li.classList.toggle("is-met", rules[li.dataset.rule]);
+    });
+
+    const submitButton = getFormSubmitButton(document.getElementById("changePasswordForm"));
+    if (submitButton.dataset.loading !== "true") submitButton.disabled = !(rules.length && rules.match);
+
+    return rules.length && rules.match;
+}
+
+function openChangePasswordModal() {
+    if (!userToChangePassword) return;
+
+    const { name, username } = userToChangePassword;
+    document.getElementById("changePasswordUserLabel").textContent = username ? `${name} · @${username}` : name;
+
+    document.getElementById("changePasswordForm").reset();
+    resetPasswordToggles();
+    updatePasswordChecklist();
+
+    setModalVisible("changePasswordModalOverlay", true);
+    document.getElementById("changePassword").focus();
+}
+
+function closeChangePasswordModal() {
+    // senha não fica guardada no DOM depois que o modal fecha
+    document.getElementById("changePasswordForm").reset();
+    resetPasswordToggles();
+    updatePasswordChecklist();
+
+    setModalVisible("changePasswordModalOverlay", false);
 }
 
 // ---------- Modal de exclusão ----------
@@ -536,6 +599,65 @@ export function initUsersSection() {
         }
     });
 
+    // ---------- Modal de alterar senha ----------
+    document.getElementById("btnOpenChangePassword").addEventListener("click", openChangePasswordModal);
+    document.getElementById("changePasswordModalClose").addEventListener("click", closeChangePasswordModal);
+    document.getElementById("changePasswordCancel").addEventListener("click", closeChangePasswordModal);
+
+    document.getElementById("changePassword").addEventListener("input", updatePasswordChecklist);
+    document.getElementById("changePasswordConfirm").addEventListener("input", updatePasswordChecklist);
+
+    // mesmo "olho" da tela de login
+    document.querySelectorAll("#changePasswordForm .password-toggle").forEach(button => {
+        button.addEventListener("click", () => {
+            const input = document.getElementById(button.dataset.target);
+            const isVisible = input.type === "text";
+
+            input.type = isVisible ? "password" : "text";
+            button.setAttribute("aria-pressed", String(!isVisible));
+            button.setAttribute("aria-label", isVisible ? "Mostrar senha" : "Ocultar senha");
+        });
+    });
+
+    const changePasswordForm = document.getElementById("changePasswordForm");
+    const changePasswordSubmitButton = getFormSubmitButton(changePasswordForm);
+    changePasswordForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        // o botão já fica desabilitado, mas o Enter ainda dispara o submit
+        if (!userToChangePassword || !updatePasswordChecklist()) return;
+
+        try {
+            // sem trim: espaço pode fazer parte da senha
+            const data = {
+                password: document.getElementById("changePassword").value,
+                password_confirm: document.getElementById("changePasswordConfirm").value
+            };
+
+            setSubmitLoading(changePasswordSubmitButton, true, "Salvando...");
+            const response = await fetchWithAuth(`/entrevista-adesao/users/${userToChangePassword.id}/change-password`, {
+                method: "PATCH",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error(await getErrorMessage(response, "Houve um erro ao tentar alterar a senha"));
+            }
+
+            closeChangePasswordModal();
+            notyf.success("Senha alterada com sucesso");
+        } catch (error) {
+            notyf.error(error.message);
+        } finally {
+            setSubmitLoading(changePasswordSubmitButton, false);
+            // setSubmitLoading reabilita o botão; o checklist decide se ele pode ficar habilitado
+            updatePasswordChecklist();
+        }
+    });
+
     // ========== Modal de exclusão ==========
     document.getElementById("deleteUserModalClose").addEventListener("click", closeDeleteModal);
 
@@ -566,6 +688,12 @@ export function initUsersSection() {
 
     // fecha os modais desta seção ao clicar fora do conteúdo ou pressionar Esc
     registerModalDismiss("createUserModalOverlay", closeCreateModal);
-    registerModalDismiss("editUserModalOverlay", closeEditModal);
+    // Cada modal escuta o Esc no document; com o de senha aberto por cima, um Esc fecharia os
+    // dois. O de edição é registrado antes e ignora a tecla enquanto o de senha está aberto.
+    registerModalDismiss("editUserModalOverlay", () => {
+        if (!document.getElementById("changePasswordModalOverlay").hidden) return;
+        closeEditModal();
+    });
+    registerModalDismiss("changePasswordModalOverlay", closeChangePasswordModal);
     registerModalDismiss("deleteUserModalOverlay", closeDeleteModal);
 }

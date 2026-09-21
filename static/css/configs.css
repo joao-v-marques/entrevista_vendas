@@ -361,6 +361,168 @@ html.modal-open {
   color: var(--color-text);
 }
 
+.modal-subtitle {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Bloco "Senha de acesso" no modal de edição ---------- */
+.user-password-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 1.1rem;
+  background: var(--color-bg-page);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.user-password-panel-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-brand-faint);
+  color: var(--color-brand);
+}
+
+.user-password-panel-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-password-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.user-password-panel-desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Modal de alterar senha ---------- */
+/* abre por cima do modal de edição, então precisa ficar acima dos outros overlays */
+#changePasswordModalOverlay {
+  z-index: 110;
+}
+
+.modal--password {
+  max-width: 480px;
+}
+
+.modal--password .modal-body {
+  gap: 1.1rem;
+}
+
+.modal--password .btn--primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.modal--password .btn--primary:disabled:hover {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+/* mesmo campo com "olho" da tela de login (login.css não é carregado aqui) */
+.password-field {
+  position: relative;
+}
+
+.password-field .input {
+  padding-right: 42px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-hint);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.password-toggle:hover {
+  background: var(--gray-100);
+  color: var(--color-text-muted);
+}
+
+.password-toggle[aria-pressed="true"] {
+  color: var(--color-brand);
+}
+
+/* checklist ao vivo: cinza enquanto pendente, verde com check quando atendido */
+.password-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--color-bg-page);
+  border-radius: var(--radius-md);
+}
+
+.password-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  transition: color var(--transition);
+}
+
+.password-checklist-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--gray-300);
+  border-radius: 50%;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.password-checklist li.is-met {
+  color: var(--green-600);
+}
+
+.password-checklist li.is-met .password-checklist-icon {
+  background: var(--green-500);
+  border-color: var(--green-500);
+}
+
+.password-checklist li.is-met .password-checklist-icon::after {
+  content: "";
+  position: absolute;
+  left: 4.5px;
+  top: 1.5px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 1.8px 1.8px 0;
+  transform: rotate(45deg);
+}
+
 /* =============================================
    4. Responsivo
    ============================================= */
@@ -441,5 +603,15 @@ html.modal-open {
 @media (max-width: 560px) {
   .user-form-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* no celular o botão desce para uma linha própria e ocupa a largura toda */
+  .user-password-panel {
+    flex-wrap: wrap;
+  }
+
+  .user-password-panel .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
