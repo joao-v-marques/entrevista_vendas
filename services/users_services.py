@@ -174,6 +174,7 @@ class UserService:
             raise Exception(str(e))
 
     # DELETE de um usuário
+    @staticmethod
     def delete(user_id):
         try:
             user = UserModel.get_by_id(user_id)
