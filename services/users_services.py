@@ -20,9 +20,12 @@ def validate_password(data):
     if len(senha) < SENHA_TAMANHO_MINIMO:
         raise ValidationError(f"A senha deve ter no mínimo {SENHA_TAMANHO_MINIMO} caracteres")
 
-    confirmacao = data.get('password_confirm')
+    confirmacao = str(data.get('password_confirm') or "")
 
-    if confirmacao is not None and senha != confirmacao:
+    if not confirmacao:
+        raise ValidationError("A confirmação de senha é obrigatória")
+
+    if senha != confirmacao:
         raise ValidationError("As senhas informadas não são iguais")
 
     return senha
@@ -185,6 +188,27 @@ class UserService:
             UserModel.delete(user_id)
 
             return True
+        except AppError:
+            raise
+        except Exception as e:
+            raise Exception(str(e))
+
+    # PATCH para atualizar a senha de um usuário
+    @staticmethod
+    def change_password(user_id, data):
+        try:
+            if not data:
+                raise ValidationError("Informe a nova senha do usuário.")
+
+            user = UserModel.get_by_id(user_id)
+
+            if not user:
+                raise NotFoundError("Não foi encontrado usuário com o ID informado")
+
+            # Busca por data.get("password")
+            new_password = validate_password(data)
+
+            UserModel.change_password(user_id, hash_password(new_password))
         except AppError:
             raise
         except Exception as e:

@@ -247,3 +247,28 @@ class UserModel:
                 cursor.close()
             if conn:
                 conn.close()
+
+    # Função para alterar a senha do usuário na aplicação (PATCH)
+    @staticmethod
+    def change_password(user_id, new_password):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            sql_query = """
+                UPDATE users
+                SET password_hash = %s
+                WHERE id = %s
+            """
+            values = (new_password, user_id)
+
+            cursor.execute(sql_query, values)
+            conn.commit()
+        except Exception as e:
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()

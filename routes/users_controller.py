@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, make_response
 from services.users_services import UserService
 from utils.exceptions import ConflictError, NotFoundError, ValidationError
 from middlewares.jwt_middleware import token_required
@@ -118,6 +118,32 @@ def delete(id):
         return jsonify({
             "message": "Usuário deletado com sucesso"
         }), 200
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
+# mudar senha do usuário
+@bp_users.route("/users/<int:id>/change-password", methods=['PATCH'])
+@token_required
+@role_required("administrator")
+def change_password(id):
+    try:
+        data = request.get_json()
+
+        UserService.change_password(id, data)
+
+        response = make_response('', 204)
+
+        return response
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except NotFoundError as e:
         return jsonify({
             "message": str(e)
