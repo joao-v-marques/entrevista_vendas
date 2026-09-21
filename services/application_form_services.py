@@ -111,6 +111,11 @@ class ApplicationFormService:
             if discount_percentage not in (None, ""):
                 discount_percentage = float(discount_percentage) / 100
 
+            # validação para garantir que o status que chegar do formulário vai ser 1
+            form_status_id = form_data.get("form_status_id")
+            if form_status_id != "1":
+                raise ValidationError("O status do formulário está incorreto. Entre em contato com o suporte.")
+
             new_application_form = ApplicationForm(
                 beneficiary_type=form_data.get("beneficiary_type"),
                 consultant_id=form_data.get("consultant_id"),
@@ -142,7 +147,7 @@ class ApplicationFormService:
                 portability_observation=form_data.get("portability_observation"),
                 grace_option=form_data.get("grace_option"),
                 especial_observations=form_data.get("especial_observations"),
-                form_status_id=form_data.get("form_status_id"),
+                form_status_id=form_status_id,
                 form_status_name=form_data.get("form_status_name"),
             )
 
