@@ -594,3 +594,109 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 13px;
   }
 }
+
+/* ---------- Senha: campo com olho, checklist e trava de rolagem ----------
+   Compartilhado pelo modal de senha do admin (Configurações) e pelo modal
+   "Alterar senha" do menu do usuário, que existe em todas as páginas. */
+/* Trava a rolagem do fundo enquanto qualquer modal está aberto.
+
+   A trava vai no <html> por ser o elemento de rolagem da viewport
+   (document.scrollingElement): assim não depende da regra de propagação do
+   overflow do <body> para a viewport, que só vale enquanto o <html> estiver com
+   overflow visible.
+
+   O corpo dos modais já tem overflow-y: auto, então formulários
+   longos continuam acessíveis rolando dentro do próprio modal. O padding-right
+   compensatório é aplicado pelo JS com a largura real da barra de rolagem, para
+   o conteúdo não dar um pulo lateral quando a barra some. */
+html.modal-open {
+  overflow: hidden;
+}
+
+/* campo de senha com "olho" (mesmo visual da tela de login) */
+.password-field {
+  position: relative;
+}
+
+.password-field .input {
+  padding-right: 42px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-hint);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.password-toggle:hover {
+  background: var(--gray-100);
+  color: var(--color-text-muted);
+}
+
+.password-toggle[aria-pressed="true"] {
+  color: var(--color-brand);
+}
+
+/* checklist ao vivo: cinza enquanto pendente, verde com check quando atendido */
+.password-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--color-bg-page);
+  border-radius: var(--radius-md);
+}
+
+.password-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  transition: color var(--transition);
+}
+
+.password-checklist-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--gray-300);
+  border-radius: 50%;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.password-checklist li.is-met {
+  color: var(--green-600);
+}
+
+.password-checklist li.is-met .password-checklist-icon {
+  background: var(--green-500);
+  border-color: var(--green-500);
+}
+
+.password-checklist li.is-met .password-checklist-icon::after {
+  content: "";
+  position: absolute;
+  left: 4.5px;
+  top: 1.5px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 1.8px 1.8px 0;
+  transform: rotate(45deg);
+}

@@ -515,3 +515,136 @@
     color: #fff;
   }
 }
+
+/* ---------- Modal "Alterar senha" do menu do usuário ----------
+   O markup é injetado pelo navbar.js. Usa prefixo próprio porque .modal e
+   .modal-overlay mudam de página para página (e nem existem em algumas),
+   enquanto este modal precisa ter a mesma cara em todas as telas.
+   z-index acima da navbar/dropdown (200) e abaixo dos toasts do notyf. */
+.pwd-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(17, 24, 39, 0.55);
+}
+
+.pwd-modal-overlay[hidden] {
+  display: none;
+}
+
+.pwd-modal {
+  width: 100%;
+  max-width: 440px;
+  max-height: calc(100vh - 3rem);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  color: var(--color-text);
+}
+
+.pwd-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.pwd-modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--green-800);
+}
+
+.pwd-modal-subtitle {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.pwd-modal-close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.pwd-modal-close:hover {
+  background: var(--gray-100);
+  color: var(--color-text);
+}
+
+.pwd-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* aviso de que salvar encerra a sessão — informativo, não é erro */
+.pwd-modal-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--blue-700);
+  background: var(--blue-50);
+  border: 1px solid var(--blue-200);
+  border-radius: var(--radius-md);
+}
+
+.pwd-modal-notice svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pwd-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--color-border-light);
+  background: var(--color-bg-secondary);
+}
+
+.pwd-modal-footer .btn--primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.pwd-modal-footer .btn--primary:disabled:hover {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+}
+
+@media (max-width: 480px) {
+  .pwd-modal-overlay {
+    padding: 0.75rem;
+  }
+
+  .pwd-modal-footer .btn {
+    flex: 1;
+    justify-content: center;
+  }
+}

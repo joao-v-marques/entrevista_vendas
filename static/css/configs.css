@@ -8,8 +8,10 @@
 
    Além do layout de sidebar + painel, este arquivo herdou o CSS da antiga
    users.css: as regras genéricas de modal que só ela definia no projeto
-   (html.modal-open, .modal--form, .modal--confirm) e as regras específicas da
-   tabela de usuários, que agora é a primeira seção desta página.
+   (.modal--form, .modal--confirm) e as regras específicas da tabela de
+   usuários, que agora é a primeira seção desta página. A trava de rolagem
+   (html.modal-open) e o campo de senha com olho/checklist foram para o
+   global.css, porque o modal "Alterar senha" da navbar existe em todas as telas.
    ============================================= */
 
 /* =============================================
@@ -332,21 +334,6 @@
   gap: 1.1rem 1.3rem;
 }
 
-/* Trava a rolagem do fundo enquanto qualquer modal está aberto.
-
-   A trava vai no <html> por ser o elemento de rolagem da viewport
-   (document.scrollingElement): assim não depende da regra de propagação do
-   overflow do <body> para a viewport, que só vale enquanto o <html> estiver com
-   overflow visible.
-
-   O .modal-body já tem overflow-y: auto (approve_form.css), então formulários
-   longos continuam acessíveis rolando dentro do próprio modal. O padding-right
-   compensatório é aplicado pelo JS com a largura real da barra de rolagem, para
-   o conteúdo não dar um pulo lateral quando a barra some. */
-html.modal-open {
-  overflow: hidden;
-}
-
 .modal--form {
   max-width: 920px;
 }
@@ -433,94 +420,6 @@ html.modal-open {
 .modal--password .btn--primary:disabled:hover {
   background: var(--color-brand);
   border-color: var(--color-brand);
-}
-
-/* mesmo campo com "olho" da tela de login (login.css não é carregado aqui) */
-.password-field {
-  position: relative;
-}
-
-.password-field .input {
-  padding-right: 42px;
-}
-
-.password-toggle {
-  position: absolute;
-  top: 50%;
-  right: 6px;
-  transform: translateY(-50%);
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-sm);
-  color: var(--color-text-hint);
-  cursor: pointer;
-  transition: background var(--transition), color var(--transition);
-}
-
-.password-toggle:hover {
-  background: var(--gray-100);
-  color: var(--color-text-muted);
-}
-
-.password-toggle[aria-pressed="true"] {
-  color: var(--color-brand);
-}
-
-/* checklist ao vivo: cinza enquanto pendente, verde com check quando atendido */
-.password-checklist {
-  list-style: none;
-  margin: 0;
-  padding: 0.85rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  background: var(--color-bg-page);
-  border-radius: var(--radius-md);
-}
-
-.password-checklist li {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 13px;
-  color: var(--color-text-muted);
-  transition: color var(--transition);
-}
-
-.password-checklist-icon {
-  position: relative;
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  border: 1.5px solid var(--gray-300);
-  border-radius: 50%;
-  transition: background var(--transition), border-color var(--transition);
-}
-
-.password-checklist li.is-met {
-  color: var(--green-600);
-}
-
-.password-checklist li.is-met .password-checklist-icon {
-  background: var(--green-500);
-  border-color: var(--green-500);
-}
-
-.password-checklist li.is-met .password-checklist-icon::after {
-  content: "";
-  position: absolute;
-  left: 4.5px;
-  top: 1.5px;
-  width: 4px;
-  height: 8px;
-  border: solid #fff;
-  border-width: 0 1.8px 1.8px 0;
-  transform: rotate(45deg);
 }
 
 /* =============================================

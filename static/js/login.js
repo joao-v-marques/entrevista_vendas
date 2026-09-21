@@ -3,6 +3,16 @@ const messageLogin = document.getElementById("messageLogin");
 const submitButton = form.querySelector('[type="submit"]');
 const submitButtonOriginalHTML = submitButton.innerHTML;
 
+// quem acabou de trocar a própria senha chega aqui já desconectado (navbar.js);
+// o parâmetro sai da URL para o aviso não repetir num F5
+const loginParams = new URLSearchParams(window.location.search);
+if (loginParams.has("senha-alterada")) {
+    notyf.success("Senha alterada. Entre novamente com a nova senha.");
+    loginParams.delete("senha-alterada");
+    const query = loginParams.toString();
+    history.replaceState(null, "", window.location.pathname + (query ? `?${query}` : "") + window.location.hash);
+}
+
 function setLoginSubmitting(isSubmitting) {
     submitButton.disabled = isSubmitting;
     submitButton.classList.toggle("is-loading", isSubmitting);
