@@ -415,6 +415,19 @@
 .quick-card--amber:hover { border-color: var(--amber-400); }
 .quick-card--blue:hover  { border-color: var(--blue-400); }
 
+/* display:flex/inline-flex vence o [hidden] do user agent — sem esta regra os atalhos
+   que o navbar.js esconde por role continuam visíveis */
+.hero-actions .btn[hidden],
+.quick-card[hidden] {
+  display: none;
+}
+
+/* sem nenhum atalho liberado para a role, a seção "Acesso rápido" some inteira
+   em vez de ficar só com o título */
+.section:has(.quick-grid):not(:has(.quick-card:not([hidden]))) {
+  display: none;
+}
+
 .quick-card-icon {
   width: 44px;
   height: 44px;

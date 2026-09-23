@@ -6,6 +6,6 @@ bp_render_completed_interviews = Blueprint("bp_render_completed_interviews", __n
 
 @bp_render_completed_interviews.route("/entrevistas-realizadas")
 @token_required
-@role_required("administrator", "director", "sales_employee", "interview_employee")
+@role_required("administrator", "director", "sales_employee")
 def render_entrevistas_realizadas():
     return render_template("completed_interviews.html")

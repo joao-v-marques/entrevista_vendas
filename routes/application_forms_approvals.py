@@ -9,7 +9,7 @@ bp_application_form_approval = Blueprint("bp_application_form_approval", __name_
 # GET de todos cadastrados no sistema
 @bp_application_form_approval.route("/application_form_approval", methods=['GET'])
 @token_required
-@role_required("administrator", "director", "finance_employee", "sales_employee")
+@role_required("administrator", "director")
 def get_all():
     try:
         approval_forms = ApplicationFormApprovalService.get_all()

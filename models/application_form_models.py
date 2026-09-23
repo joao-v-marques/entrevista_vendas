@@ -86,9 +86,34 @@ class ApplicationForm:
         }
     
 class ApplicationFormModel:
-    # GET de todos os forms do sistema
+    # Monta o WHERE de visibilidade por colaborador: vendas vê só o que lançou e o financeiro só o
+    # que analisou por último (reanálise feita por outra pessoa tira a ficha da lista de quem analisou antes)
     @staticmethod
-    def get_all():
+    def _visibility_filters(consultant_id=None, financial_reviewer_id=None):
+        conditions = []
+        values = []
+
+        if consultant_id is not None:
+            conditions.append("af.consultant_id = %s")
+            values.append(consultant_id)
+
+        if financial_reviewer_id is not None:
+            conditions.append("""
+                (
+                    SELECT fa.financial_reviewer_id
+                    FROM application_form_approvals fa
+                    WHERE fa.application_form_id = af.id
+                    ORDER BY fa.id DESC
+                    LIMIT 1
+                ) = %s
+            """)
+            values.append(financial_reviewer_id)
+
+        return conditions, values
+
+    # GET de todos os forms do sistema, opcionalmente filtrados pelo colaborador
+    @staticmethod
+    def get_all(consultant_id=None, financial_reviewer_id=None):
         conn = None
         cursor = None
         try:
@@ -137,7 +162,11 @@ class ApplicationFormModel:
                 INNER JOIN form_status fs ON fs.id = af.form_status_id
             """
 
-            cursor.execute(sql_query)
+            conditions, values = ApplicationFormModel._visibility_filters(consultant_id, financial_reviewer_id)
+            if conditions:
+                sql_query += " WHERE " + " AND ".join(conditions)
+
+            cursor.execute(sql_query, values)
             application_forms_data = cursor.fetchall()
 
             application_forms = [
@@ -224,9 +253,9 @@ class ApplicationFormModel:
             if conn:
                 conn.close()
 
-    # GET de todos os forms cadastrados no sistema pelo status
+    # GET de todos os forms cadastrados no sistema pelo status, opcionalmente filtrados pelo colaborador
     @staticmethod
-    def get_by_status(status_id):
+    def get_by_status(status_id, consultant_id=None, financial_reviewer_id=None):
         conn = None
         cursor = None
         try:
@@ -280,7 +309,12 @@ class ApplicationFormModel:
                 LEFT JOIN users iu ON iu.id = ai.interviewer_id
                 WHERE af.form_status_id = %s
             """
-            values = (status_id,)
+            values = [status_id]
+
+            conditions, filter_values = ApplicationFormModel._visibility_filters(consultant_id, financial_reviewer_id)
+            if conditions:
+                sql_query += " AND " + " AND ".join(conditions)
+                values += filter_values
 
             cursor.execute(sql_query, values)
             application_forms_data = cursor.fetchall()

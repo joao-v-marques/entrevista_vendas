@@ -8,16 +8,45 @@ from models.application_form_management import ApplicationFormManagementModel
 from models.application_form_documents import ApplicationFormDocumentModel
 from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel
 from services.application_form_documents_services import ApplicationFormDocumentService
-from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationError
+from utils.exceptions import AppError, ConflictError, ForbiddenError, NotFoundError, ValidationError
 from utils.validations import to_id
 
 class ApplicationFormService:
-    # GET de todos cadastrados no sistema
-    def get_all():
+    # GET de todos cadastrados no sistema, opcionalmente filtrados pelo colaborador
+    def get_all(consultant_id=None, financial_reviewer_id=None):
         try:
-            application_forms = ApplicationFormModel.get_all()
+            application_forms = ApplicationFormModel.get_all(consultant_id, financial_reviewer_id)
 
             return application_forms
+        except Exception as e:
+            raise Exception(str(e))
+
+    # Garante que o usuário logado pode acessar uma ficha específica: diretoria e administradores
+    # acessam todas, vendas só as que lançou e o financeiro só as que analisou por último
+    def check_access(application_form_id, user):
+        try:
+            role_name = (user.get("role_name") or "").lower()
+
+            if role_name in ("administrator", "director"):
+                return True
+
+            application_form = ApplicationFormModel.get_by_id(application_form_id)
+
+            if not application_form:
+                raise NotFoundError("Formulário não encontrado")
+
+            if role_name == "sales_employee" and application_form.consultant_id == user.get("id"):
+                return True
+
+            if role_name == "finance_employee":
+                approval = ApplicationFormApprovalModel.get_by_application_form_id(application_form_id)
+
+                if approval and approval.financial_reviewer_id == user.get("id"):
+                    return True
+
+            raise ForbiddenError("Você não tem permissão para acessar este formulário")
+        except AppError:
+            raise
         except Exception as e:
             raise Exception(str(e))
 
@@ -61,19 +90,19 @@ class ApplicationFormService:
         except Exception as e:
             raise Exception(str(e))
     
-    # GET por status
-    def get_by_status(status_id):
+    # GET por status, opcionalmente filtrados pelo colaborador
+    def get_by_status(status_id, consultant_id=None, financial_reviewer_id=None):
         try:
-            application_forms = ApplicationFormModel.get_by_status(status_id)
+            application_forms = ApplicationFormModel.get_by_status(status_id, consultant_id, financial_reviewer_id)
 
             return application_forms
         except Exception as e:
             raise Exception(str(e))
 
     # GET das fichas aguardando aprovação da gerência (status 4) juntamente com as entrevistas qualificadas
-    def get_pending_management_approval():
+    def get_pending_management_approval(consultant_id=None):
         try:
-            application_forms = ApplicationFormModel.get_by_status(4)
+            application_forms = ApplicationFormModel.get_by_status(4, consultant_id)
 
             qualify_by_form_id = QualifyInterviewModel.get_by_application_form_ids(
                 [application_form.id for application_form in application_forms]

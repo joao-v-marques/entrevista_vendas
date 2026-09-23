@@ -191,7 +191,7 @@
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           Inserir nova ficha
         </a>
-        <a href="{{ url_for('bp_render_forms.render_fichas') }}" class="btn btn--outline">
+        <a href="{{ url_for('bp_render_forms.render_fichas') }}" class="btn btn--outline" data-page="pendentes">
           Ver todas as fichas
         </a>
       </div>
@@ -240,7 +240,7 @@
           <span class="quick-card-tag">Novo cadastro</span>
         </a>
 
-        <a href="{{ url_for('bp_render_forms.render_fichas') }}" class="quick-card quick-card--amber">
+        <a href="{{ url_for('bp_render_forms.render_fichas') }}" class="quick-card quick-card--amber" data-page="pendentes">
           <div class="quick-card-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 4h14M4 9h14M4 14h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
           </div>

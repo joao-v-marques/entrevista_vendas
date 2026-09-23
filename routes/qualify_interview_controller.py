@@ -7,7 +7,7 @@ bp_qualify_interview = Blueprint("bp_qualify_interview", __name__)
 
 @bp_qualify_interview.route("/qualify-interviews", methods=['GET'])
 @token_required
-@role_required("administrator", "director", "sales_employee")
+@role_required("administrator", "director")
 def get_all():
     try:
         qualify_interviews = QualifyInterviewService.get_all()

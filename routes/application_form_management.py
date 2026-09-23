@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from services.application_form_management import ApplicationFormManagementService
 from services.application_form_services import ApplicationFormService
-from utils.exceptions import ConflictError, NotFoundError, ValidationError
+from utils.exceptions import ConflictError, ForbiddenError, NotFoundError, ValidationError
 from middlewares.jwt_middleware import token_required
 from middlewares.permissions import role_required
 
@@ -10,7 +10,7 @@ bp_application_form_management = Blueprint("bp_application_form_management", __n
 # GET de todos cadastrados no sistema
 @bp_application_form_management.route("/application_form_management", methods=['GET'])
 @token_required
-@role_required("administrator", "director", "sales_employee")
+@role_required("administrator", "director")
 def get_all():
     try:
         management_forms = ApplicationFormManagementService.get_all()
@@ -72,6 +72,8 @@ def request_reanalysis(application_form_id):
         requester_id = request.form.get("requester_id")
         files = request.files.getlist("medical_report")
 
+        ApplicationFormService.check_access(application_form_id, request.user)
+
         # request.form sempre devolve string, mas requester_id é coluna int no banco
         if requester_id:
             if not requester_id.isdigit():
@@ -92,6 +94,10 @@ def request_reanalysis(application_form_id):
         return jsonify({
             "message": str(e)
         }), 400
+    except ForbiddenError as e:
+        return jsonify({
+            "message": str(e)
+        }), 403
     except NotFoundError as e:
         return jsonify({
             "message": str(e)
@@ -111,9 +117,15 @@ def request_reanalysis(application_form_id):
 @role_required("administrator", "director", "sales_employee")
 def close_negotiation(application_form_id):
     try:
+        ApplicationFormService.check_access(application_form_id, request.user)
+
         ApplicationFormManagementService.close_negotiation(application_form_id)
 
         return jsonify({"message": "Negociação encerrada com sucesso"}), 200
+    except ForbiddenError as e:
+        return jsonify({
+            "message": str(e)
+        }), 403
     except NotFoundError as e:
         return jsonify({
             "message": str(e)

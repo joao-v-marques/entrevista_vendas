@@ -6,6 +6,6 @@ bp_render_rejected_interview_forms = Blueprint("bp_render_rejected_interview_for
 
 @bp_render_rejected_interview_forms.route("/fichas-reprovadas-entrevista")
 @token_required
-@role_required("administrator", "director", "sales_employee", "interview_employee")
+@role_required("administrator", "director", "sales_employee")
 def render_fichas_reprovadas_entrevista():
     return render_template("rejected_interview_forms.html")

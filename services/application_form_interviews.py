@@ -15,9 +15,9 @@ class ApplicationFormInterviewService:
             raise Exception(str(e))
 
     # GET das entrevistas já analisadas, usado pela tela de Entrevistas Realizadas
-    def get_completed():
+    def get_completed(consultant_id=None):
         try:
-            completed_interviews = ApplicationFormInterviewModel.get_completed()
+            completed_interviews = ApplicationFormInterviewModel.get_completed(consultant_id)
 
             return completed_interviews
         except Exception as e:

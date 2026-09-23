@@ -110,7 +110,7 @@ class ApplicationFormInterviewModel:
 
     # GET das entrevistas JÁ ANALISADAS (aprovadas e reprovadas), para a tela de Entrevistas
     @staticmethod
-    def get_completed():
+    def get_completed(consultant_id=None):
         conn = None
         cursor = None
         try:
@@ -141,9 +141,17 @@ class ApplicationFormInterviewModel:
                 LEFT JOIN users ui ON ui.id = ai.interviewer_id
                 LEFT JOIN qualify_interviews qi ON qi.application_form_interview_id = ai.id
                 WHERE ai.interview_reviewed_at IS NOT NULL
-                ORDER BY ai.interview_reviewed_at DESC
             """
-            cursor.execute(sql_query)
+            values = []
+
+            # vendedor enxerga só as entrevistas das fichas que ele lançou
+            if consultant_id is not None:
+                sql_query += " AND af.consultant_id = %s"
+                values.append(consultant_id)
+
+            sql_query += " ORDER BY ai.interview_reviewed_at DESC"
+
+            cursor.execute(sql_query, values)
 
             completed_interviews_data = cursor.fetchall()
 
