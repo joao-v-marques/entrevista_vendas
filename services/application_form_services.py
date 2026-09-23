@@ -116,12 +116,17 @@ class ApplicationFormService:
             if form_status_id != "1":
                 raise ValidationError("O status do formulário está incorreto. Entre em contato com o suporte.")
 
+            # validação para garantir que quando for troca de plano chegar a data do cancelamento do plano anterior
+            if form_data.get("inclusion_type") == "Troca de Plano" and not form_data.get("previous_plan_cancellation_date"):
+                raise ValidationError("Informe a data do cancelamento do plano anterior")
+
             new_application_form = ApplicationForm(
                 beneficiary_type=form_data.get("beneficiary_type"),
                 consultant_id=form_data.get("consultant_id"),
                 inclusion_type=form_data.get("inclusion_type"),
                 cnpj=form_data.get("cnpj"),
                 previous_plan=form_data.get("previous_plan"),
+                previous_plan_cancellation_date=form_data.get("previous_plan_cancellation_date") or None,
                 inclusion_date=form_data.get("inclusion_date"),
                 contract_type=form_data.get("contract_type"),
                 plan_type=form_data.get("plan_type"),
