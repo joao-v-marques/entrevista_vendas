@@ -146,7 +146,7 @@ class ApplicationFormService:
                 portability_accepted_date=form_data.get("portability_accepted_date"),
                 portability_observation=form_data.get("portability_observation"),
                 grace_option=form_data.get("grace_option"),
-                especial_observations=form_data.get("especial_observations"),
+                especial_observations=form_data.get("especial_observations") or None,
                 form_status_id=form_status_id,
                 form_status_name=form_data.get("form_status_name"),
             )
