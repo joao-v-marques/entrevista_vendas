@@ -1,0 +1,2 @@
+ALTER TABLE application_forms
+ADD COLUMN previous_plan_cancellation_date DATE;
