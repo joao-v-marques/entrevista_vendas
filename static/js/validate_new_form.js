@@ -116,6 +116,16 @@ modeloPropostaInput.addEventListener("input", () => {
     modeloPropostaInput.value = maskPlanoAnterior(digits);
 });
 
+// ! ========== Validação: Mod./Prop. é opcional para "Troca de Plano" ==========
+function toggleModeloPropostaRequired() {
+    const isTrocaDePlano = tipoInclusaoSelect.value === "Troca de Plano";
+
+    modeloPropostaInput.required = !isTrocaDePlano;
+}
+
+tipoInclusaoSelect.addEventListener("change", toggleModeloPropostaRequired);
+toggleModeloPropostaRequired();
+
 // ! ========== Máscara: Fone / Celular no padrão (00) 00000-0000, sem permitir mais ou menos dígitos ==========
 const telefoneInput = document.getElementById("telefone");
 

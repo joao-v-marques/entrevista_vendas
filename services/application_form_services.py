@@ -125,7 +125,7 @@ class ApplicationFormService:
                 inclusion_date=form_data.get("inclusion_date"),
                 contract_type=form_data.get("contract_type"),
                 plan_type=form_data.get("plan_type"),
-                model_proposal=form_data.get("model_proposal"),
+                model_proposal=form_data.get("model_proposal") or None,
                 expiration_month=form_data.get("expiration_month"),
                 is_pa_digital=form_data.get("is_pa_digital"),
                 is_aeromedic=form_data.get("is_aeromedic"),
