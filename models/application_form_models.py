@@ -405,6 +405,54 @@ class ApplicationFormModel:
 
         return cursor.fetchone()
 
+    # SELECT ... FOR UPDATE da ficha, usando um cursor externo. Trava a linha até o fim da transação
+    # para que a ficha não mude de status entre a checagem e a edição (ex.: aprovação simultânea).
+    @staticmethod
+    def lock_for_update(cursor, application_form_id):
+        sql_query = """
+            SELECT id, form_status_id
+            FROM application_forms
+            WHERE id = %s
+            FOR UPDATE
+        """
+        values = (application_form_id,)
+
+        cursor.execute(sql_query, values)
+
+        return cursor.fetchone()
+
+    # UPDATE dos campos editáveis da ficha, usando um cursor externo, sem commit/close.
+    # A lista de colunas é fixa: status, consultor, tipo de beneficiário e created_at nunca entram no SET.
+    @staticmethod
+    def update_form(cursor, application_form_id, fields):
+        sql_query = """
+            UPDATE application_forms SET
+                inclusion_type = %s, cnpj = %s, previous_plan = %s, previous_plan_cancellation_date = %s,
+                inclusion_date = %s, contract_type = %s, plan_type = %s, model_proposal = %s, expiration_month = %s,
+                is_pa_digital = %s, is_aeromedic = %s, is_discount = %s, discount_percentage = %s, discount_observation = %s,
+                beneficiary_name = %s, beneficiary_cpf = %s, beneficiary_birth_date = %s, beneficiary_phone = %s, beneficiary_email = %s,
+                beneficiary_marital_state = %s, billing_email = %s,
+                secondary_beneficiary_primary_name = %s, secondary_beneficiary_kinship = %s,
+                is_portability = %s, portability_accepted = %s, portability_accepted_date = %s, portability_observation = %s,
+                grace_option = %s, especial_observations = %s
+            WHERE id = %s
+        """
+        values = (
+            fields["inclusion_type"], fields["cnpj"], fields["previous_plan"], fields["previous_plan_cancellation_date"],
+            fields["inclusion_date"], fields["contract_type"], fields["plan_type"], fields["model_proposal"], fields["expiration_month"],
+            fields["is_pa_digital"], fields["is_aeromedic"], fields["is_discount"], fields["discount_percentage"], fields["discount_observation"],
+            fields["beneficiary_name"], fields["beneficiary_cpf"], fields["beneficiary_birth_date"], fields["beneficiary_phone"], fields["beneficiary_email"],
+            fields["beneficiary_marital_state"], fields["billing_email"],
+            fields["secondary_beneficiary_primary_name"], fields["secondary_beneficiary_kinship"],
+            fields["is_portability"], fields["portability_accepted"], fields["portability_accepted_date"], fields["portability_observation"],
+            fields["grace_option"], fields["especial_observations"],
+            application_form_id,
+        )
+
+        cursor.execute(sql_query, values)
+
+        return True
+
     # UPDATE do campo de status do formulário
     @staticmethod
     def update_status(new_status_id, application_form_id):

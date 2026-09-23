@@ -9,6 +9,7 @@ from models.application_form_documents import ApplicationFormDocumentModel
 from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel
 from services.application_form_documents_services import ApplicationFormDocumentService
 from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationError
+from utils.validations import to_id
 
 class ApplicationFormService:
     # GET de todos cadastrados no sistema
@@ -88,6 +89,66 @@ class ApplicationFormService:
         except Exception as e:
             raise Exception(str(e))
 
+    # Monta e valida os campos EDITÁVEIS da ficha a partir dos dados recebidos.
+    # Compartilhado entre o cadastro e a edição, para que uma regra nova de campo valha nos dois.
+    # Status, consultor, tipo de beneficiário e datas de controle ficam de fora de propósito.
+    @staticmethod
+    def _build_form_fields(form_data):
+        # discount_percentage é salvo como fração (ex: 50% -> 0.50) para caber em numeric(3, 2)
+        discount_percentage = form_data.get("discount_percentage")
+        if discount_percentage not in (None, ""):
+            discount_percentage = float(discount_percentage) / 100
+
+        # validação para garantir que quando for troca de plano chegar a data do cancelamento do plano anterior
+        if form_data.get("inclusion_type") == "Troca de Plano" and not form_data.get("previous_plan_cancellation_date"):
+            raise ValidationError("Informe a data do cancelamento do plano anterior")
+
+        return {
+            "inclusion_type": form_data.get("inclusion_type"),
+            "cnpj": form_data.get("cnpj"),
+            "previous_plan": form_data.get("previous_plan"),
+            "previous_plan_cancellation_date": form_data.get("previous_plan_cancellation_date") or None,
+            "inclusion_date": form_data.get("inclusion_date"),
+            "contract_type": form_data.get("contract_type"),
+            "plan_type": form_data.get("plan_type"),
+            "model_proposal": form_data.get("model_proposal") or None,
+            "expiration_month": form_data.get("expiration_month"),
+            "is_pa_digital": form_data.get("is_pa_digital"),
+            "is_aeromedic": form_data.get("is_aeromedic"),
+            "is_discount": form_data.get("is_discount"),
+            "discount_percentage": discount_percentage,
+            "discount_observation": form_data.get("discount_observation"),
+            "beneficiary_name": form_data.get("beneficiary_name"),
+            "beneficiary_cpf": form_data.get("beneficiary_cpf"),
+            "beneficiary_birth_date": form_data.get("beneficiary_birth_date"),
+            "beneficiary_phone": form_data.get("beneficiary_phone"),
+            "beneficiary_email": form_data.get("beneficiary_email"),
+            "beneficiary_marital_state": form_data.get("beneficiary_marital_state"),
+            "billing_email": form_data.get("billing_email"),
+            "secondary_beneficiary_primary_name": form_data.get("secondary_beneficiary_primary_name"),
+            "secondary_beneficiary_kinship": form_data.get("secondary_beneficiary_kinship"),
+            "is_portability": form_data.get("is_portability"),
+            "portability_accepted": form_data.get("portability_accepted"),
+            "portability_accepted_date": form_data.get("portability_accepted_date"),
+            "portability_observation": form_data.get("portability_observation"),
+            "grace_option": form_data.get("grace_option"),
+            "especial_observations": form_data.get("especial_observations") or None,
+        }
+
+    # Monta os responsáveis pela inclusão a partir dos dados recebidos (cadastro e edição)
+    @staticmethod
+    def _build_responsibles(responsibles_data, application_form_id=None):
+        return [
+            InclusionResponsibles(
+                name=responsible.get("name"),
+                cpf=responsible.get("cpf"),
+                marital_state=responsible.get("marital_state"),
+                profession=responsible.get("profession"),
+                application_form_id=application_form_id,
+            )
+            for responsible in responsibles_data
+        ]
+
     # POST ATÔMICO: cria o formulário, seus responsáveis pela inclusão e os documentos
     # anexados numa única transação (tudo ou nada). Os arquivos são gravados em disco e,
     # se qualquer insert falhar, é feito rollback do banco E os arquivos salvos são removidos,
@@ -106,66 +167,20 @@ class ApplicationFormService:
             if not files:
                 raise ValidationError("É necessário anexar ao menos um documento")
 
-            # discount_percentage é salvo como fração (ex: 50% -> 0.50) para caber em numeric(3, 2)
-            discount_percentage = form_data.get("discount_percentage")
-            if discount_percentage not in (None, ""):
-                discount_percentage = float(discount_percentage) / 100
-
             # validação para garantir que o status que chegar do formulário vai ser 1
             form_status_id = form_data.get("form_status_id")
             if form_status_id != "1":
                 raise ValidationError("O status do formulário está incorreto. Entre em contato com o suporte.")
 
-            # validação para garantir que quando for troca de plano chegar a data do cancelamento do plano anterior
-            if form_data.get("inclusion_type") == "Troca de Plano" and not form_data.get("previous_plan_cancellation_date"):
-                raise ValidationError("Informe a data do cancelamento do plano anterior")
-
             new_application_form = ApplicationForm(
                 beneficiary_type=form_data.get("beneficiary_type"),
                 consultant_id=form_data.get("consultant_id"),
-                inclusion_type=form_data.get("inclusion_type"),
-                cnpj=form_data.get("cnpj"),
-                previous_plan=form_data.get("previous_plan"),
-                previous_plan_cancellation_date=form_data.get("previous_plan_cancellation_date") or None,
-                inclusion_date=form_data.get("inclusion_date"),
-                contract_type=form_data.get("contract_type"),
-                plan_type=form_data.get("plan_type"),
-                model_proposal=form_data.get("model_proposal") or None,
-                expiration_month=form_data.get("expiration_month"),
-                is_pa_digital=form_data.get("is_pa_digital"),
-                is_aeromedic=form_data.get("is_aeromedic"),
-                is_discount=form_data.get("is_discount"),
-                discount_percentage=discount_percentage,
-                discount_observation=form_data.get("discount_observation"),
-                beneficiary_name=form_data.get("beneficiary_name"),
-                beneficiary_cpf=form_data.get("beneficiary_cpf"),
-                beneficiary_birth_date=form_data.get("beneficiary_birth_date"),
-                beneficiary_phone=form_data.get("beneficiary_phone"),
-                beneficiary_email=form_data.get("beneficiary_email"),
-                beneficiary_marital_state=form_data.get("beneficiary_marital_state"),
-                billing_email=form_data.get("billing_email"),
-                secondary_beneficiary_primary_name=form_data.get("secondary_beneficiary_primary_name"),
-                secondary_beneficiary_kinship=form_data.get("secondary_beneficiary_kinship"),
-                is_portability=form_data.get("is_portability"),
-                portability_accepted=form_data.get("portability_accepted"),
-                portability_accepted_date=form_data.get("portability_accepted_date"),
-                portability_observation=form_data.get("portability_observation"),
-                grace_option=form_data.get("grace_option"),
-                especial_observations=form_data.get("especial_observations") or None,
                 form_status_id=form_status_id,
                 form_status_name=form_data.get("form_status_name"),
+                **ApplicationFormService._build_form_fields(form_data),
             )
 
-            new_responsibles = [
-                InclusionResponsibles(
-                    name=responsible.get("name"),
-                    cpf=responsible.get("cpf"),
-                    marital_state=responsible.get("marital_state"),
-                    profession=responsible.get("profession"),
-                    application_form_id=None,
-                )
-                for responsible in responsibles_data
-            ]
+            new_responsibles = ApplicationFormService._build_responsibles(responsibles_data)
 
             conn, cursor = get_db_connection()
 
@@ -196,6 +211,63 @@ class ApplicationFormService:
             if conn:
                 conn.rollback()
             ApplicationFormDocumentService.delete_files(saved_paths)
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    # PUT ATÔMICO: edita os campos editáveis da ficha e substitui os responsáveis pela inclusão
+    # numa única transação (tudo ou nada). Status, consultor, tipo de beneficiário e datas de
+    # controle não são lidos do corpo, então nunca são alterados por aqui.
+    def update_complete(application_form_id, form_data, responsibles_data):
+        conn = None
+        cursor = None
+        try:
+            application_form_id = to_id(application_form_id, "formulário")
+            form_data = form_data or {}
+            responsibles_data = responsibles_data or []
+
+            if not responsibles_data:
+                raise ValidationError("É necessário informar ao menos um responsável pela inclusão")
+
+            # valida tudo antes de abrir a transação
+            fields = ApplicationFormService._build_form_fields(form_data)
+            new_responsibles = ApplicationFormService._build_responsibles(responsibles_data, application_form_id)
+
+            conn, cursor = get_db_connection()
+
+            # trava a ficha até o fim da transação, para o status não mudar entre a checagem e o update
+            application_form = ApplicationFormModel.lock_for_update(cursor, application_form_id)
+
+            if not application_form:
+                raise NotFoundError("Formulário não encontrado")
+
+            # 6. Finalizado, 8/10/12. Negociação Encerrada
+            if application_form["form_status_id"] in (6, 8, 10, 12):
+                raise ConflictError("Não é possível editar formulários finalizados ou com negociação encerrada")
+
+            # 1. ficha
+            ApplicationFormModel.update_form(cursor, application_form_id, fields)
+
+            # 2. responsáveis: apaga os atuais e insere a lista recebida
+            InclusionResponsiblesModel.delete_by_application_form_id(cursor, application_form_id)
+            for responsible in new_responsibles:
+                InclusionResponsiblesModel.insert(cursor, responsible)
+
+            conn.commit()
+
+            updated_application_form = ApplicationFormModel.get_by_id(application_form_id)
+
+            return updated_application_form, new_responsibles
+        except AppError:
+            if conn:
+                conn.rollback()
+            raise
+        except Exception as e:
+            if conn:
+                conn.rollback()
             raise Exception(str(e))
         finally:
             if cursor:

@@ -108,6 +108,20 @@ class InclusionResponsiblesModel:
 
         return inclusion_responsible
 
+    # DELETE de todos os responsáveis de um formulário usando um cursor externo, sem commit/close.
+    # Usado na edição da ficha, que substitui a lista inteira dentro da mesma transação.
+    @staticmethod
+    def delete_by_application_form_id(cursor, application_form_id):
+        sql_query = """
+            DELETE FROM inclusion_responsibles
+            WHERE application_form_id = %s
+        """
+        values = (application_form_id,)
+
+        cursor.execute(sql_query, values)
+
+        return True
+
     # POST de um responsável pela inclusão no sistema
     @staticmethod
     def create(inclusion_responsible):

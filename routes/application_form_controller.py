@@ -114,6 +114,41 @@ def create_form_complete():
             "message": str(e)
         }), 500
 
+# PUT ATÔMICO: edita os dados editáveis do formulário e substitui os responsáveis pela inclusão.
+# Recebe JSON: "form" (objeto) e "responsibles" (lista). Status, consultor, tipo de beneficiário
+# e datas de controle não são alterados por aqui, mesmo que venham no corpo.
+@bp_application_form.route("/application-forms/<int:application_form_id>", methods=['PUT'])
+@token_required
+@role_required("administrator", "director")
+def update_form_complete(application_form_id):
+    try:
+        data = request.get_json(silent=True) or {}
+
+        application_form, responsibles = ApplicationFormService.update_complete(
+            application_form_id, data.get("form"), data.get("responsibles")
+        )
+
+        return jsonify({
+            "form": application_form.to_dict(),
+            "responsibles": [responsible.to_dict() for responsible in responsibles],
+        }), 200
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
 # POST para solicitar reanálise financeira de uma ficha reprovada
 @bp_application_form.route("/application-forms/<int:application_form_id>/request-reanalysis", methods=['POST'])
 @token_required
