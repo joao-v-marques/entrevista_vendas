@@ -287,6 +287,376 @@
         </div>
     </div>
 
+    <!-- ===== MODAL: EDIÇÃO DO FORMULÁRIO (administrador e diretoria) ===== -->
+    <!-- Os campos e opções espelham o new_form.html; a lógica fica em formsModals/editFormModal.js -->
+    <div class="modal-overlay" id="editFormModalOverlay" hidden>
+        <div class="modal modal--edit" role="dialog" aria-modal="true" aria-labelledby="editFormModalTitle">
+            <div class="modal-header">
+                <div class="edit-form-heading">
+                    <h2 class="modal-title" id="editFormModalTitle">Editar formulário #<span id="editFormModalId"></span></h2>
+                    <p class="edit-form-subtitle" id="editFormModalSubtitle"></p>
+                </div>
+                <button type="button" class="modal-close" id="editFormModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Atalhos para as seções: fora da área rolável, sempre visíveis -->
+            <nav class="edit-form-nav" id="editFormNav" hidden aria-label="Seções do formulário">
+                <button type="button" class="edit-form-nav-link" data-target="editSectionPlan">Plano e inclusão</button>
+                <button type="button" class="edit-form-nav-link" data-target="editSectionBeneficiary">Beneficiário</button>
+                <button type="button" class="edit-form-nav-link" data-target="editSectionResponsibles">Responsáveis</button>
+                <button type="button" class="edit-form-nav-link" data-target="editSectionPortability">Portabilidade</button>
+                <button type="button" class="edit-form-nav-link" data-target="editSectionExtra">Carência e observações</button>
+            </nav>
+
+            <!-- carregamento/erro: o form só aparece depois que os dados chegam -->
+            <div class="modal-body" id="editFormModalStatus"></div>
+
+            <div class="modal-body edit-form-body" id="editFormModalBody" hidden>
+                <!-- Dados que o PUT não altera: aparecem só como contexto -->
+                <div class="edit-form-context">
+                    <div class="edit-form-context-item">
+                        <span class="edit-form-context-label">Status</span>
+                        <span id="editContextStatus"></span>
+                    </div>
+                    <div class="edit-form-context-item">
+                        <span class="edit-form-context-label">Tipo de beneficiário</span>
+                        <span class="edit-form-context-value" id="editContextType"></span>
+                    </div>
+                    <div class="edit-form-context-item">
+                        <span class="edit-form-context-label">Consultor</span>
+                        <span class="edit-form-context-value" id="editContextConsultant"></span>
+                    </div>
+                    <div class="edit-form-context-item">
+                        <span class="edit-form-context-label">Criado em</span>
+                        <span class="edit-form-context-value" id="editContextCreatedAt"></span>
+                    </div>
+                    <p class="edit-form-context-note">
+                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.6" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                        Esses dados e os documentos anexados não são alterados pela edição.
+                    </p>
+                </div>
+
+                <form id="editForm" class="edit-form">
+                    <!-- ========== 1. Plano e inclusão ========== -->
+                    <section class="edit-form-section" id="editSectionPlan">
+                        <h3 class="edit-form-section-title"><span class="edit-form-step">1</span>Plano e inclusão</h3>
+                        <div class="edit-form-grid">
+                            <div class="form-group">
+                                <label for="edit_inclusion_type" class="form-label required">Tipo de inclusão</label>
+                                <select name="inclusion_type" id="edit_inclusion_type" class="select" required>
+                                    <option value="Existente">Existente</option>
+                                    <option value="Novo Contrato">Novo Contrato</option>
+                                    <option value="Troca de Plano">Troca de Plano</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="edit_previous_plan_group" hidden>
+                                <label for="edit_previous_plan" class="form-label required">Plano anterior</label>
+                                <input id="edit_previous_plan" class="input" name="previous_plan" type="text" placeholder="00/0000" inputmode="numeric" maxlength="7" pattern="\d{2}\/\d{4}" title="Informe o plano anterior no formato 00/0000" required>
+                            </div>
+
+                            <div class="form-group" id="edit_previous_plan_cancellation_date_group" hidden>
+                                <label for="edit_previous_plan_cancellation_date" class="form-label required">Cancelamento do plano anterior</label>
+                                <input id="edit_previous_plan_cancellation_date" class="input" name="previous_plan_cancellation_date" type="date" required>
+                            </div>
+
+                            <div class="form-group" id="edit_cnpj_group" hidden>
+                                <label for="edit_cnpj" class="form-label required">CNPJ (novo contrato empresarial)</label>
+                                <input id="edit_cnpj" class="input" name="cnpj" type="text" placeholder="00.000.000/0000-00" inputmode="numeric" maxlength="18" pattern="\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}" title="Informe o CNPJ completo no formato 00.000.000/0000-00" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_inclusion_date" class="form-label required">Data da inclusão</label>
+                                <input id="edit_inclusion_date" class="input" name="inclusion_date" type="date" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_contract_type" class="form-label required">Contratação</label>
+                                <select name="contract_type" id="edit_contract_type" class="select" required>
+                                    <option value="Pessoa Fisica">Pessoa Física</option>
+                                    <option value="Pessoa Juridica">Pessoa Júridica</option>
+                                    <option value="Odonto">Odonto</option>
+                                    <option value="Coletivo por Adesão">Coletivo por Adesão</option>
+                                    <option value="Adesão P.A Digital">Adesão P.A Digital</option>
+                                    <option value="ACISSP">ACISSP</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="edit_model_proposal_group">
+                                <label for="edit_model_proposal" class="form-label required">Mod./Prop.</label>
+                                <input id="edit_model_proposal" class="input" name="model_proposal" type="text" placeholder="00/0000" inputmode="numeric" maxlength="7" pattern="\d{2}\/\d{4}" title="Informe o modelo/proposta no formato 00/0000" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_plan_type" class="form-label required">Plano</label>
+                                <select name="plan_type" id="edit_plan_type" class="select" required>
+                                    <option value="UNIPOP PESSOA FISICA">UNIPOP PESSOA FÍSICA</option>
+                                    <option value="UNIVIDA PESSOA FISICA">UNIVIDA PESSOA FÍSICA</option>
+                                    <option value="UNIMED FRANCA PF">UNIMED FRANCA PF</option>
+                                    <option value="PESSOA FISICA HOSPITALAR - REFERENCIA">PESSOA FÍSICA HOSPITALAR - REFERÊNCIA</option>
+                                    <option value="UNIPOP PESSOA JURIDICA">UNIPOP PESSOA JURIDICA</option>
+                                    <option value="UNIMED FACIL">UNIMED FÁCIL</option>
+                                    <option value="UNIEMPRESA ECONOMY STANDARD">UNIEMPRESA ECONOMY STANDARD</option>
+                                    <option value="UNIMED RIBEIRAO PRETO PJ">UNIMED RIBEIRÃO PRETO PJ</option>
+                                    <option value="UNIMED FRANCA PJ">UNIMED FRANCA PJ</option>
+                                    <option value="UNIMED REGIONAL ENF. CO-PARTICIPATIVO">UNIMED REGIONAL ENF. CO-PARTICIPATIVO</option>
+                                    <option value="UNIPLAN CO-PARTICIPATIVO ENF.">UNIPLAN CO-PARTICIPATIVO ENF.</option>
+                                    <option value="UNIPOP ACISSP">UNIPOP ACISSP</option>
+                                    <option value="PLANO LOCAL CO-PART 30% ACISSP">PLANO LOCAL CO-PART 30% ACISSP</option>
+                                    <option value="PLANO EXECUTIVO S/ CO-PART ACISSP">PLANO EXECUTIVO S/ CO-PART ACISSP</option>
+                                    <option value="UNIMED LOCAL + RIB. PRETO - ACISSP">UNIMED LOCAL + RIB. PRETO - ACISSP</option>
+                                    <option value="UNIPLAN ACISSP">UNIPLAN ACISSP</option>
+                                    <option value="OUTROS">OUTROS</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_expiration_month" class="form-label required">Vencimento</label>
+                                <select name="expiration_month" id="edit_expiration_month" class="select" required>
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                    <option value="25">25</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_is_pa_digital" class="form-label required">Adesão ao PA Digital</label>
+                                <select id="edit_is_pa_digital" class="select" name="is_pa_digital" required>
+                                    <option value="false">NÃO</option>
+                                    <option value="true">SIM</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_is_aeromedic" class="form-label required">Aeromédico</label>
+                                <select id="edit_is_aeromedic" class="select" name="is_aeromedic" required>
+                                    <option value="false">NÃO</option>
+                                    <option value="true">SIM</option>
+                                </select>
+                            </div>
+
+                            <!-- Desconto -->
+                            <div class="edit-form-subsection">
+                                <div class="edit-form-subsection-title">Desconto</div>
+                                <div class="edit-form-grid">
+                                    <div class="form-group">
+                                        <label for="edit_is_discount" class="form-label required">Possui desconto?</label>
+                                        <select id="edit_is_discount" class="select" name="is_discount" required>
+                                            <option value="false">NÃO</option>
+                                            <option value="true">SIM</option>
+                                        </select>
+                                        <span class="edit-form-hint" id="edit_is_discount_hint" hidden>Inclusões do tipo Existente não possuem desconto.</span>
+                                    </div>
+
+                                    <div class="form-group" id="edit_discount_percentage_group" hidden>
+                                        <label for="edit_discount_percentage" class="form-label required">Porcentagem de desconto</label>
+                                        <input type="number" id="edit_discount_percentage" class="input" name="discount_percentage" placeholder="50" min="0" max="99" step="0.01" required>
+                                    </div>
+
+                                    <div class="form-group full-width" id="edit_discount_observation_group" hidden>
+                                        <label for="edit_discount_observation" class="form-label required">Observações do desconto</label>
+                                        <textarea id="edit_discount_observation" class="textarea" name="discount_observation" placeholder="Explique o motivo do desconto" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ========== 2. Beneficiário ========== -->
+                    <section class="edit-form-section" id="editSectionBeneficiary">
+                        <h3 class="edit-form-section-title"><span class="edit-form-step">2</span>Beneficiário</h3>
+                        <div class="edit-form-grid">
+                            <div class="form-group">
+                                <label for="edit_beneficiary_name" class="form-label required">Nome do beneficiário</label>
+                                <input id="edit_beneficiary_name" class="input" name="beneficiary_name" type="text" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_beneficiary_cpf" class="form-label required">CPF</label>
+                                <input id="edit_beneficiary_cpf" class="input" name="beneficiary_cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" title="Informe o CPF completo no formato 000.000.000-00" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_beneficiary_birth_date" class="form-label required">Data de nascimento</label>
+                                <input id="edit_beneficiary_birth_date" class="input" name="beneficiary_birth_date" type="date" min="1900-01-01" required>
+                            </div>
+
+                            <!-- Só para dependentes -->
+                            <div class="form-group" id="edit_primary_name_group" hidden>
+                                <label for="edit_secondary_beneficiary_primary_name" class="form-label required">Nome do titular</label>
+                                <input id="edit_secondary_beneficiary_primary_name" class="input" name="secondary_beneficiary_primary_name" type="text" placeholder="Nome do titular" required>
+                            </div>
+
+                            <div class="form-group" id="edit_kinship_group" hidden>
+                                <label for="edit_secondary_beneficiary_kinship" class="form-label required">Parentesco</label>
+                                <input id="edit_secondary_beneficiary_kinship" class="input" name="secondary_beneficiary_kinship" type="text" placeholder="Parentesco do dependente" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_beneficiary_phone" class="form-label required">Fone / Celular</label>
+                                <input id="edit_beneficiary_phone" class="input" name="beneficiary_phone" type="text" placeholder="(00) 00000-0000" inputmode="numeric" maxlength="15" pattern="\(\d{2}\)\s\d{4,5}-\d{4}" title="Informe o telefone no formato (00) 00000-0000" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_beneficiary_email" class="form-label required">E-mail do beneficiário</label>
+                                <input id="edit_beneficiary_email" class="input" name="beneficiary_email" type="email" placeholder="email@exemplo.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_billing_email" class="form-label required">E-mail de cobrança</label>
+                                <input id="edit_billing_email" class="input" name="billing_email" type="email" placeholder="email@exemplo.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_beneficiary_marital_state" class="form-label required">Estado civil</label>
+                                <select id="edit_beneficiary_marital_state" class="select" name="beneficiary_marital_state" required>
+                                    <option value="Solteiro(a)">Solteiro(a)</option>
+                                    <option value="Casado(a)">Casado(a)</option>
+                                    <option value="Divorciado(a)">Divorciado(a)</option>
+                                    <option value="Viuvo(a)">Viúvo(a)</option>
+                                    <option value="Separado(a) Judicialmente">Separado(a) Judicialmente</option>
+                                    <option value="Uniao Estavel">União Estável</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ========== 3. Responsáveis pela inclusão ========== -->
+                    <section class="edit-form-section" id="editSectionResponsibles">
+                        <h3 class="edit-form-section-title"><span class="edit-form-step">3</span>Responsáveis pela inclusão</h3>
+                        <div class="edit-responsibles" id="editResponsiblesContainer"></div>
+                        <button type="button" class="btn btn--outline btn--sm edit-responsible-add" id="editAddResponsible">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+                            Adicionar responsável
+                        </button>
+                    </section>
+
+                    <!-- ========== 4. Portabilidade ========== -->
+                    <section class="edit-form-section" id="editSectionPortability">
+                        <h3 class="edit-form-section-title"><span class="edit-form-step">4</span>Portabilidade</h3>
+                        <div class="edit-form-grid">
+                            <div class="form-group">
+                                <label for="edit_is_portability" class="form-label required">É inclusão via portabilidade?</label>
+                                <select id="edit_is_portability" class="select" name="is_portability" required>
+                                    <option value="false">NÃO</option>
+                                    <option value="true">SIM</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="edit_portability_accepted_group" hidden>
+                                <label for="edit_portability_accepted" class="form-label required">Portabilidade aceita</label>
+                                <select id="edit_portability_accepted" class="select" name="portability_accepted" required>
+                                    <option value="false">NÃO</option>
+                                    <option value="true">SIM</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="edit_portability_accepted_date_group" hidden>
+                                <label for="edit_portability_accepted_date" class="form-label required">Data do aceite</label>
+                                <input id="edit_portability_accepted_date" class="input" name="portability_accepted_date" type="date" required>
+                            </div>
+
+                            <div class="form-group full-width" id="edit_portability_observation_group" hidden>
+                                <label for="edit_portability_observation" class="form-label required">Observações da portabilidade</label>
+                                <textarea id="edit_portability_observation" class="textarea" name="portability_observation" placeholder="Detalhes sobre a análise ou o aceite da portabilidade" required></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ========== 5. Carência e observações ========== -->
+                    <section class="edit-form-section" id="editSectionExtra">
+                        <h3 class="edit-form-section-title"><span class="edit-form-step">5</span>Carência e observações</h3>
+                        <div class="edit-form-grid">
+                            <div class="form-group full-width">
+                                <span class="form-label">Opção de carência</span>
+                                <div class="edit-option-group" role="radiogroup" aria-label="Opção de carência">
+                                    <label class="edit-option"><input type="radio" name="grace_option" value="Utilizar Carências do Plano Anterior, Troca de Planos Dentro da Unimed"><span><strong>1</strong>Utilizar Carências do Plano Anterior, Troca de Planos Dentro da Unimed</span></label>
+                                    <label class="edit-option"><input type="radio" name="grace_option" value="Incluir Sem Carências para Consultas e Exames Simples"><span><strong>2</strong>Incluir Sem Carências para Consultas e Exames Simples</span></label>
+                                    <label class="edit-option"><input type="radio" name="grace_option" value="Incluir s/carências conforme regra de port. - RN 438/2018"><span><strong>3</strong>Incluir s/carências conforme regra de port. - RN 438/2018</span></label>
+                                    <label class="edit-option"><input type="radio" name="grace_option" value="Incluir Sem Carências, Cumprir Carências apenas para Doenças Pré-Existências e Parto"><span><strong>4</strong>Incluir Sem Carências, Cumprir Carências apenas para Doenças Pré-Existências e Parto</span></label>
+                                    <label class="edit-option"><input type="radio" name="grace_option" value="Incluir Sem Carências, Criança nasceu pela Unimed"><span><strong>5</strong>Incluir Sem Carências, Criança nasceu pela Unimed</span></label>
+                                    <label class="edit-option"><input type="radio" name="grace_option" value="Incluir sem carências, beneficiário inscrito dentro dos 30 dias de contratação."><span><strong>6</strong>Incluir sem carências, beneficiário inscrito dentro dos 30 dias de contratação.</span></label>
+                                    <label class="edit-option"><input type="radio" name="grace_option" value="Sem Condições Especiais, Cumprir Carências Integrais."><span><strong>7</strong>Sem Condições Especiais, Cumprir Carências Integrais.</span></label>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="edit_especial_observations" class="form-label">Observações e considerações especiais</label>
+                                <textarea id="edit_especial_observations" class="textarea" name="especial_observations" placeholder="Digite observações e considerações especiais..."></textarea>
+                            </div>
+                        </div>
+                    </section>
+                </form>
+
+                <!-- Card de responsável clonado pelo JS -->
+                <template id="editResponsibleTemplate">
+                    <div class="edit-responsible">
+                        <div class="edit-responsible-header">
+                            <span class="edit-responsible-title">Responsável <span class="edit-responsible-index">1</span></span>
+                            <button type="button" class="btn btn--ghost btn--sm edit-responsible-remove">
+                                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+                                Remover
+                            </button>
+                        </div>
+                        <div class="edit-form-grid edit-form-grid--2">
+                            <div class="form-group">
+                                <label class="form-label required">Nome</label>
+                                <input class="input" data-field="name" type="text" placeholder="Nome do responsável" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">CPF</label>
+                                <input class="input" data-field="cpf" type="text" placeholder="000.000.000-00" inputmode="numeric" maxlength="14" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" title="Informe o CPF completo no formato 000.000.000-00" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">Estado civil</label>
+                                <select class="select" data-field="marital_state" required>
+                                    <option value="Solteiro(a)">Solteiro(a)</option>
+                                    <option value="Casado(a)">Casado(a)</option>
+                                    <option value="Divorciado(a)">Divorciado(a)</option>
+                                    <option value="Viuvo(a)">Viúvo(a)</option>
+                                    <option value="Separado(a) Judicialmente">Separado(a) Judicialmente</option>
+                                    <option value="Uniao Estavel">União Estável</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">Profissão</label>
+                                <input class="input" data-field="profession" type="text" placeholder="Profissão do responsável" required>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <div class="modal-footer edit-form-footer" id="editFormFooter" hidden>
+                <!-- estado normal -->
+                <div class="edit-form-footer-main" id="editFooterMain">
+                    <span class="edit-form-dirty" id="editDirtyIndicator" hidden>
+                        <span class="edit-form-dirty-dot" aria-hidden="true"></span>
+                        Alterações não salvas
+                    </span>
+                    <div class="edit-form-footer-actions">
+                        <button type="button" class="btn btn--outline" id="editFormCancel">Cancelar</button>
+                        <button type="submit" form="editForm" class="btn btn--primary" id="editFormSave" disabled>Salvar alterações</button>
+                    </div>
+                </div>
+
+                <!-- confirmação ao fechar com alterações pendentes (sem confirm() nativo) -->
+                <div class="edit-form-discard" id="editFooterDiscard" hidden role="alert">
+                    <span>Descartar as alterações feitas neste formulário?</span>
+                    <div class="edit-form-footer-actions">
+                        <button type="button" class="btn btn--outline btn--sm" id="editDiscardKeep">Continuar editando</button>
+                        <button type="button" class="btn btn--danger btn--sm" id="editDiscardConfirm">Descartar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>

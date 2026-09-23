@@ -2,6 +2,7 @@ import { fetchWithAuth, getLoggedUser } from "./utils/apiHelper.js";
 import { formatDateToBR } from "./utils/dateUtils.js";
 import { escapeHtml, formatCPF } from "./utils/detailsView.js";
 import { openViewFormModal } from "./formsModals/viewFormModal.js";
+import { openEditFormModal } from "./formsModals/editFormModal.js";
 import { getStatusPillClass } from "./utils/statusPill.js";
 
 // guarda a lista completa carregada do backend; os filtros atuam sobre ela sem novo request
@@ -11,8 +12,12 @@ let allForms = [];
 // POST /application-forms/<id>/finalize. Financeiro e Entrevistas só visualizam e baixam.
 const ROLES_FINALIZE = ["administrator", "director", "sales_employee"];
 
+// quem edita a ficha — espelha o @role_required de PUT /application-forms/<id>
+const ROLES_EDIT = ["administrator", "director"];
+
 // resolvido antes da primeira renderização, já que os filtros re-renderizam as linhas
 let canFinalize = false;
+let canEdit = false;
 
 // ordenação atual da tabela: a mais recente primeiro, que é o que se espera de uma
 // listagem de fichas. O desempate cai no id, que segue a ordem de inclusão.
@@ -214,6 +219,13 @@ function renderFormsTable(forms, filters) {
                         <svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </button>` : "";
 
+        // edição só para quem tem permissão e fora dos status em que o backend a bloqueia
+        // (6. Finalizado e 8/10/12. Negociação Encerrada)
+        const editButton = (canEdit && ![6, 8, 10, 12].includes(form.form_status_id)) ? `
+                    <button class="icon-btn btn-edit-form" data-id="${form.id}" title="Editar formulário" aria-label="Editar formulário">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M10.8 2.7a1.6 1.6 0 012.3 2.3L5.6 12.5l-3.1.8.8-3.1 7.5-7.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9.5 4l2.5 2.5" stroke="currentColor" stroke-width="1.4"/></svg>
+                    </button>` : "";
+
         const cpf = form.beneficiary_cpf ? formatCPF(form.beneficiary_cpf) : "";
 
         trForms.innerHTML = `
@@ -233,7 +245,7 @@ function renderFormsTable(forms, filters) {
                 <div class="table-actions">
                     <button class="icon-btn btn-view-form" data-id="${form.id}" title="Visualizar" aria-label="Visualizar">
                         <svg viewBox="0 0 16 16" fill="none"><path d="M1 8s2.7-5 7-5 7 5 7 5-2.7 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="2.2" stroke="currentColor" stroke-width="1.4"/></svg>
-                    </button>
+                    </button>${editButton}
                     <button class="icon-btn btn-download-docs" data-id="${form.id}" title="Baixar documentos" aria-label="Baixar documentos">
                         <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5v8.5M8 10l-2.8-2.8M8 10l2.8-2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.5 12v1.3a1 1 0 001 1h9a1 1 0 001-1V12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </button>${finalizeButton}
@@ -362,6 +374,7 @@ async function finalizeRegistration(applicationFormId, button) {
 document.addEventListener("DOMContentLoaded", async () => {
     const user = await getLoggedUser();
     canFinalize = ROLES_FINALIZE.includes(user?.role_name);
+    canEdit = ROLES_EDIT.includes(user?.role_name);
 
     populateFormsTable();
 
@@ -430,6 +443,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const viewButton = event.target.closest(".btn-view-form");
         if (viewButton) {
             openViewFormModal(viewButton.dataset.id);
+            return;
+        }
+
+        const editButton = event.target.closest(".btn-edit-form");
+        if (editButton) {
+            // ao salvar, recarrega a tabela para refletir os dados novos
+            openEditFormModal(editButton.dataset.id, { onSaved: populateFormsTable });
             return;
         }
 

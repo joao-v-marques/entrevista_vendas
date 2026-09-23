@@ -967,3 +967,377 @@
   font-size: 13.5px;
   line-height: 1.5;
 }
+
+/* ---------- Modal: Editar Formulário ---------- */
+/* .modal-body e .modal-footer são display:flex, o que venceria o atributo hidden */
+#editFormModalOverlay [hidden] {
+  display: none !important;
+}
+
+.modal--edit {
+  max-width: 920px;
+}
+
+.edit-form-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.edit-form-subtitle {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.edit-form-body {
+  gap: 1.25rem;
+  padding-top: 1.25rem;
+}
+
+/* faixa com os dados que a edição não altera */
+.edit-form-context {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem 1.25rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.edit-form-context-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+}
+
+.edit-form-context-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-hint);
+}
+
+.edit-form-context-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-form-context-note {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--color-border);
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+/* atalhos das seções: ficam entre o cabeçalho e o corpo, fora da área rolável.
+   flex-shrink: 0 porque o overflow-x zera a altura mínima do item flex e o
+   .modal encolheria a barra quando o formulário é mais alto que a tela */
+.edit-form-nav {
+  flex-shrink: 0;
+  display: flex;
+  gap: 6px;
+  padding: 0.7rem 1.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.edit-form-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.edit-form-nav-link {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: var(--gray-100);
+  border: 1px solid transparent;
+  border-radius: 99px;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.edit-form-nav-link:hover {
+  color: var(--green-700);
+  background: var(--green-50);
+}
+
+.edit-form-nav-link.is-active {
+  color: var(--green-700);
+  background: var(--green-100);
+  border-color: var(--green-200);
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* um respiro acima do título ao rolar até a seção pelos atalhos */
+.edit-form-section {
+  scroll-margin-top: 1rem;
+}
+
+.edit-form-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--green-800);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.edit-form-step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-brand);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.edit-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.edit-form-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+#editFormModalOverlay .full-width {
+  grid-column: 1 / -1;
+}
+
+.edit-form-hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* bloco de desconto dentro de "Plano e inclusão" */
+.edit-form-subsection {
+  grid-column: 1 / -1;
+  padding: 0.9rem 1rem 1rem;
+  background: var(--gray-50);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--teal-700);
+  border-radius: var(--radius-md);
+}
+
+.edit-form-subsection-title {
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+}
+
+/* responsáveis pela inclusão */
+.edit-responsibles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.edit-responsible {
+  padding: 0.85rem 1rem 1rem;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.edit-responsible-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.edit-responsible-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray-600);
+}
+
+.edit-responsible-remove {
+  color: var(--red-500);
+}
+
+.edit-responsible-remove:hover {
+  color: var(--red-700);
+  background: var(--red-50);
+}
+
+.edit-responsible-add {
+  margin-top: 0.85rem;
+}
+
+/* opções de carência */
+.edit-option-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.edit-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.7rem 0.85rem;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--color-text);
+  background: var(--color-bg-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.edit-option:hover {
+  border-color: var(--green-400);
+}
+
+.edit-option input[type="radio"] {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  accent-color: var(--green-600);
+  cursor: pointer;
+}
+
+.edit-option strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 18px;
+  margin-right: 0.45rem;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-600);
+  background: var(--gray-100);
+  border-radius: var(--radius-sm);
+}
+
+.edit-option:has(input:checked) {
+  border-color: var(--green-500);
+  background: var(--green-50);
+}
+
+.edit-option:has(input:checked) strong {
+  color: #fff;
+  background: var(--green-600);
+}
+
+/* rodapé: indicador de alterações à esquerda, ações à direita */
+.edit-form-footer {
+  display: block;
+  padding: 0.9rem 1.5rem;
+}
+
+.edit-form-footer-main,
+.edit-form-discard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.edit-form-footer-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-left: auto;
+}
+
+.edit-form-dirty {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.edit-form-dirty-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber-500);
+  box-shadow: 0 0 0 3px var(--amber-50);
+}
+
+.edit-form-discard {
+  margin: -0.35rem -0.6rem;
+  padding: 0.5rem 0.6rem;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--red-700);
+  background: var(--red-50);
+  border: 1px solid var(--red-100);
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 720px) {
+  #editFormModalOverlay {
+    padding: 0.75rem;
+  }
+
+  #editFormModalOverlay .modal {
+    max-height: calc(100vh - 1.5rem);
+  }
+
+  .edit-form-context {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .edit-form-grid,
+  .edit-form-grid--2,
+  .edit-option-group {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-form-footer-actions {
+    width: 100%;
+  }
+
+  .edit-form-footer-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
