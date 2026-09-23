@@ -35,8 +35,8 @@ function formatValue(value, format) {
     return value;
 }
 
-export function renderBeneficiaryInfo(container, applicationForm) {
-    container.innerHTML = BENEFICIARY_FIELDS.map(field => `
+export function renderBeneficiaryInfo(container, applicationForm, extraFields = []) {
+    container.innerHTML = [...BENEFICIARY_FIELDS, ...extraFields].map(field => `
         <div class="info-item">
             <span class="info-label">${field.label}</span>
             <span class="info-value">${formatValue(applicationForm[field.key], field.format)}</span>

@@ -14,6 +14,11 @@ const cancelButton = document.getElementById("analyzeModalCancel");
 const applicationFormIdInput = document.getElementById("application_form_id");
 const reviewerIdInput = document.getElementById("reviewer_id");
 
+// campos exibidos só na análise financeira (não aparecem no agendamento/entrevista, que usam a mesma função)
+const FINANCIAL_EXTRA_FIELDS = [
+    { label: "Data de Cancelamento do Plano Anterior", key: "previous_plan_cancellation_date", format: "date" },
+];
+
 function closeModal() {
     overlay.hidden = true;
 }
@@ -27,7 +32,7 @@ function resetApprovalSection() {
 
 export function openAnalyzeFormModal(applicationForm) {
     formIdLabel.textContent = applicationForm.id;
-    renderBeneficiaryInfo(beneficiaryInfoGrid, applicationForm);
+    renderBeneficiaryInfo(beneficiaryInfoGrid, applicationForm, FINANCIAL_EXTRA_FIELDS);
     resetApprovalSection();
 
     // preenche os campos ocultos que vão junto no envio pro backend

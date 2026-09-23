@@ -309,6 +309,12 @@
                                 <input id="plano_anterior" class="input" name="previous_plan" type="text" placeholder="00/0000" inputmode="numeric" maxlength="7" pattern="\d{2}\/\d{4}" title="Informe o plano anterior no formato 00/0000" disabled required>
                             </div>
 
+                            <!-- Data de cancelamento do plano anterior: só aparece se Tipo de inclusão for Troca de Plano -->
+                            <div class="form-group" id="data_cancelamento_plano_anterior_group" hidden>
+                                <label for="data_cancelamento_plano_anterior" class="form-label">Data de cancelamento do plano anterior</label>
+                                <input id="data_cancelamento_plano_anterior" class="input" name="previous_plan_cancellation_date" type="date" disabled required>
+                            </div>
+
                             <!-- Caso seja novo contrator empresarial informar CNPJ -->
                             <div class="form-group" id="cnpj_empresa_group" hidden>
                                 <label for="cnpj_empresa" class="form-label">NOVO CONTRATO EMPRESARIAL INFORMAR CNPJ:</label>

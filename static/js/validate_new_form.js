@@ -77,19 +77,24 @@ cnpjInput.addEventListener("input", () => {
     cnpjInput.value = maskCnpj(digits);
 });
 
-// ! ========== Validação: Plano anterior só aparece para "Troca de Plano" ==========
+// ! ========== Validação: Plano anterior e data de cancelamento só aparecem para "Troca de Plano" ==========
 const planoAnteriorGroup = document.getElementById("plano_anterior_group");
 const planoAnteriorInput = document.getElementById("plano_anterior");
+const dataCancelamentoGroup = document.getElementById("data_cancelamento_plano_anterior_group");
+const dataCancelamentoInput = document.getElementById("data_cancelamento_plano_anterior");
 
 function togglePlanoAnteriorField() {
     const isTrocaDePlano = tipoInclusaoSelect.value === "Troca de Plano";
 
     planoAnteriorGroup.hidden = !isTrocaDePlano;
+    dataCancelamentoGroup.hidden = !isTrocaDePlano;
     // campo desabilitado não é incluído no FormData, então não é enviado ao backend
     planoAnteriorInput.disabled = !isTrocaDePlano;
+    dataCancelamentoInput.disabled = !isTrocaDePlano;
 
     if (!isTrocaDePlano) {
         planoAnteriorInput.value = "";
+        dataCancelamentoInput.value = "";
     }
 }
 
