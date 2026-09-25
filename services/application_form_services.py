@@ -9,7 +9,7 @@ from models.application_form_documents import ApplicationFormDocumentModel
 from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel
 from services.application_form_documents_services import ApplicationFormDocumentService
 from utils.exceptions import AppError, ConflictError, ForbiddenError, NotFoundError, ValidationError
-from utils.validations import to_id
+from utils.validations import to_id, to_bool, to_number
 
 class ApplicationFormService:
     # GET de todos cadastrados no sistema, opcionalmente filtrados pelo colaborador
@@ -123,10 +123,20 @@ class ApplicationFormService:
     # Status, consultor, tipo de beneficiário e datas de controle ficam de fora de propósito.
     @staticmethod
     def _build_form_fields(form_data):
-        # discount_percentage é salvo como fração (ex: 50% -> 0.50) para caber em numeric(3, 2)
-        discount_percentage = form_data.get("discount_percentage")
-        if discount_percentage not in (None, ""):
-            discount_percentage = float(discount_percentage) / 100
+        # discount_percentage é salvo como fração (ex: 10,50% -> 0.1050) em numeric(5, 4).
+        # Só vale quando há desconto; sem desconto qualquer valor recebido é descartado.
+        discount_percentage = None
+        if to_bool(form_data.get("is_discount")):
+            discount_percentage = to_number(form_data.get("discount_percentage"), "porcentagem de desconto")
+
+            if discount_percentage <= 0 or discount_percentage > 99:
+                raise ValidationError("A porcentagem de desconto precisa ser maior que 0 e no máximo 99")
+
+            # numeric(5, 4) guarda a fração com 4 casas, ou seja, a porcentagem com 2
+            if round(discount_percentage, 2) != discount_percentage:
+                raise ValidationError("A porcentagem de desconto aceita no máximo 2 casas decimais")
+
+            discount_percentage = round(discount_percentage / 100, 4)
 
         # validação para garantir que quando for troca de plano chegar a data do cancelamento do plano anterior
         if form_data.get("inclusion_type") == "Troca de Plano" and not form_data.get("previous_plan_cancellation_date"):
