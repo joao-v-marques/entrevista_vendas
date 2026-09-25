@@ -2,6 +2,8 @@
    financial_analysis.css — modal de análise financeira (/aprovar-ficha) em abas.
    Abas, cartões de KPI, cabeçalho de resumo e cartão de decisão vêm de management_approval.css;
    aqui ficam só os ajustes do financeiro, todos presos a #analyzeModalOverlay.
+   Os cartões (.fin-*) também são usados pela visualização de /fichas (#viewFormModalOverlay),
+   que monta as mesmas abas de Beneficiário e Plano via utils/formCardsView.js.
    ============================================= */
 
 /* menos conteúdo do que a gerência (3 abas, sem entrevista/documentos): um pouco mais estreito */
@@ -11,7 +13,7 @@
 
 /* ---------- Resumo: título da seção com atalho para a aba de detalhe ---------- */
 
-#analyzeModalOverlay .fin-section-head {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-section-head {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -20,11 +22,11 @@
   margin-bottom: 1rem;
 }
 
-#analyzeModalOverlay .fin-section-head .form-section-title {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-section-head .form-section-title {
   margin-bottom: 0;
 }
 
-#analyzeModalOverlay .fin-go-tab {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-go-tab {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -40,11 +42,11 @@
   transition: background var(--transition);
 }
 
-#analyzeModalOverlay .fin-go-tab:hover {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-go-tab:hover {
   background: var(--green-50);
 }
 
-#analyzeModalOverlay .fin-go-tab:focus-visible {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-go-tab:focus-visible {
   outline: 2px solid var(--color-brand-light);
   outline-offset: 1px;
 }
@@ -56,18 +58,18 @@
 }
 
 /* condição comercial que o financeiro precisa conferir (desconto, portabilidade) */
-#analyzeModalOverlay .mgmt-kpi--highlight {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .mgmt-kpi--highlight {
   border-color: var(--amber-200);
   background: var(--amber-50);
 }
 
-#analyzeModalOverlay .mgmt-kpi--highlight .mgmt-kpi-value {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .mgmt-kpi--highlight .mgmt-kpi-value {
   color: var(--amber-700);
 }
 
 /* ---------- Observações em destaque ---------- */
 
-#analyzeModalOverlay .fin-callouts .observation-callout:first-child {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-callouts .observation-callout:first-child {
   margin-top: 0;
 }
 
@@ -75,11 +77,11 @@
 
 /* sem reanálise (ou enquanto o /details não responde) o bloco some, senão o gap
    do .mgmt-panel-content deixaria um espaço vazio no topo do Resumo */
-#analyzeModalOverlay .fin-reanalysis:empty {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-reanalysis:empty {
   display: none;
 }
 
-#analyzeModalOverlay .fin-reanalysis .observation-callout {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-reanalysis .observation-callout {
   margin-top: 0.75rem;
 }
 
@@ -89,7 +91,7 @@
 
 /* ---------- Cabeçalho de destaque ---------- */
 
-#analyzeModalOverlay .fin-hero {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-hero {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -100,8 +102,8 @@
   background: linear-gradient(135deg, var(--green-50), var(--color-bg-surface) 70%);
 }
 
-#analyzeModalOverlay .fin-avatar,
-#analyzeModalOverlay .fin-hero-icon {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-avatar,
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-hero-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -113,22 +115,22 @@
   color: var(--green-700);
 }
 
-#analyzeModalOverlay .fin-avatar {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-avatar {
   font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
 
-#analyzeModalOverlay .fin-hero-icon {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-hero-icon {
   border-radius: var(--radius-md);
 }
 
-#analyzeModalOverlay .fin-hero-text {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-hero-text {
   flex: 1;
   min-width: 220px;
 }
 
-#analyzeModalOverlay .fin-hero-eyebrow {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-hero-eyebrow {
   display: block;
   font-size: 11.5px;
   font-weight: 600;
@@ -137,7 +139,7 @@
   color: var(--green-600);
 }
 
-#analyzeModalOverlay .fin-hero-title {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-hero-title {
   margin-top: 2px;
   font-size: 1.25rem;
   font-weight: 600;
@@ -145,7 +147,7 @@
   overflow-wrap: anywhere;
 }
 
-#analyzeModalOverlay .fin-hero-meta {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-hero-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -155,16 +157,16 @@
   color: var(--color-text-muted);
 }
 
-#analyzeModalOverlay .fin-hero-meta strong {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-hero-meta strong {
   font-weight: 500;
   color: var(--color-text);
 }
 
-#analyzeModalOverlay .fin-hero-sep {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-hero-sep {
   color: var(--gray-300);
 }
 
-#analyzeModalOverlay .fin-hero-tags {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-hero-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
@@ -172,13 +174,13 @@
 
 /* ---------- Grade de cartões ---------- */
 
-#analyzeModalOverlay .fin-cards {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
-#analyzeModalOverlay .fin-card {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-card {
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -189,11 +191,11 @@
   overflow: hidden;
 }
 
-#analyzeModalOverlay .fin-card--full {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-card--full {
   grid-column: 1 / -1;
 }
 
-#analyzeModalOverlay .fin-card-head {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-card-head {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -202,7 +204,7 @@
   background: var(--color-bg-secondary);
 }
 
-#analyzeModalOverlay .fin-card-icon {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-card-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -214,45 +216,45 @@
   color: var(--green-700);
 }
 
-#analyzeModalOverlay .fin-card-title {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-card-title {
   flex: 1;
   font-size: 14px;
   font-weight: 600;
   color: var(--color-text);
 }
 
-#analyzeModalOverlay .fin-card-badge {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-card-badge {
   flex-shrink: 0;
 }
 
-#analyzeModalOverlay .fin-card-body {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-card-body {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
   padding: 0.35rem 1rem 1rem;
 }
 
-#analyzeModalOverlay .fin-card-empty {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-card-empty {
   padding-top: 0.65rem;
   font-size: 14px;
   font-style: italic;
   color: var(--color-text-muted);
 }
 
-#analyzeModalOverlay .fin-card-empty--error {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-card-empty--error {
   font-style: normal;
   color: var(--red-700);
 }
 
 /* ---------- Lista rótulo → valor ---------- */
 
-#analyzeModalOverlay .fin-rows {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-rows {
   display: flex;
   flex-direction: column;
   margin: 0;
 }
 
-#analyzeModalOverlay .fin-row {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-row {
   display: grid;
   grid-template-columns: minmax(120px, 42%) minmax(0, 1fr);
   gap: 1rem;
@@ -260,16 +262,16 @@
   border-bottom: 1px dashed var(--color-border-light);
 }
 
-#analyzeModalOverlay .fin-row:last-child {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-row:last-child {
   border-bottom: none;
 }
 
-#analyzeModalOverlay .fin-row dt {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-row dt {
   font-size: 13px;
   color: var(--gray-500);
 }
 
-#analyzeModalOverlay .fin-row dd {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-row dd {
   margin: 0;
   font-size: 14px;
   font-weight: 500;
@@ -278,49 +280,49 @@
   overflow-wrap: anywhere;
 }
 
-#analyzeModalOverlay .fin-row dd.is-empty {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-row dd.is-empty {
   font-weight: 400;
   color: var(--gray-400);
 }
 
-#analyzeModalOverlay .fin-row dd a {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-row dd a {
   color: var(--color-brand);
   text-decoration: none;
 }
 
-#analyzeModalOverlay .fin-row dd a:hover {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-row dd a:hover {
   text-decoration: underline;
 }
 
 /* cartão de largura total com poucos campos: itens lado a lado, rótulo em cima */
-#analyzeModalOverlay .fin-rows--inline {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-rows--inline {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 0 1.5rem;
 }
 
-#analyzeModalOverlay .fin-rows--inline .fin-row {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-rows--inline .fin-row {
   grid-template-columns: 1fr;
   gap: 2px;
   border-bottom: none;
 }
 
-#analyzeModalOverlay .fin-rows--inline .fin-row dd {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-rows--inline .fin-row dd {
   text-align: left;
 }
 
 /* ---------- Sub-blocos (vários responsáveis pela inclusão no mesmo cartão) ---------- */
 
-#analyzeModalOverlay .fin-subblock {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-subblock {
   padding-top: 0.65rem;
 }
 
-#analyzeModalOverlay .fin-subblock + .fin-subblock {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-subblock + .fin-subblock {
   margin-top: 0.35rem;
   border-top: 1px dashed var(--color-border);
 }
 
-#analyzeModalOverlay .fin-subblock-title {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-subblock-title {
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
@@ -330,7 +332,7 @@
 
 /* ---------- Valor em destaque (percentual de desconto) ---------- */
 
-#analyzeModalOverlay .fin-stat {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-stat {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
@@ -342,28 +344,28 @@
   background: var(--amber-50);
 }
 
-#analyzeModalOverlay .fin-stat-value {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-stat-value {
   font-size: 1.6rem;
   font-weight: 600;
   line-height: 1.1;
   color: var(--amber-700);
 }
 
-#analyzeModalOverlay .fin-stat-label {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-stat-label {
   font-size: 13px;
   color: var(--amber-700);
 }
 
 /* ---------- Texto longo dentro do cartão ---------- */
 
-#analyzeModalOverlay .fin-note {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-note {
   padding: 0.75rem 0.9rem;
   border-left: 3px solid var(--color-brand);
   border-radius: var(--radius-sm);
   background: var(--color-bg-secondary);
 }
 
-#analyzeModalOverlay .fin-note-label {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-note-label {
   display: block;
   margin-bottom: 0.3rem;
   font-size: 12px;
@@ -371,7 +373,7 @@
   color: var(--gray-500);
 }
 
-#analyzeModalOverlay .fin-note-text {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-note-text {
   padding-top: 0.25rem;
   font-size: 14px;
   line-height: 1.55;
@@ -379,20 +381,20 @@
   color: var(--color-text);
 }
 
-#analyzeModalOverlay .fin-note .fin-note-text {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-note .fin-note-text {
   padding-top: 0;
 }
 
 /* ---------- Adicionais contratados (liga/desliga) ---------- */
 
-#analyzeModalOverlay .fin-flags {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-flags {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 0.75rem;
   padding-top: 0.65rem;
 }
 
-#analyzeModalOverlay .fin-flag {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-flag {
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -403,23 +405,23 @@
   font-weight: 500;
 }
 
-#analyzeModalOverlay .fin-flag svg {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-flag svg {
   flex-shrink: 0;
 }
 
-#analyzeModalOverlay .fin-flag-state {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-flag-state {
   margin-left: auto;
   font-size: 12px;
   font-weight: 400;
 }
 
-#analyzeModalOverlay .fin-flag.is-on {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-flag.is-on {
   border-color: var(--green-200);
   background: var(--green-50);
   color: var(--green-700);
 }
 
-#analyzeModalOverlay .fin-flag.is-off {
+:is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-flag.is-off {
   background: var(--gray-50);
   color: var(--color-text-muted);
 }
@@ -431,7 +433,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  #analyzeModalOverlay .fin-cards {
+  :is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-cards {
     grid-template-columns: 1fr;
   }
 }
@@ -441,12 +443,12 @@
     grid-template-columns: 1fr;
   }
 
-  #analyzeModalOverlay .fin-row {
+  :is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-row {
     grid-template-columns: 1fr;
     gap: 2px;
   }
 
-  #analyzeModalOverlay .fin-row dd {
+  :is(#analyzeModalOverlay, #viewFormModalOverlay) .fin-row dd {
     text-align: left;
   }
 }

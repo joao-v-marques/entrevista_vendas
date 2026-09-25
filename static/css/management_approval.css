@@ -11,13 +11,15 @@
 
 /* altura fixa para o modal não "pular" de tamanho ao trocar de aba */
 #analyzeManagementModalOverlay .modal,
-#analyzeModalOverlay .modal {
+#analyzeModalOverlay .modal,
+#viewFormModalOverlay .modal {
   max-width: 1320px;
   height: calc(100vh - 3rem);
 }
 
 #analyzeManagementModalOverlay .modal-body,
-#analyzeModalOverlay .modal-body {
+#analyzeModalOverlay .modal-body,
+#viewFormModalOverlay .modal-body {
   flex: 1;
   gap: 0;
 }
@@ -415,7 +417,8 @@
 
 @media (max-width: 520px) {
   #analyzeManagementModalOverlay .modal,
-  #analyzeModalOverlay .modal {
+  #analyzeModalOverlay .modal,
+  #viewFormModalOverlay .modal {
     height: calc(100vh - 1.5rem);
   }
 

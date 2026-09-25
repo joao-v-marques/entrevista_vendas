@@ -1,0 +1,296 @@
+/* =============================================
+   view_form_modal.css — visualização do formulário em /fichas (#viewFormModalOverlay).
+   Abas e cabeçalho de resumo vêm de management_approval.css; os cartões (.fin-*)
+   de financial_analysis.css; o questionário de saúde de qualify_interview_view.css.
+   Aqui ficam só os ajustes deste modal, todos presos a #viewFormModalOverlay.
+   ============================================= */
+
+/* ---------- Abas: são oito, então um pouco mais justas para caberem sem rolagem ---------- */
+
+#viewFormModalOverlay .mgmt-tab {
+  padding: 0.8rem 0.65rem;
+}
+
+/* ---------- Resumo: blocos de dados para copiar no cadastro ---------- */
+
+#viewFormModalOverlay .vf-copy-hint {
+  margin-top: -0.75rem;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+#viewFormModalOverlay .vf-copy-blocks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+#viewFormModalOverlay .vf-copy-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* cada bloco ocupa a largura toda; só Desconto e Portabilidade, curtos, dividem a linha */
+#viewFormModalOverlay .vf-copy-block {
+  grid-column: 1 / -1;
+}
+
+#viewFormModalOverlay .vf-copy-block--half {
+  grid-column: auto;
+}
+
+#viewFormModalOverlay .vf-copy-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem 0.55rem 1rem;
+  border-bottom: 1px solid var(--color-border-light);
+  background: var(--color-bg-secondary);
+}
+
+#viewFormModalOverlay .vf-copy-block-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+#viewFormModalOverlay .vf-copy-block > .empty-section {
+  padding: 0.85rem 1rem;
+}
+
+#viewFormModalOverlay .vf-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0;
+}
+
+#viewFormModalOverlay .vf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px dashed var(--color-border-light);
+}
+
+#viewFormModalOverlay .vf-field--full {
+  grid-column: 1 / -1;
+}
+
+#viewFormModalOverlay .vf-field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-500);
+}
+
+#viewFormModalOverlay .vf-field-value-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+/* o valor é o que vai ser copiado: fácil de selecionar à mão também */
+#viewFormModalOverlay .vf-field-value {
+  flex: 1;
+  min-width: 0;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+#viewFormModalOverlay .vf-field-value--pre {
+  font-weight: 400;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  user-select: text;
+}
+
+#viewFormModalOverlay .vf-field-value.is-empty {
+  font-weight: 400;
+  color: var(--gray-400);
+  user-select: none;
+}
+
+#viewFormModalOverlay .vf-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin-top: -3px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--gray-400);
+  cursor: pointer;
+  transition: color var(--transition), background var(--transition), border-color var(--transition);
+}
+
+#viewFormModalOverlay .vf-field:hover .vf-copy-btn {
+  color: var(--color-brand);
+}
+
+#viewFormModalOverlay .vf-copy-btn:hover {
+  border-color: var(--green-200);
+  background: var(--green-50);
+}
+
+#viewFormModalOverlay .vf-copy-btn:focus-visible,
+#viewFormModalOverlay .vf-copy-section:focus-visible {
+  outline: 2px solid var(--color-brand-light);
+  outline-offset: 1px;
+}
+
+/* troca o ícone por um check por ~1s depois de copiar */
+#viewFormModalOverlay .vf-copied-icon,
+#viewFormModalOverlay .is-copied .vf-copy-icon {
+  display: none;
+}
+
+#viewFormModalOverlay .is-copied .vf-copied-icon {
+  display: inline;
+}
+
+#viewFormModalOverlay .vf-copy-btn.is-copied,
+#viewFormModalOverlay .vf-copy-section.is-copied {
+  color: var(--green-700);
+}
+
+#viewFormModalOverlay .vf-copy-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+/* ---------- Etapas: observação e reanálises dentro dos cartões ---------- */
+
+#viewFormModalOverlay .fin-card .documents-list {
+  margin-top: 0.5rem;
+}
+
+/* ---------- Linha do tempo ---------- */
+
+#viewFormModalOverlay .vf-events {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#viewFormModalOverlay .vf-event {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 0.85rem;
+  padding-bottom: 1.1rem;
+}
+
+/* trilho vertical ligando os marcadores; o último evento não continua a linha */
+#viewFormModalOverlay .vf-event::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  bottom: 0;
+  left: 13px;
+  width: 2px;
+  background: var(--color-border);
+}
+
+#viewFormModalOverlay .vf-event:last-child {
+  padding-bottom: 0;
+}
+
+#viewFormModalOverlay .vf-event:last-child::before {
+  display: none;
+}
+
+#viewFormModalOverlay .vf-event-dot {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--color-bg-surface);
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+
+#viewFormModalOverlay .vf-event--approved .vf-event-dot { background: var(--green-100); color: var(--green-700); }
+#viewFormModalOverlay .vf-event--rejected .vf-event-dot { background: var(--red-100);   color: var(--red-700); }
+#viewFormModalOverlay .vf-event--warning  .vf-event-dot { background: var(--amber-100); color: var(--amber-700); }
+#viewFormModalOverlay .vf-event--info     .vf-event-dot { background: var(--blue-100);  color: var(--blue-700); }
+#viewFormModalOverlay .vf-event--current  .vf-event-dot { background: var(--color-brand); color: #fff; }
+
+#viewFormModalOverlay .vf-event-body {
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-secondary);
+}
+
+#viewFormModalOverlay .vf-event-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+}
+
+#viewFormModalOverlay .vf-event-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+#viewFormModalOverlay .vf-event-date {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+#viewFormModalOverlay .vf-event-meta {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+#viewFormModalOverlay .vf-event-text {
+  margin-top: 0.4rem;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--color-text);
+}
+
+#viewFormModalOverlay .vf-events-note {
+  margin-bottom: 1rem;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Responsivo (mesmos breakpoints da gerência) ---------- */
+
+@media (max-width: 860px) {
+  #viewFormModalOverlay .vf-copy-blocks {
+    grid-template-columns: 1fr;
+  }
+}

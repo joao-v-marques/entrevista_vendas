@@ -14,6 +14,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/approve_form.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/qualify_interview_view.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/management_approval.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/financial_analysis.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/view_form_modal.css') }}" />
 </head>
 <body>
 
@@ -273,7 +277,10 @@
     <div class="modal-overlay" id="viewFormModalOverlay" hidden>
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="viewFormModalTitle">
             <div class="modal-header">
-                <h2 class="modal-title" id="viewFormModalTitle">Formulário #<span id="viewFormModalId"></span></h2>
+                <h2 class="modal-title" id="viewFormModalTitle">
+                    Formulário #<span id="viewFormModalId"></span>
+                    <span class="mgmt-modal-subtitle" id="viewFormModalSubtitle"></span>
+                </h2>
                 <button type="button" class="modal-close" id="viewFormModalClose" aria-label="Fechar">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
@@ -282,8 +289,77 @@
                 </button>
             </div>
 
-            <!-- todo o conteúdo é renderizado dinamicamente pelo viewFormModal.js -->
-            <div class="modal-body" id="viewFormModalBody"></div>
+            <!-- Abas: Resumo, dados da ficha, uma aba por etapa e, por fim, linha do tempo e documentos -->
+            <div class="mgmt-tabs" role="tablist" aria-label="Seções do formulário" id="viewFormTabs">
+                <button type="button" class="mgmt-tab is-active" role="tab" data-tab="summary" id="vf-tab-summary" aria-controls="vf-panel-summary" aria-selected="true">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                    Resumo
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="beneficiary" id="vf-tab-beneficiary" aria-controls="vf-panel-beneficiary" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="2.8" stroke="currentColor" stroke-width="1.3"/><path d="M2.8 14c.6-2.7 2.7-4.2 5.2-4.2s4.6 1.5 5.2 4.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Beneficiário
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="plan" id="vf-tab-plan" aria-controls="vf-panel-plan" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M4 1.5h5L13 5.5V14a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 3 14V2a.5.5 0 0 1 .5-.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.5 8.5h5M5.5 11h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Plano e Contrato
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="financial" id="vf-tab-financial" aria-controls="vf-panel-financial" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1.5v13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M11.3 3.3H6.3a2.3 2.3 0 0 0 0 4.7h3.3a2.3 2.3 0 0 1 0 4.7H4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Aprovação do Financeiro
+                    <span class="mgmt-tab-count" data-tab-count="financial" hidden></span>
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="interview" id="vf-tab-interview" aria-controls="vf-panel-interview" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 3.5h12v7H6l-3 3v-3H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                    Entrevista
+                    <span class="mgmt-tab-count" data-tab-count="interview" hidden></span>
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="management" id="vf-tab-management" aria-controls="vf-panel-management" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l5.5 2v3.8c0 3.2-2.3 5.9-5.5 6.7-3.2-.8-5.5-3.5-5.5-6.7V3.5l5.5-2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                    Aprovação da Gerência
+                    <span class="mgmt-tab-count" data-tab-count="management" hidden></span>
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="history" id="vf-tab-history" aria-controls="vf-panel-history" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.8" stroke="currentColor" stroke-width="1.3"/><path d="M8 4.8V8l2.2 1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Linha do Tempo
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="documents" id="vf-tab-documents" aria-controls="vf-panel-documents" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M13.5 7.6l-5.2 5.2a3.2 3.2 0 0 1-4.5-4.5l5.4-5.4a2.1 2.1 0 0 1 3 3L6.9 11.2a1 1 0 0 1-1.5-1.5l4.9-4.9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Documentos
+                    <span class="mgmt-tab-count" data-tab-count="documents" hidden></span>
+                </button>
+            </div>
+
+            <!-- o conteúdo de cada aba é renderizado pelo formsModals/viewFormModal.js quando o /details chega -->
+            <div class="modal-body" id="viewFormModalBody">
+                <section class="mgmt-panel" role="tabpanel" data-tab="summary" id="vf-panel-summary" aria-labelledby="vf-tab-summary">
+                    <div class="mgmt-panel-content" id="viewFormSummaryContent"></div>
+                </section>
+                <section class="mgmt-panel" role="tabpanel" data-tab="beneficiary" id="vf-panel-beneficiary" aria-labelledby="vf-tab-beneficiary" hidden>
+                    <div class="mgmt-panel-content" id="viewFormBeneficiaryContent"></div>
+                </section>
+                <section class="mgmt-panel" role="tabpanel" data-tab="plan" id="vf-panel-plan" aria-labelledby="vf-tab-plan" hidden>
+                    <div class="mgmt-panel-content" id="viewFormPlanContent"></div>
+                </section>
+                <section class="mgmt-panel" role="tabpanel" data-tab="financial" id="vf-panel-financial" aria-labelledby="vf-tab-financial" hidden>
+                    <div class="mgmt-panel-content" id="viewFormFinancialContent"></div>
+                </section>
+                <section class="mgmt-panel" role="tabpanel" data-tab="interview" id="vf-panel-interview" aria-labelledby="vf-tab-interview" hidden>
+                    <div class="mgmt-panel-content" id="viewFormInterviewContent"></div>
+                </section>
+                <section class="mgmt-panel" role="tabpanel" data-tab="management" id="vf-panel-management" aria-labelledby="vf-tab-management" hidden>
+                    <div class="mgmt-panel-content" id="viewFormManagementContent"></div>
+                </section>
+                <section class="mgmt-panel" role="tabpanel" data-tab="history" id="vf-panel-history" aria-labelledby="vf-tab-history" hidden>
+                    <div class="mgmt-panel-content" id="viewFormHistoryContent"></div>
+                </section>
+                <section class="mgmt-panel" role="tabpanel" data-tab="documents" id="vf-panel-documents" aria-labelledby="vf-tab-documents" hidden>
+                    <div class="mgmt-panel-content" id="viewFormDocumentsContent"></div>
+                </section>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" id="viewFormModalCancel">Fechar</button>
+            </div>
         </div>
     </div>
 

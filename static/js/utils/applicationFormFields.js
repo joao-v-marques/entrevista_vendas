@@ -1,5 +1,5 @@
 // Definições de campo compartilhadas entre modais que exibem dados do contrato
-// (formsModals/viewFormModal.js e rejectedFormsModals/requestReanalysisModal.js).
+// (managementModals/analyzeManagementModal.js e rejectedFormsModals/requestReanalysisModal.js).
 // Ficam num módulo à parte, sem nenhuma leitura de DOM, para que importar os arrays
 // não arraste efeitos colaterais (querys de elementos que só existem no modal de origem).
 
