@@ -169,7 +169,7 @@ class ApplicationFormService:
             "is_portability": form_data.get("is_portability"),
             "portability_accepted": form_data.get("portability_accepted"),
             "portability_accepted_date": form_data.get("portability_accepted_date"),
-            "portability_observation": form_data.get("portability_observation"),
+            "portability_observation": form_data.get("portability_observation") or None,
             "grace_option": form_data.get("grace_option"),
             "especial_observations": form_data.get("especial_observations") or None,
         }
