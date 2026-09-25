@@ -1,4 +1,4 @@
-import { fetchWithAuth } from "../utils/apiHelper.js";
+import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js";
 import { populateRejectedFormsTable } from "../rejected_forms.js";
 import { setSubmitLoading } from "../utils/submitLoading.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
@@ -11,6 +11,8 @@ const body = document.getElementById("requestReanalysisModalBody");
 const closeButton = document.getElementById("requestReanalysisModalClose");
 const cancelButton = document.getElementById("requestReanalysisModalCancel");
 const confirmButton = document.getElementById("requestReanalysisModalConfirm");
+const requesterIdInput = document.getElementById("reanalysis_requester_id");
+const observationInput = document.getElementById("reanalysisObservation");
 
 // guarda a ficha que está sendo reanalisada, já que o id vai na URL do endpoint
 let currentApplicationFormId = null;
@@ -28,6 +30,7 @@ function buildBody(form) {
 function closeModal() {
     overlay.hidden = true;
     body.innerHTML = "";
+    observationInput.value = "";
     currentApplicationFormId = null;
 }
 
@@ -38,17 +41,35 @@ export function openRequestReanalysisModal(applicationForm) {
     formIdLabel.textContent = applicationForm.id;
     body.innerHTML = buildBody(applicationForm);
 
+    // limpa a observação para não vazar o texto de outra ficha
+    observationInput.value = "";
+
+    requesterIdInput.value = "";
+    getLoggedUser().then(user => {
+        requesterIdInput.value = user?.id ?? "";
+    });
+
     overlay.hidden = false;
 }
 
 confirmButton.addEventListener("click", async () => {
     if (!currentApplicationFormId) return;
 
+    // observação é opcional: vazia vai como null para o backend
+    const payload = {
+        requester_id: Number(requesterIdInput.value) || null,
+        reanalysis_observation: observationInput.value.trim() || null,
+    };
+
     setSubmitLoading(confirmButton, true, "Solicitando...");
 
     try {
         const response = await fetchWithAuth(`/entrevista-adesao/application-forms/${currentApplicationFormId}/request-reanalysis`, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) {

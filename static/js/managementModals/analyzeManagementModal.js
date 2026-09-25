@@ -120,6 +120,12 @@ function getMedicalReports(details) {
     return (details.documents || []).filter(document => document.document_type === "laudo_medico");
 }
 
+// a tabela de reanálises também guarda as pedidas após reprovação do financeiro; aqui só
+// interessam as que voltaram para a gerência
+function getManagementReanalyses(details) {
+    return (details.reanalysis_requests || []).filter(request => request.stage === "management");
+}
+
 /* ============================================================
    Aba: Resumo
    ============================================================ */
@@ -153,7 +159,7 @@ function renderSummaryHeader(form) {
 
 // a ficha voltou para a gerência depois de uma reprovação: é a primeira coisa que o gerente precisa saber
 function renderReanalysisAlert(details) {
-    const reanalysisRequests = details.reanalysis_requests || [];
+    const reanalysisRequests = getManagementReanalyses(details);
     if (reanalysisRequests.length === 0) return "";
 
     const latest = reanalysisRequests[0];
@@ -399,7 +405,7 @@ function renderInterviewTab(details) {
 
 function renderHistoryTab(details) {
     const { approval, management } = details;
-    const reanalysisRequests = details.reanalysis_requests || [];
+    const reanalysisRequests = getManagementReanalyses(details);
     const medicalReports = getMedicalReports(details);
 
     const financialHtml = approval
@@ -582,7 +588,7 @@ function renderAllTabs(details) {
     panels.documents.innerHTML = renderDocumentsTab(details);
 
     setTabCount("interview", getDeclaredConditions(qualify).length, true);
-    setTabCount("history", (details.reanalysis_requests || []).length);
+    setTabCount("history", getManagementReanalyses(details).length);
     setTabCount("documents", (details.documents || []).length);
 }
 

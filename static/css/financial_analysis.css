@@ -71,6 +71,18 @@
   margin-top: 0;
 }
 
+/* ---------- Resumo: aviso de reanálise ---------- */
+
+/* sem reanálise (ou enquanto o /details não responde) o bloco some, senão o gap
+   do .mgmt-panel-content deixaria um espaço vazio no topo do Resumo */
+#analyzeModalOverlay .fin-reanalysis:empty {
+  display: none;
+}
+
+#analyzeModalOverlay .fin-reanalysis .observation-callout {
+  margin-top: 0.75rem;
+}
+
 /* =============================================
    Abas de detalhe (Beneficiário / Plano): cabeçalho de destaque + cartões agrupados
    ============================================= */

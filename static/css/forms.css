@@ -917,6 +917,12 @@
 }
 
 /* ---------- Modal: Solicitar Reanálise ---------- */
+/* reanálise financeira (rejected_forms.html): o wrapper dos dados da ficha não pode quebrar
+   o gap do .modal-body entre as seções, então as seções dele contam como filhas diretas */
+.request-reanalysis-form-data {
+  display: contents;
+}
+
 #requestReanalysisModalOverlay .form-grid {
   display: flex;
   flex-direction: column;

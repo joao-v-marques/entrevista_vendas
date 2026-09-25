@@ -104,7 +104,13 @@ function renderManagement(management) {
     return renderSection("Aprovação da Gerência", inner);
 }
 
-// cada rodada de reanálise solicitada após uma reprovação da gerência
+// etapa que reprovou a ficha e gerou a reanálise
+const REANALYSIS_STAGE_LABELS = {
+    financial: "Financeiro",
+    management: "Gerência",
+};
+
+// cada rodada de reanálise solicitada após uma reprovação do financeiro ou da gerência
 function renderReanalysisRequests(reanalysisRequests) {
     if (!reanalysisRequests || reanalysisRequests.length === 0) {
         return renderSection("Solicitações de Reanálise", renderEmptySection("Nenhuma reanálise solicitada."));
@@ -119,7 +125,7 @@ function renderReanalysisRequests(reanalysisRequests) {
     // a lista vem da mais recente para a mais antiga, por isso a numeração é invertida
     const blocks = reanalysisRequests.map((reanalysisRequest, index) => `
         <div class="responsible-block">
-            <p class="responsible-block-title">Reanálise ${reanalysisRequests.length - index}</p>
+            <p class="responsible-block-title">Reanálise ${reanalysisRequests.length - index} · ${escapeHtml(REANALYSIS_STAGE_LABELS[reanalysisRequest.stage] || "—")}</p>
             ${renderInfoGrid(reanalysisRequest, fields)}
         </div>
     `).join("");

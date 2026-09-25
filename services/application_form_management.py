@@ -109,7 +109,8 @@ class ApplicationFormManagementService:
             reanalysis_request = ApplicationFormReanalysisRequest(
                 requester_id=requester_id,
                 reanalysis_observation=observation,
-                application_form_id=application_form_id
+                application_form_id=application_form_id,
+                stage="management"
             )
 
             try:

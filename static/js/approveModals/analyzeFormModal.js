@@ -8,6 +8,8 @@ import {
     formatValue,
     formatAge,
     renderSection,
+    renderInfoGrid,
+    renderEmptySection,
     renderKpi,
     renderCommercialTags,
     renderObservationCallout,
@@ -30,9 +32,10 @@ const panels = {
     summary: document.getElementById("financialSummaryContent"),
     beneficiary: document.getElementById("financialBeneficiaryContent"),
     plan: document.getElementById("financialPlanContent"),
+    history: document.getElementById("financialHistoryContent"),
 };
 
-const { setActiveTab, getActiveTab } = createModalTabs(tabList, modalBody);
+const { setActiveTab, getActiveTab, setTabCount } = createModalTabs(tabList, modalBody);
 
 // cada abertura do modal ganha um número; respostas assíncronas (/details, usuário logado) só são
 // aplicadas se ainda forem da abertura atual, senão uma ficha lenta sobrescreveria a que está na tela
@@ -107,6 +110,12 @@ const CARD_ICONS = {
 
 const ICON_CHECK = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const ICON_CROSS = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+
+const ICON_WARNING = `
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M8 1.8l6.5 11.4H1.5L8 1.8z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M8 6.3v3.2M8 11.4v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>`;
 
 /* ============================================================
    Helpers
@@ -353,8 +362,30 @@ function renderSummaryObservations(form) {
     return renderSection("Observações da ficha", `<div class="fin-callouts">${callouts.join("")}</div>`);
 }
 
+// a ficha voltou para o financeiro depois de uma reprovação: mostra quem pediu a reanálise e o
+// que foi informado. A lista vem da mais recente para a mais antiga e só com as do financeiro
+function renderReanalysisAlert(reanalysisRequests) {
+    if (!reanalysisRequests || reanalysisRequests.length === 0) return "";
+
+    const latest = reanalysisRequests[0];
+
+    return `
+        <div class="mgmt-alert" role="note">
+            ${ICON_WARNING}
+            <div>
+                <p><strong>Ficha em reanálise</strong> — ${reanalysisRequests.length} solicitação(ões), a mais recente por
+                ${textOrDash(latest.requester_name)} em ${escapeHtml(formatValue(latest.requested_at, "datetime"))}.</p>
+                <p><button type="button" class="mgmt-link" data-go-tab="history">Ver o histórico de reanálises</button></p>
+            </div>
+        </div>
+        ${renderObservationCallout("Observação da reanálise", latest.reanalysis_observation, true)}
+    `;
+}
+
 function renderSummaryTab(form) {
     return [
+        // preenchido quando o /details responder (ver loadDetails)
+        `<div id="financialReanalysisContent" class="fin-reanalysis"></div>`,
         renderSummaryHeader(form),
         renderSummarySection("Beneficiário", "beneficiary", "Ver dados completos", renderBeneficiaryKpis(form)),
         renderSummarySection("Plano", "plan", "Ver detalhes do plano", renderPlanKpis(form)),
@@ -430,7 +461,7 @@ function renderBeneficiaryTab(form, responsibles) {
         renderCard({
             title: "Responsáveis pela inclusão",
             icon: "clipboard",
-            // o /details chega depois: o badge e a lista são trocados em loadResponsibles
+            // o /details chega depois: o badge e a lista são trocados em loadDetails
             badge: `<span id="financialResponsibleCount">${renderResponsiblesCount(responsibles)}</span>`,
             body: `<div id="financialResponsibleContent">${renderResponsibles(responsibles)}</div>`,
         }),
@@ -549,12 +580,47 @@ function renderPlanTab(form) {
 }
 
 /* ============================================================
+   Aba: Histórico de Reanálises
+   ============================================================ */
+
+const REANALYSIS_FIELDS = [
+    { label: "Solicitado por", key: "requester_name" },
+    { label: "Solicitado em", key: "requested_at", format: "datetime" },
+    { label: "Observação da solicitação", key: "reanalysis_observation", full: true, pre: true },
+];
+
+// todas as rodadas de reanálise do financeiro; o Resumo mostra só a mais recente
+function renderHistoryTab(reanalysisRequests) {
+    // undefined = /details ainda não respondeu; null = falhou
+    if (reanalysisRequests === undefined) return `<p class="modal-loading">Carregando informações...</p>`;
+    if (reanalysisRequests === null) {
+        return renderSection("Solicitações de Reanálise", `<p class="fin-card-empty fin-card-empty--error">Não foi possível carregar o histórico de reanálises.</p>`);
+    }
+
+    if (reanalysisRequests.length === 0) {
+        return renderSection("Solicitações de Reanálise", renderEmptySection("Nenhuma reanálise solicitada."));
+    }
+
+    // a lista vem da mais recente para a mais antiga, então a numeração é invertida
+    const blocks = reanalysisRequests.map((reanalysisRequest, index) => `
+        <div class="responsible-block">
+            <p class="responsible-block-title">Reanálise ${reanalysisRequests.length - index}${index === 0 ? " (mais recente)" : ""}</p>
+            ${renderInfoGrid(reanalysisRequest, REANALYSIS_FIELDS)}
+        </div>
+    `).join("");
+
+    return renderSection("Solicitações de Reanálise", blocks);
+}
+
+/* ============================================================
    Carregamento e abertura
    ============================================================ */
 
-// o /details só é necessário para os responsáveis pela inclusão; todo o resto já veio da tabela
-async function loadResponsibles(applicationFormId, requestId) {
+// o /details só é necessário para os responsáveis pela inclusão e as reanálises do financeiro;
+// todo o resto já veio da tabela
+async function loadDetails(applicationFormId, requestId) {
     let responsibles = null;
+    let reanalysisRequests = null;
 
     try {
         const response = await fetchWithAuth(`/entrevista-adesao/application-forms/${applicationFormId}/details`);
@@ -562,11 +628,19 @@ async function loadResponsibles(applicationFormId, requestId) {
 
         const details = await response.json();
         responsibles = details.responsibles || [];
+        // a mesma tabela guarda as reanálises da gerência, que não interessam aqui
+        reanalysisRequests = (details.reanalysis_requests || []).filter(request => request.stage === "financial");
     } catch (error) {
         console.error(error);
     }
 
     if (requestId !== openRequestId) return;
+
+    const reanalysisContainer = document.getElementById("financialReanalysisContent");
+    if (reanalysisContainer) reanalysisContainer.innerHTML = renderReanalysisAlert(reanalysisRequests);
+
+    panels.history.innerHTML = renderHistoryTab(reanalysisRequests);
+    setTabCount("history", reanalysisRequests ? reanalysisRequests.length : 0);
 
     const container = document.getElementById("financialResponsibleContent");
     if (container) container.innerHTML = renderResponsibles(responsibles);
@@ -601,7 +675,9 @@ export function openAnalyzeFormModal(applicationForm) {
     panels.summary.innerHTML = renderSummaryTab(applicationForm);
     panels.beneficiary.innerHTML = renderBeneficiaryTab(applicationForm, undefined);
     panels.plan.innerHTML = renderPlanTab(applicationForm);
-    loadResponsibles(applicationForm.id, requestId);
+    panels.history.innerHTML = renderHistoryTab(undefined);
+    setTabCount("history", 0);
+    loadDetails(applicationForm.id, requestId);
 
     // preenche os campos ocultos que vão junto no envio pro backend
     applicationFormIdInput.value = applicationForm.id;

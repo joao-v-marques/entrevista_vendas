@@ -6,7 +6,7 @@ from models.application_form_interviews import ApplicationFormInterviewModel
 from models.qualify_interview import QualifyInterviewModel
 from models.application_form_management import ApplicationFormManagementModel
 from models.application_form_documents import ApplicationFormDocumentModel
-from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel
+from models.application_form_reanalysis_request import ApplicationFormReanalysisRequestModel, ApplicationFormReanalysisRequest
 from services.application_form_documents_services import ApplicationFormDocumentService
 from utils.exceptions import AppError, ConflictError, ForbiddenError, NotFoundError, ValidationError
 from utils.validations import to_id, to_bool, to_number
@@ -323,8 +323,10 @@ class ApplicationFormService:
         except Exception as e:
             raise Exception(str(e))
 
-    # Solicita reanálise financeira de uma ficha reprovada (volta o status para 1)
-    def request_reanalysis(application_form_id):
+    # Solicita reanálise financeira de uma ficha reprovada (volta o status para 1).
+    # A observação é opcional: vazia vira null, mas a solicitação é gravada mesmo assim
+    # para manter o histórico de quem pediu e quando.
+    def request_reanalysis(application_form_id, requester_id, reanalysis_observation):
         try:
             application_form = ApplicationFormModel.get_by_id(application_form_id)
 
@@ -334,9 +336,18 @@ class ApplicationFormService:
             if application_form.form_status_id != 7:
                 raise ConflictError("Só é possível solicitar reanálise de fichas reprovadas pelo financeiro")
 
-            ApplicationFormModel.update_status(1, application_form_id)
+            requester_id = to_id(requester_id, "solicitante da reanálise")
 
-            return True
+            observation = str(reanalysis_observation or "").strip() or None
+
+            reanalysis_request = ApplicationFormReanalysisRequest(
+                requester_id=requester_id,
+                reanalysis_observation=observation,
+                application_form_id=application_form_id,
+                stage="financial"
+            )
+
+            return ApplicationFormReanalysisRequestModel.create_and_return_to_financial(reanalysis_request)
         except AppError:
             raise
         except Exception as e:

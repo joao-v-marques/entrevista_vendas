@@ -187,17 +187,29 @@ def update_form_complete(application_form_id):
             "message": str(e)
         }), 500
 
-# POST para solicitar reanálise financeira de uma ficha reprovada
+# POST para solicitar reanálise financeira de uma ficha reprovada.
+# Recebe JSON com requester_id e reanalysis_observation (opcional).
 @bp_application_form.route("/application-forms/<int:application_form_id>/request-reanalysis", methods=['POST'])
 @token_required
 @role_required("administrator", "director", "sales_employee")
 def request_reanalysis(application_form_id):
     try:
+        data = request.get_json(silent=True) or {}
+
         ApplicationFormService.check_access(application_form_id, request.user)
 
-        ApplicationFormService.request_reanalysis(application_form_id)
+        reanalysis_request = ApplicationFormService.request_reanalysis(
+            application_form_id, data.get("requester_id"), data.get("reanalysis_observation")
+        )
 
-        return jsonify({"message": "Reanálise solicitada com sucesso"}), 200
+        return jsonify({
+            "message": "Reanálise solicitada com sucesso",
+            "reanalysis_request": reanalysis_request.to_dict(),
+        }), 201
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
     except ForbiddenError as e:
         return jsonify({
             "message": str(e)

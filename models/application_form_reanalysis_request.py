@@ -3,12 +3,14 @@ from models.application_form_documents import ApplicationFormDocumentModel
 from models.application_form_models import ApplicationFormModel
 
 class ApplicationFormReanalysisRequest:
-    def __init__(self, requester_id, reanalysis_observation, application_form_id, id=None, requested_at=None, requester_name=None):
+    # stage: etapa que reprovou a ficha e gerou a reanálise ('management' ou 'financial')
+    def __init__(self, requester_id, reanalysis_observation, application_form_id, id=None, requested_at=None, requester_name=None, stage="management"):
         self.requester_id = requester_id
         self.reanalysis_observation = reanalysis_observation
         self.requested_at = requested_at
         self.application_form_id = application_form_id
         self.requester_name = requester_name
+        self.stage = stage
         self.id = id
 
     def to_dict(self):
@@ -18,7 +20,8 @@ class ApplicationFormReanalysisRequest:
             "reanalysis_observation": self.reanalysis_observation,
             "requested_at": self.requested_at,
             "application_form_id": self.application_form_id,
-            "requester_name": self.requester_name
+            "requester_name": self.requester_name,
+            "stage": self.stage
         }
 
 class ApplicationFormReanalysisRequestModel:
@@ -30,8 +33,10 @@ class ApplicationFormReanalysisRequestModel:
             INSERT INTO application_form_reanalysis_requests (
                 requester_id,
                 reanalysis_observation,
-                application_form_id
+                application_form_id,
+                stage
             ) VALUES (
+                %s,
                 %s,
                 %s,
                 %s
@@ -42,6 +47,7 @@ class ApplicationFormReanalysisRequestModel:
             reanalysis_request.requester_id,
             reanalysis_request.reanalysis_observation,
             reanalysis_request.application_form_id,
+            reanalysis_request.stage,
         )
 
         cursor.execute(sql_query, values)
@@ -86,6 +92,32 @@ class ApplicationFormReanalysisRequestModel:
             if conn:
                 conn.close()
 
+    # POST da solicitação de reanálise financeira em uma ÚNICA transação: grava a solicitação e
+    # devolve a ficha para o status 1 (Aguardando Aprovação do Financeiro). Sem laudos: o
+    # financeiro só recebe a observação.
+    @staticmethod
+    def create_and_return_to_financial(reanalysis_request):
+        conn = None
+        cursor = None
+        try:
+            conn, cursor = get_db_connection()
+
+            ApplicationFormReanalysisRequestModel.insert(cursor, reanalysis_request)
+            ApplicationFormModel.update_status_with_cursor(cursor, 1, reanalysis_request.application_form_id)
+
+            conn.commit()
+
+            return reanalysis_request
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            raise Exception(str(e))
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
     # GET de todas as solicitações de reanálise de um formulário (com nome de quem solicitou).
     # Retorna a lista completa porque a mesma ficha pode ser reprovada e reanalisada várias vezes,
     # da mais recente para a mais antiga.
@@ -97,7 +129,7 @@ class ApplicationFormReanalysisRequestModel:
             conn, cursor = get_db_connection()
 
             sql_query = """
-                SELECT rr.id, rr.requester_id, u.name AS requester_name, rr.reanalysis_observation, rr.requested_at, rr.application_form_id
+                SELECT rr.id, rr.requester_id, u.name AS requester_name, rr.reanalysis_observation, rr.requested_at, rr.application_form_id, rr.stage
                 FROM application_form_reanalysis_requests rr
                 LEFT JOIN users u ON u.id = rr.requester_id
                 WHERE rr.application_form_id = %s

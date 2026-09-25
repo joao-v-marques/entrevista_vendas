@@ -392,7 +392,23 @@
                 </button>
             </div>
 
-            <div class="modal-body" id="requestReanalysisModalBody"></div>
+            <div class="modal-body">
+                <section class="modal-section">
+                    <h3 class="form-section-title">Dados da Reanálise</h3>
+
+                    <!-- ID do usuário logado, ou seja, quem está solicitando a reanálise -->
+                    <input type="hidden" id="reanalysis_requester_id">
+
+                    <div class="form-group full-width">
+                        <label class="form-label" for="reanalysisObservation">Observações da solicitação (opcional)</label>
+                        <textarea class="textarea" id="reanalysisObservation"
+                            placeholder="Descreva o que mudou desde a reprovação e as informações complementares para o financeiro..."></textarea>
+                    </div>
+                </section>
+
+                <!-- dados da ficha, preenchidos pelo requestReanalysisModal.js -->
+                <div class="request-reanalysis-form-data" id="requestReanalysisModalBody"></div>
+            </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn--ghost" id="requestReanalysisModalCancel">Cancelar</button>
