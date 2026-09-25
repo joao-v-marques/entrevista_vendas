@@ -2,6 +2,7 @@ import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js";
 import { populateManagementApproveTable } from "../management_approval.js";
 import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { syncBodyScrollLock } from "../utils/modalControl.js";
 import {
     escapeHtml,
     formatValue,
@@ -631,6 +632,7 @@ async function loadFormDetails(applicationForm, requestId) {
 
 function closeModal() {
     overlay.hidden = true;
+    syncBodyScrollLock();
     // invalida uma resposta ainda pendente da ficha que acabou de ser fechada
     openRequestId += 1;
 }
@@ -662,6 +664,7 @@ export function openAnalyzeManagementModal(applicationForm) {
     });
 
     overlay.hidden = false;
+    syncBodyScrollLock();
 }
 
 // o formulário de decisão mora na aba Resumo. Se o envio partir de outra aba, os campos obrigatórios
