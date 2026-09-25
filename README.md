@@ -61,7 +61,7 @@ mantendo o histórico completo para consulta.
 - Fila de fichas aguardando aprovação financeira
 - Aprovação ou reprovação com observação registrada e carimbo de quem revisou
 - Download de todos os documentos anexados em um único `.zip`, nomeado pelo beneficiário
-- Tela dedicada a fichas reprovadas, com opção de reanálise ou encerramento da negociação
+- Tela dedicada a fichas reprovadas, com opção de reanálise (com observação opcional, exibida ao financeiro na nova análise) ou encerramento da negociação
 
 ### Entrevistas
 
@@ -207,7 +207,7 @@ api_entrevista_vendas/
 | `application_form_approvals` | Parecer do financeiro |
 | `application_form_interviews` | Agendamento e análise da entrevista |
 | `application_form_management` | Parecer da gerência |
-| `application_form_reanalysis_requests` | Histórico de solicitações de reanálise |
+| `application_form_reanalysis_requests` | Histórico de solicitações de reanálise, com a etapa de origem (`stage`: `financial` ou `management`) |
 | `qualify_interview` | Declaração de saúde estruturada, com mais de 140 itens de resposta |
 
 ---
@@ -260,6 +260,9 @@ Em seguida, execute o DDL das tabelas:
 ```bash
 psql -U postgres -d entrevista_adesao -f database/migrations/V1__create_tables.sql
 ```
+
+Depois, aplique as migrations seguintes em ordem (`V2__...` até a mais recente, como a
+`V7__add_reanalysis_stage.sql`).
 
 O arquivo `database/migrations/V1__form_status.sql` contém os 12 status de referência
 (`id`, `name`, `description`) que devem ser carregados na tabela `form_status` antes do primeiro uso.
@@ -346,7 +349,7 @@ Todas as rotas são registradas sob o prefixo **`/entrevista-adesao`**.
 | `GET` | `/application-forms/status?status_id=` | Lista as fichas de um status específico |
 | `GET` | `/application-forms/{id}/details` | Retorno agregado: ficha, responsáveis, aprovações, entrevista, reanálises e documentos |
 | `POST` | `/application-forms/complete` | Cria ficha + responsáveis + documentos em uma transação (`multipart/form-data`) |
-| `POST` | `/application-forms/{id}/request-reanalysis` | Reanálise financeira: status 7 volta para 1 |
+| `POST` | `/application-forms/{id}/request-reanalysis` | Reanálise financeira: status 7 volta para 1. JSON com `requester_id` e `reanalysis_observation` (opcional) |
 | `POST` | `/application-forms/{id}/close-negotiation` | Encerra a negociação após reprovação financeira (status 8) |
 | `POST` | `/application-forms/{id}/finalize` | Efetiva o cadastro: status 5 avança para 6 |
 
