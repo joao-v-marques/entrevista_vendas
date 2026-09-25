@@ -197,9 +197,9 @@ function renderPortability(panel, forms) {
    Descontos
    ============================================================ */
 
-// discount_percentage é numeric(3,2) — teto 9.99. Isso comporta a fração (0.15 = 15%),
-// mas não 15 como pontos percentuais. Como o dado pode ter sido gravado das duas formas,
-// normalizamos: valor até 1 é fração, acima disso já são pontos percentuais.
+// discount_percentage é numeric(5,4) e guarda a fração (0.1050 = 10,5%). Registros antigos
+// podem ter sido gravados em pontos percentuais, então normalizamos: valor até 1 é fração,
+// acima disso já são pontos percentuais.
 function discountPercent(form) {
     const raw = Number(form.discount_percentage);
     if (!isFinite(raw) || raw <= 0) return null;

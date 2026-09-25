@@ -273,12 +273,12 @@ function renderTriageChips(filters) {
     }).join("");
 }
 
-// converte o discount_percentage (numeric(3,2): 0.15 no banco) para "15%",
+// converte o discount_percentage (numeric(5,4): 0.1050 no banco) para "10,5%",
 // o mesmo cálculo que formatValue(..., "percentage") faz nos modais
 function formatDiscount(value) {
     const percentage = Number(value);
     if (isNaN(percentage)) return "";
-    return `${(percentage * 100).toFixed(0)}%`;
+    return `${(percentage * 100).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
 }
 
 // monta as etiquetas da coluna "Sinalizações" a partir das flags da ficha

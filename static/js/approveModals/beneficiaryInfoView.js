@@ -28,7 +28,7 @@ function formatValue(value, format) {
 
     if (format === "date") return formatDateToBR(value);
     if (format === "boolean") return value ? "Sim" : "Não";
-    if (format === "percentage") return `${(Number(value) * 100).toFixed(0)}%`;
+    if (format === "percentage") return `${(Number(value) * 100).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
     if (format === "cpf") return formatCPF(value);
     if (format === "cnpj") return formatCNPJ(value);
 
