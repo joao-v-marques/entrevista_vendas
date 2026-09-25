@@ -10,7 +10,12 @@ import {
     renderSection,
     renderDecisionPill,
     renderEmptySection,
+    formatAge,
+    renderObservationCallout,
+    renderCommercialTags,
+    renderKpi,
 } from "../utils/detailsView.js";
+import { createModalTabs } from "../utils/modalTabs.js";
 import {
     FORM_FIELDS,
     DISCOUNT_FIELDS,
@@ -51,7 +56,7 @@ const panels = {
     documents: document.getElementById("managementDocumentsContent"),
 };
 
-const tabButtons = [...tabList.querySelectorAll(".mgmt-tab")];
+const { setActiveTab, getActiveTab, setTabCount } = createModalTabs(tabList, modalBody);
 
 // cada abertura do modal ganha um número; a resposta do /details só é aplicada se ainda for da
 // abertura atual, senão uma ficha lenta aberta antes sobrescreveria a que está na tela
@@ -85,63 +90,8 @@ const ICON_WARNING = `
    Helpers
    ============================================================ */
 
-// idade em anos completos; usa getters UTC pelo mesmo motivo do formatDate (datas chegam em GMT)
-function calculateAge(birthDate) {
-    if (!birthDate) return null;
-
-    const birth = new Date(birthDate);
-    if (isNaN(birth.getTime())) return null;
-
-    const today = new Date();
-    let age = today.getUTCFullYear() - birth.getUTCFullYear();
-
-    const hadBirthdayThisYear =
-        today.getUTCMonth() > birth.getUTCMonth() ||
-        (today.getUTCMonth() === birth.getUTCMonth() && today.getUTCDate() >= birth.getUTCDate());
-
-    if (!hadBirthdayThisYear) age -= 1;
-    return age;
-}
-
-function formatAge(birthDate) {
-    const age = calculateAge(birthDate);
-    if (age === null) return "—";
-    return `${age} ${age === 1 ? "ano" : "anos"}`;
-}
-
 function textOrDash(value) {
     return escapeHtml(formatValue(value));
-}
-
-// destaca um texto longo em um bloco próprio, mais legível do que espremido em um item da grade
-function renderObservationCallout(label, text, isHighlighted = false) {
-    const trimmedText = (text || "").trim();
-
-    const body = trimmedText
-        ? `<p class="observation-callout-text">${escapeHtml(trimmedText)}</p>`
-        : `<p class="observation-callout-text observation-callout-text--empty">Nenhuma observação registrada.</p>`;
-
-    return `
-        <div class="observation-callout${isHighlighted ? " observation-callout--highlight" : ""}">
-            <span class="observation-callout-label">${escapeHtml(label)}</span>
-            ${body}
-        </div>
-    `;
-}
-
-// as mesmas etiquetas comerciais da tabela (desconto, portabilidade, PA digital, aeromédico)
-function renderCommercialTags(form) {
-    const tags = [];
-
-    if (form.is_discount) {
-        const discount = formatValue(form.discount_percentage, "percentage");
-        tags.push(`<span class="forms-tag forms-tag--discount">${discount !== "—" ? `${escapeHtml(discount)} desc.` : "Desconto"}</span>`);
-    }
-    if (form.is_portability) tags.push(`<span class="forms-tag forms-tag--portability">Portabilidade</span>`);
-    if (form.is_pa_digital) tags.push(`<span class="forms-tag forms-tag--digital">PA Digital</span>`);
-    if (form.is_aeromedic) tags.push(`<span class="forms-tag forms-tag--aero">Aeromédico</span>`);
-
-    return tags.join("");
 }
 
 function renderDocumentLink(document) {
@@ -218,24 +168,6 @@ function renderReanalysisAlert(details) {
                 com ${reportsCount} laudo(s) médico(s) anexado(s).</p>
                 <p><button type="button" class="mgmt-link" data-go-tab="history">Ver a reprovação anterior e as reanálises</button></p>
             </div>
-        </div>
-    `;
-}
-
-function renderKpi({ label, value, foot = "", wide = false, full = false, alert = false, extra = "" }) {
-    const classes = [
-        "mgmt-kpi",
-        wide ? "mgmt-kpi--wide" : "",
-        full ? "mgmt-kpi--full" : "",
-        alert ? "mgmt-kpi--alert" : "",
-    ].filter(Boolean).join(" ");
-
-    return `
-        <div class="${classes}">
-            <span class="mgmt-kpi-label">${escapeHtml(label)}</span>
-            <span class="mgmt-kpi-value">${value}</span>
-            ${foot ? `<span class="mgmt-kpi-foot">${foot}</span>` : ""}
-            ${extra}
         </div>
     `;
 }
@@ -382,15 +314,31 @@ function renderBeneficiaryTab(form, responsibles) {
         { label: "Tipo de Beneficiário", key: "beneficiary_type", format: "beneficiaryType" },
     ];
 
-    const responsible = responsibles?.[0];
-    const responsibleHtml = responsible
-        ? renderInfoGrid(responsible, RESPONSIBLE_FIELDS)
-        : renderEmptySection("Nenhum responsável pela inclusão cadastrado.");
-
     return [
         renderSection("Dados do Beneficiário", renderInfoGrid(source, fields)),
-        renderSection("Responsável pela Inclusão", responsibleHtml),
+        renderResponsibles(responsibles),
     ].join("");
+}
+
+// a ficha pode ter mais de um responsável pela inclusão; com um só, não há numeração
+function renderResponsibles(responsibles) {
+    const list = responsibles || [];
+
+    if (list.length === 0) {
+        return renderSection("Responsável pela Inclusão", renderEmptySection("Nenhum responsável pela inclusão cadastrado."));
+    }
+    if (list.length === 1) {
+        return renderSection("Responsável pela Inclusão", renderInfoGrid(list[0], RESPONSIBLE_FIELDS));
+    }
+
+    const blocks = list.map((responsible, index) => `
+        <div class="responsible-block">
+            <p class="responsible-block-title">Responsável ${index + 1}</p>
+            ${renderInfoGrid(responsible, RESPONSIBLE_FIELDS)}
+        </div>
+    `).join("");
+
+    return renderSection("Responsáveis pela Inclusão", blocks);
 }
 
 /* ============================================================
@@ -543,58 +491,10 @@ function renderDocumentsTab(details) {
    Abas: controle
    ============================================================ */
 
-function setActiveTab(tabName, { focus = false } = {}) {
-    tabButtons.forEach(button => {
-        const isActive = button.dataset.tab === tabName;
-        button.classList.toggle("is-active", isActive);
-        button.setAttribute("aria-selected", String(isActive));
-        button.tabIndex = isActive ? 0 : -1;
-        if (isActive && focus) button.focus();
-    });
-
-    modalBody.querySelectorAll(".mgmt-panel").forEach(panel => {
-        panel.hidden = panel.dataset.tab !== tabName;
-    });
-
-    modalBody.scrollTop = 0;
-}
-
-function getActiveTab() {
-    return tabButtons.find(button => button.classList.contains("is-active"))?.dataset.tab;
-}
-
-function setTabCount(tabName, count, isAlert = false) {
-    const badge = tabList.querySelector(`[data-tab-count="${tabName}"]`);
-    if (!badge) return;
-
-    badge.hidden = !count;
-    badge.textContent = count ? String(count) : "";
-    badge.classList.toggle("mgmt-tab-count--alert", Boolean(count) && isAlert);
-}
-
+// o controle das abas (clique, teclado, contadores) vem de utils/modalTabs.js
 function resetTabCounts() {
     ["interview", "history", "documents"].forEach(tabName => setTabCount(tabName, 0));
 }
-
-tabList.addEventListener("click", (event) => {
-    const button = event.target.closest(".mgmt-tab");
-    if (button) setActiveTab(button.dataset.tab);
-});
-
-// setas ←/→ (e Home/End) navegam entre as abas, como pede o padrão ARIA de tablist
-tabList.addEventListener("keydown", (event) => {
-    const currentIndex = tabButtons.findIndex(button => button.dataset.tab === getActiveTab());
-    let nextIndex = null;
-
-    if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % tabButtons.length;
-    if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabButtons.length) % tabButtons.length;
-    if (event.key === "Home") nextIndex = 0;
-    if (event.key === "End") nextIndex = tabButtons.length - 1;
-    if (nextIndex === null) return;
-
-    event.preventDefault();
-    setActiveTab(tabButtons[nextIndex].dataset.tab, { focus: true });
-});
 
 /* ============================================================
    Downloads

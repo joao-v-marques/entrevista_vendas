@@ -3,17 +3,21 @@
    A casca do modal (.modal, .info-grid, .decision-group, .observation-callout...) vem de
    approve_form.css, que outras seis páginas também carregam; por isso tudo aqui fica preso a
    #analyzeManagementModalOverlay. O questionário de saúde vem de qualify_interview_view.css.
+   O modal de análise financeira (#analyzeModalOverlay, /aprovar-ficha) reaproveita as mesmas
+   abas e cartões; os ajustes só dele ficam em financial_analysis.css.
    ============================================= */
 
 /* ---------- Casca: mais largo e com altura fixa ---------- */
 
 /* altura fixa para o modal não "pular" de tamanho ao trocar de aba */
-#analyzeManagementModalOverlay .modal {
+#analyzeManagementModalOverlay .modal,
+#analyzeModalOverlay .modal {
   max-width: 1320px;
   height: calc(100vh - 3rem);
 }
 
-#analyzeManagementModalOverlay .modal-body {
+#analyzeManagementModalOverlay .modal-body,
+#analyzeModalOverlay .modal-body {
   flex: 1;
   gap: 0;
 }
@@ -410,7 +414,8 @@
 }
 
 @media (max-width: 520px) {
-  #analyzeManagementModalOverlay .modal {
+  #analyzeManagementModalOverlay .modal,
+  #analyzeModalOverlay .modal {
     height: calc(100vh - 1.5rem);
   }
 

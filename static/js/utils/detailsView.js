@@ -2,6 +2,7 @@
 // GET /application-forms/<id>/details (formsModals/viewFormModal.js e
 // completedInterviewModals/viewInterviewModal.js).
 // Foram extraídos daqui para que os dois modais não mantenham cópias dos mesmos formatadores.
+// Também usados pelos modais de análise da gerência e do financeiro (KPIs, idade, callouts).
 
 export function escapeHtml(value) {
     return String(value)
@@ -124,4 +125,79 @@ export function renderDecisionPill(approved) {
 
 export function renderEmptySection(message) {
     return `<p class="empty-section">${escapeHtml(message)}</p>`;
+}
+
+// idade em anos completos; usa getters UTC pelo mesmo motivo do formatDate (datas chegam em GMT)
+export function calculateAge(birthDate) {
+    if (!birthDate) return null;
+
+    const birth = new Date(birthDate);
+    if (isNaN(birth.getTime())) return null;
+
+    const today = new Date();
+    let age = today.getUTCFullYear() - birth.getUTCFullYear();
+
+    const hadBirthdayThisYear =
+        today.getUTCMonth() > birth.getUTCMonth() ||
+        (today.getUTCMonth() === birth.getUTCMonth() && today.getUTCDate() >= birth.getUTCDate());
+
+    if (!hadBirthdayThisYear) age -= 1;
+    return age;
+}
+
+export function formatAge(birthDate) {
+    const age = calculateAge(birthDate);
+    if (age === null) return "—";
+    return `${age} ${age === 1 ? "ano" : "anos"}`;
+}
+
+// destaca um texto longo em um bloco próprio, mais legível do que espremido em um item da grade
+export function renderObservationCallout(label, text, isHighlighted = false) {
+    const trimmedText = (text || "").trim();
+
+    const body = trimmedText
+        ? `<p class="observation-callout-text">${escapeHtml(trimmedText)}</p>`
+        : `<p class="observation-callout-text observation-callout-text--empty">Nenhuma observação registrada.</p>`;
+
+    return `
+        <div class="observation-callout${isHighlighted ? " observation-callout--highlight" : ""}">
+            <span class="observation-callout-label">${escapeHtml(label)}</span>
+            ${body}
+        </div>
+    `;
+}
+
+// as mesmas etiquetas comerciais da tabela (desconto, portabilidade, PA digital, aeromédico)
+export function renderCommercialTags(form) {
+    const tags = [];
+
+    if (form.is_discount) {
+        const discount = formatValue(form.discount_percentage, "percentage");
+        tags.push(`<span class="forms-tag forms-tag--discount">${discount !== "—" ? `${escapeHtml(discount)} desc.` : "Desconto"}</span>`);
+    }
+    if (form.is_portability) tags.push(`<span class="forms-tag forms-tag--portability">Portabilidade</span>`);
+    if (form.is_pa_digital) tags.push(`<span class="forms-tag forms-tag--digital">PA Digital</span>`);
+    if (form.is_aeromedic) tags.push(`<span class="forms-tag forms-tag--aero">Aeromédico</span>`);
+
+    return tags.join("");
+}
+
+// cartão de indicador dos resumos dos modais de análise; value e foot já chegam em HTML (escapados por quem chama)
+export function renderKpi({ label, value, foot = "", wide = false, full = false, alert = false, highlight = false, extra = "" }) {
+    const classes = [
+        "mgmt-kpi",
+        wide ? "mgmt-kpi--wide" : "",
+        full ? "mgmt-kpi--full" : "",
+        alert ? "mgmt-kpi--alert" : "",
+        highlight ? "mgmt-kpi--highlight" : "",
+    ].filter(Boolean).join(" ");
+
+    return `
+        <div class="${classes}">
+            <span class="mgmt-kpi-label">${escapeHtml(label)}</span>
+            <span class="mgmt-kpi-value">${value}</span>
+            ${foot ? `<span class="mgmt-kpi-foot">${foot}</span>` : ""}
+            ${extra}
+        </div>
+    `;
 }

@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/approve_form.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/management_approval.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/financial_analysis.css') }}" />
 </head>
 
 <body>
@@ -357,7 +359,9 @@
     <div class="modal-overlay" id="analyzeModalOverlay" hidden>
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="analyzeModalTitle">
             <div class="modal-header">
-                <h2 class="modal-title" id="analyzeModalTitle">Análise da Ficha #<span id="analyzeModalFormId"></span>
+                <h2 class="modal-title" id="analyzeModalTitle">
+                    Análise Financeira da Ficha #<span id="analyzeModalFormId"></span>
+                    <span class="mgmt-modal-subtitle" id="analyzeModalSubtitle"></span>
                 </h2>
                 <button type="button" class="modal-close" id="analyzeModalClose" aria-label="Fechar">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -367,54 +371,78 @@
                 </button>
             </div>
 
-            <div class="modal-body">
-                <!-- Seção 1: Informações do beneficiário (somente leitura) -->
-                <section class="modal-section">
-                    <h3 class="form-section-title">Informações do Beneficiário</h3>
-                    <div class="info-grid" id="beneficiaryInfoGrid"></div>
+            <!-- Abas: o Resumo concentra a decisão; as demais detalham beneficiário e plano -->
+            <div class="mgmt-tabs" role="tablist" aria-label="Seções da análise" id="financialTabs">
+                <button type="button" class="mgmt-tab is-active" role="tab" data-tab="summary" id="fin-tab-summary" aria-controls="fin-panel-summary" aria-selected="true">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                    Resumo
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="beneficiary" id="fin-tab-beneficiary" aria-controls="fin-panel-beneficiary" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="2.8" stroke="currentColor" stroke-width="1.3"/><path d="M2.8 14c.6-2.7 2.7-4.2 5.2-4.2s4.6 1.5 5.2 4.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Info. do Beneficiário
+                </button>
+                <button type="button" class="mgmt-tab" role="tab" data-tab="plan" id="fin-tab-plan" aria-controls="fin-panel-plan" aria-selected="false" tabindex="-1">
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M4 1.5h5L13 5.5V14a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 3 14V2a.5.5 0 0 1 .5-.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.5 8.5h5M5.5 11h3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Info. do Plano
+                </button>
+            </div>
+
+            <div class="modal-body" id="analyzeModalBody">
+                <!-- Aba 1: Resumo (beneficiário + plano + decisão do financeiro) -->
+                <section class="mgmt-panel" role="tabpanel" data-tab="summary" id="fin-panel-summary" aria-labelledby="fin-tab-summary">
+                    <div class="mgmt-panel-content" id="financialSummaryContent"></div>
+
+                    <section class="mgmt-decision">
+                        <h3 class="form-section-title">Aprovação Financeira</h3>
+                        <p class="mgmt-decision-hint">Revise o resumo acima (e as abas de detalhe, se precisar) antes de decidir.</p>
+
+                        <div class="approval-status" id="approvalStatusBanner"></div>
+
+                        <form id="financialApprovalForm" class="form-grid">
+                            <!-- ID do application_forms (formulário principal) que estamos enviando -->
+                            <input type="hidden" id="application_form_id" name="application_form_id">
+                            <!-- ID do usuário que está logado, ou seja, quem está realizando a aprovação/reprova -->
+                            <input type="hidden" id="reviewer_id" name="financial_reviewer_id">
+
+                            <div class="form-group full-width">
+                                <label class="form-label">Decisão</label>
+                                <div class="decision-group">
+
+                                    <label class="decision-option decision-option--approve">
+                                        <input type="radio" name="financial_approved" value="true" id="approvalApproveRadio" required>
+                                        <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                                            <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <span>Aprovar</span>
+                                    </label>
+
+                                    <label class="decision-option decision-option--reject">
+                                        <input type="radio" name="financial_approved" value="false" id="approvalRejectRadio" required>
+                                        <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                                            <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                                        </svg>
+                                        <span>Reprovar</span>
+                                    </label>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label" for="financialObservation">Observações</label>
+                                <textarea class="textarea" id="financialObservation" name="financial_observation" placeholder="Observações da análise financeira..." required></textarea>
+                            </div>
+                        </form>
+                    </section>
                 </section>
 
-                <!-- Seção 2: Aprovação financeira -->
-                <section class="modal-section">
-                    <h3 class="form-section-title">Aprovação Financeira</h3>
+                <!-- Aba 2: Dados do beneficiário e responsável pela inclusão -->
+                <section class="mgmt-panel" role="tabpanel" data-tab="beneficiary" id="fin-panel-beneficiary" aria-labelledby="fin-tab-beneficiary" hidden>
+                    <div class="mgmt-panel-content" id="financialBeneficiaryContent"></div>
+                </section>
 
-                    <div class="approval-status" id="approvalStatusBanner"></div>
-
-                    <form id="financialApprovalForm" class="form-grid">
-                        <!-- ID do application_forms (formulário principal) que estamos enviando -->
-                        <input type="hidden" id="application_form_id" name="application_form_id">
-                        <!-- ID do usuário que está logado, ou seja, quem está realizando a aprovação/reprova -->
-                        <input type="hidden" id="reviewer_id" name="financial_reviewer_id">
-
-                        <div class="form-group full-width">
-                            <label class="form-label">Decisão</label>
-                            <div class="decision-group">
-
-                                <label class="decision-option decision-option--approve">
-                                    <input type="radio" name="financial_approved" value="true" id="approvalApproveRadio">
-                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-                                        <path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Aprovar</span>
-                                </label>
-
-                                <label class="decision-option decision-option--reject">
-                                    <input type="radio" name="financial_approved" value="false" id="approvalRejectRadio">
-                                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-                                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                                    </svg>
-                                    <span>Reprovar</span>
-                                </label>
-
-                            </div>
-                        </div>
-
-                        <div class="form-group full-width">
-                            
-                            <label class="form-label" for="financialObservation">Observações</label>
-                            <textarea class="textarea" id="financialObservation" name="financial_observation" placeholder="Observações da análise financeira..." required></textarea>
-                        </div>
-                    </form>
+                <!-- Aba 3: Plano, inclusão, adicionais, desconto e portabilidade -->
+                <section class="mgmt-panel" role="tabpanel" data-tab="plan" id="fin-panel-plan" aria-labelledby="fin-tab-plan" hidden>
+                    <div class="mgmt-panel-content" id="financialPlanContent"></div>
                 </section>
             </div>
 

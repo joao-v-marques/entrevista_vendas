@@ -80,15 +80,25 @@ function renderQualifyInterview(qualifyInterview) {
    Demais seções
    ============================================================ */
 
-// a ficha tem no máximo um responsável pela inclusão, então não há numeração nem lista
-function renderResponsible(responsibles) {
-    const responsible = responsibles?.[0];
+// a ficha pode ter mais de um responsável pela inclusão; com um só, não há numeração
+function renderResponsibles(responsibles) {
+    const list = responsibles || [];
 
-    if (!responsible) {
+    if (list.length === 0) {
         return renderSection("Responsável pela Inclusão", renderEmptySection("Nenhum responsável pela inclusão cadastrado."));
     }
+    if (list.length === 1) {
+        return renderSection("Responsável pela Inclusão", renderInfoGrid(list[0], RESPONSIBLE_FIELDS));
+    }
 
-    return renderSection("Responsável pela Inclusão", renderInfoGrid(responsible, RESPONSIBLE_FIELDS));
+    const blocks = list.map((responsible, index) => `
+        <div class="responsible-block">
+            <p class="responsible-block-title">Responsável ${index + 1}</p>
+            ${renderInfoGrid(responsible, RESPONSIBLE_FIELDS)}
+        </div>
+    `).join("");
+
+    return renderSection("Responsáveis pela Inclusão", blocks);
 }
 
 function renderInterview(interview) {
@@ -120,7 +130,7 @@ function buildBody(details) {
     return [
         renderSection("Dados do Beneficiário", renderInfoGrid(form, BENEFICIARY_FIELDS)),
         renderSection("Plano e Contrato", renderInfoGrid(form, CONTRACT_FIELDS)),
-        renderResponsible(responsibles),
+        renderResponsibles(responsibles),
         renderInterview(interview),
         renderQualifyInterview(qualify_interview),
         renderConsultantAndObservations(form, interview, qualify_interview),
