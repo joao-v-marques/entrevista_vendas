@@ -134,7 +134,8 @@ export function renderEmptySection(message) {
     return `<p class="empty-section">${escapeHtml(message)}</p>`;
 }
 
-// idade em anos completos; usa getters UTC pelo mesmo motivo do formatDate (datas chegam em GMT)
+// idade em anos e meses completos, mesma conta do PDF da entrevista (recém-nascidos precisam dos meses);
+// usa getters UTC pelo mesmo motivo do formatDate (datas chegam em GMT)
 export function calculateAge(birthDate) {
     if (!birthDate) return null;
 
@@ -142,20 +143,27 @@ export function calculateAge(birthDate) {
     if (isNaN(birth.getTime())) return null;
 
     const today = new Date();
-    let age = today.getUTCFullYear() - birth.getUTCFullYear();
+    let totalMonths =
+        (today.getUTCFullYear() - birth.getUTCFullYear()) * 12 +
+        (today.getUTCMonth() - birth.getUTCMonth());
 
-    const hadBirthdayThisYear =
-        today.getUTCMonth() > birth.getUTCMonth() ||
-        (today.getUTCMonth() === birth.getUTCMonth() && today.getUTCDate() >= birth.getUTCDate());
+    if (today.getUTCDate() < birth.getUTCDate()) totalMonths -= 1;
+    if (totalMonths < 0) return null;
 
-    if (!hadBirthdayThisYear) age -= 1;
-    return age;
+    return { years: Math.floor(totalMonths / 12), months: totalMonths % 12 };
 }
 
 export function formatAge(birthDate) {
     const age = calculateAge(birthDate);
     if (age === null) return "—";
-    return `${age} ${age === 1 ? "ano" : "anos"}`;
+
+    const { years, months } = age;
+    const monthsText = `${months} ${months === 1 ? "mês" : "meses"}`;
+
+    if (years === 0) return months === 0 ? "Menos de 1 mês" : monthsText;
+
+    const yearsText = `${years} ${years === 1 ? "ano" : "anos"}`;
+    return months === 0 ? yearsText : `${yearsText} e ${monthsText}`;
 }
 
 // destaca um texto longo em um bloco próprio, mais legível do que espremido em um item da grade
