@@ -146,9 +146,22 @@ class ApplicationFormService:
         if form_data.get("inclusion_type") == "Troca de Plano" and not form_data.get("previous_plan_cancellation_date"):
             raise ValidationError("Informe a data do cancelamento do plano anterior")
 
+        cnpj = form_data.get("cnpj") or None
+        caepf = form_data.get("caepf") or None
+
+        # Novo Contrato exige exatamente um documento do contratante: CNPJ ou CAEPF
+        if form_data.get("inclusion_type") == "Novo Contrato":
+            if cnpj and caepf:
+                raise ValidationError("Informe apenas o CNPJ ou o CAEPF, não os dois")
+            if not cnpj and not caepf:
+                raise ValidationError("Informe o CNPJ ou o CAEPF para Novo Contrato")
+        else:
+            cnpj = caepf = None
+
         return {
             "inclusion_type": form_data.get("inclusion_type"),
-            "cnpj": form_data.get("cnpj"),
+            "cnpj": cnpj,
+            "caepf": caepf,
             "previous_plan": form_data.get("previous_plan"),
             "previous_plan_cancellation_date": form_data.get("previous_plan_cancellation_date") or None,
             "inclusion_date": form_data.get("inclusion_date"),

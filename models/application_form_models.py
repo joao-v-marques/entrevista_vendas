@@ -1,7 +1,7 @@
 from database.connect_db import get_db_connection
 
 class ApplicationForm:
-    def __init__(self, beneficiary_type, inclusion_type, inclusion_date, contract_type, plan_type, model_proposal, expiration_month, is_pa_digital, is_aeromedic, is_discount, beneficiary_name, beneficiary_birth_date, beneficiary_phone, beneficiary_email, beneficiary_marital_state, billing_email, is_portability, especial_observations, form_status_id, form_status_name, created_at=None, portability_accepted=None, portability_accepted_date=None, portability_observation=None, grace_option=None, beneficiary_cpf=None, secondary_beneficiary_primary_name=None, secondary_beneficiary_kinship=None,  discount_percentage=None, discount_observation=None, consultant_id=None, consultant_name=None, id=None, cnpj=None, previous_plan=None, previous_plan_cancellation_date=None, interview_date=None, schedule_observation=None, interviewer_name=None):
+    def __init__(self, beneficiary_type, inclusion_type, inclusion_date, contract_type, plan_type, model_proposal, expiration_month, is_pa_digital, is_aeromedic, is_discount, beneficiary_name, beneficiary_birth_date, beneficiary_phone, beneficiary_email, beneficiary_marital_state, billing_email, is_portability, especial_observations, form_status_id, form_status_name, created_at=None, portability_accepted=None, portability_accepted_date=None, portability_observation=None, grace_option=None, beneficiary_cpf=None, secondary_beneficiary_primary_name=None, secondary_beneficiary_kinship=None,  discount_percentage=None, discount_observation=None, consultant_id=None, consultant_name=None, id=None, cnpj=None, caepf=None, previous_plan=None, previous_plan_cancellation_date=None, interview_date=None, schedule_observation=None, interviewer_name=None):
         self.beneficiary_type = beneficiary_type
         self.inclusion_type = inclusion_type
         self.inclusion_date = inclusion_date
@@ -35,6 +35,7 @@ class ApplicationForm:
         self.consultant_name = consultant_name
         self.id = id
         self.cnpj = cnpj
+        self.caepf = caepf
         self.previous_plan = previous_plan
         self.previous_plan_cancellation_date = previous_plan_cancellation_date
         self.form_status_name = form_status_name
@@ -50,6 +51,7 @@ class ApplicationForm:
             "consultant_name": self.consultant_name,
             "inclusion_type": self.inclusion_type,
             "cnpj": self.cnpj,
+            "caepf": self.caepf,
             "previous_plan": self.previous_plan,
             "previous_plan_cancellation_date": self.previous_plan_cancellation_date,
             "inclusion_date": self.inclusion_date,
@@ -127,6 +129,7 @@ class ApplicationFormModel:
                     u.name AS consultant_name,
                     af.inclusion_type,
                     af.cnpj,
+                    af.caepf,
                     af.previous_plan,
                     af.previous_plan_cancellation_date,
                     af.inclusion_date,
@@ -199,6 +202,7 @@ class ApplicationFormModel:
                     u.name AS consultant_name,
                     af.inclusion_type,
                     af.cnpj,
+                    af.caepf,
                     af.previous_plan,
                     af.previous_plan_cancellation_date,
                     af.inclusion_date,
@@ -269,6 +273,7 @@ class ApplicationFormModel:
                     u.name AS consultant_name,
                     af.inclusion_type,
                     af.cnpj,
+                    af.caepf,
                     af.previous_plan,
                     af.previous_plan_cancellation_date,
                     af.inclusion_date,
@@ -340,7 +345,7 @@ class ApplicationFormModel:
     def insert_form(cursor, application_form):
         sql_query = """
             INSERT INTO application_forms (
-                beneficiary_type, consultant_id, inclusion_type, cnpj, previous_plan, previous_plan_cancellation_date,
+                beneficiary_type, consultant_id, inclusion_type, cnpj, caepf, previous_plan, previous_plan_cancellation_date,
                 inclusion_date, contract_type, plan_type, model_proposal, expiration_month,
                 is_pa_digital, is_aeromedic, is_discount, discount_percentage, discount_observation,
                 beneficiary_name, beneficiary_cpf, beneficiary_birth_date, beneficiary_phone, beneficiary_email,
@@ -349,7 +354,7 @@ class ApplicationFormModel:
                 is_portability, portability_accepted, portability_accepted_date, portability_observation,
                 grace_option, especial_observations, form_status_id
             ) VALUES (
-                %s, %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s,
@@ -361,7 +366,7 @@ class ApplicationFormModel:
             RETURNING id
         """
         values = (
-            application_form.beneficiary_type, application_form.consultant_id, application_form.inclusion_type, application_form.cnpj, application_form.previous_plan, application_form.previous_plan_cancellation_date,
+            application_form.beneficiary_type, application_form.consultant_id, application_form.inclusion_type, application_form.cnpj, application_form.caepf, application_form.previous_plan, application_form.previous_plan_cancellation_date,
             application_form.inclusion_date, application_form.contract_type, application_form.plan_type, application_form.model_proposal, application_form.expiration_month,
             application_form.is_pa_digital, application_form.is_aeromedic, application_form.is_discount, application_form.discount_percentage, application_form.discount_observation,
             application_form.beneficiary_name, application_form.beneficiary_cpf, application_form.beneficiary_birth_date, application_form.beneficiary_phone, application_form.beneficiary_email,
@@ -461,7 +466,7 @@ class ApplicationFormModel:
     def update_form(cursor, application_form_id, fields):
         sql_query = """
             UPDATE application_forms SET
-                inclusion_type = %s, cnpj = %s, previous_plan = %s, previous_plan_cancellation_date = %s,
+                inclusion_type = %s, cnpj = %s, caepf = %s, previous_plan = %s, previous_plan_cancellation_date = %s,
                 inclusion_date = %s, contract_type = %s, plan_type = %s, model_proposal = %s, expiration_month = %s,
                 is_pa_digital = %s, is_aeromedic = %s, is_discount = %s, discount_percentage = %s, discount_observation = %s,
                 beneficiary_name = %s, beneficiary_cpf = %s, beneficiary_birth_date = %s, beneficiary_phone = %s, beneficiary_email = %s,
@@ -472,7 +477,7 @@ class ApplicationFormModel:
             WHERE id = %s
         """
         values = (
-            fields["inclusion_type"], fields["cnpj"], fields["previous_plan"], fields["previous_plan_cancellation_date"],
+            fields["inclusion_type"], fields["cnpj"], fields["caepf"], fields["previous_plan"], fields["previous_plan_cancellation_date"],
             fields["inclusion_date"], fields["contract_type"], fields["plan_type"], fields["model_proposal"], fields["expiration_month"],
             fields["is_pa_digital"], fields["is_aeromedic"], fields["is_discount"], fields["discount_percentage"], fields["discount_observation"],
             fields["beneficiary_name"], fields["beneficiary_cpf"], fields["beneficiary_birth_date"], fields["beneficiary_phone"], fields["beneficiary_email"],
@@ -530,6 +535,7 @@ class ApplicationFormModel:
                     u.name AS consultant_name,
                     af.inclusion_type,
                     af.cnpj,
+                    af.caepf,
                     af.previous_plan,
                     af.previous_plan_cancellation_date,
                     af.inclusion_date,
