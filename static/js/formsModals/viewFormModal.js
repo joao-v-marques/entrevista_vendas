@@ -842,7 +842,7 @@ function renderAllTabs(details, user) {
 
     // espelha o @role_required de /application-form-documents/<id>/file e
     // /application-form-interviews/<id>/document
-    const canOpenFiles = ["administrator", "director", "sales_employee"].includes(user?.role_name);
+    const canOpenFiles = ["administrator", "director", "sales_employee", "backoffice_employee"].includes(user?.role_name);
 
     subtitleLabel.textContent = form.beneficiary_name || "";
 

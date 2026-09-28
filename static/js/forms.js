@@ -10,7 +10,7 @@ let allForms = [];
 
 // quem finaliza o cadastro no backoffice — espelha o @role_required de
 // POST /application-forms/<id>/finalize. Financeiro e Entrevistas só visualizam e baixam.
-const ROLES_FINALIZE = ["administrator", "director", "sales_employee"];
+const ROLES_FINALIZE = ["administrator", "director", "sales_employee", "backoffice_employee"];
 
 // quem edita a ficha — espelha o @role_required de PUT /application-forms/<id>
 const ROLES_EDIT = ["administrator", "director"];

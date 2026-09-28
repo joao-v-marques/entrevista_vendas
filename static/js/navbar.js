@@ -99,15 +99,16 @@
     finance_employee: 'COLABORADOR FINANCEIRO',
     sales_employee: 'COLABORADOR DE VENDAS',
     interview_employee: 'COLABORADOR DE ENTREVISTAS',
+    backoffice_employee: 'COLABORADOR DE BACKOFFICE',
   };
 
   // quem enxerga cada tela — espelha os @role_required das rotas de render.
   // Vale para qualquer elemento com data-page, não só os itens da navbar
   // (os atalhos da home usam os mesmos valores).
   const PAGE_ROLES = {
-    'home': ['administrator', 'director', 'finance_employee', 'sales_employee', 'interview_employee'],
+    'home': ['administrator', 'director', 'finance_employee', 'sales_employee', 'interview_employee', 'backoffice_employee'],
     'nova': ['administrator', 'director', 'sales_employee'],
-    'pendentes': ['administrator', 'director', 'finance_employee', 'sales_employee'],
+    'pendentes': ['administrator', 'director', 'finance_employee', 'sales_employee', 'backoffice_employee'],
     'dashboard': ['administrator', 'director'],
     'aprovar-ficha': ['administrator', 'director', 'finance_employee', 'sales_employee'],
     'fichas-reprovadas': ['administrator', 'director', 'finance_employee', 'sales_employee'],

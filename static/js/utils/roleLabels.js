@@ -1,6 +1,6 @@
 // Rótulo e cor de pill de cada cargo, a partir do role_name que vem do backend.
 //
-// Os nomes seguem os mesmos cinco cargos que o navbar já exibe no menu do usuário
+// Os nomes seguem os mesmos cargos que o navbar já exibe no menu do usuário
 // (static/js/navbar.js), aqui em caixa normal porque cabem numa .pill de tabela.
 // O navbar mantém a própria cópia por ser script clássico, e não módulo.
 export const ROLE_LABELS = {
@@ -9,6 +9,7 @@ export const ROLE_LABELS = {
     finance_employee: "Colaborador Financeiro",
     sales_employee: "Colaborador de Vendas",
     interview_employee: "Colaborador de Entrevistas",
+    backoffice_employee: "Colaborador de Backoffice",
 };
 
 export const ROLE_PILL_CLASSES = {
@@ -17,6 +18,7 @@ export const ROLE_PILL_CLASSES = {
     finance_employee: "pill--teal",
     sales_employee: "pill--blue",
     interview_employee: "pill--gray",
+    backoffice_employee: "pill--green",
 };
 
 // um cargo criado pela tela de Configurações não está nos mapas acima, então o
