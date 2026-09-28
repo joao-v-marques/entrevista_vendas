@@ -28,7 +28,7 @@ def get_all():
 # GET que baixa, em um único .zip, todos os documentos anexados a um formulário
 @bp_application_form_documents.route("/application-form-documents/<int:application_form_id>/download", methods=['GET'])
 @token_required
-@role_required("administrator", "director", "finance_employee", "sales_employee")
+@role_required("administrator", "director", "finance_employee", "sales_employee", "backoffice_employee")
 def download_all(application_form_id):
     try:
         ApplicationFormService.check_access(application_form_id, request.user)
@@ -58,7 +58,7 @@ def download_all(application_form_id):
 # permite visualizar o laudo médico da reanálise; com ?download=true força o download.
 @bp_application_form_documents.route("/application-form-documents/<int:document_id>/file", methods=['GET'])
 @token_required
-@role_required("administrator", "director", "sales_employee")
+@role_required("administrator", "director", "sales_employee", "backoffice_employee")
 def download_file(document_id):
     try:
         absolute_path, document = ApplicationFormDocumentService.get_document_file(document_id)

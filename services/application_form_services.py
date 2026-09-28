@@ -22,7 +22,8 @@ class ApplicationFormService:
             raise Exception(str(e))
 
     # Garante que o usuário logado pode acessar uma ficha específica: diretoria e administradores
-    # acessam todas, vendas só as que lançou e o financeiro só as que analisou por último
+    # acessam todas, vendas só as que lançou, o financeiro só as que analisou por último e o
+    # backoffice as aguardando cadastro (5) e as finalizadas (6)
     def check_access(application_form_id, user):
         try:
             role_name = (user.get("role_name") or "").lower()
@@ -36,6 +37,9 @@ class ApplicationFormService:
                 raise NotFoundError("Formulário não encontrado")
 
             if role_name == "sales_employee" and application_form.consultant_id == user.get("id"):
+                return True
+
+            if role_name == "backoffice_employee" and application_form.form_status_id in (5, 6):
                 return True
 
             if role_name == "finance_employee":

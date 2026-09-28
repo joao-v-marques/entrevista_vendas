@@ -6,6 +6,6 @@ bp_render_home = Blueprint('bp_render_home', __name__)
 
 @bp_render_home.route('/home')
 @token_required
-@role_required("administrator", "director", "finance_employee", "sales_employee", "interview_employee")
+@role_required("administrator", "director", "finance_employee", "sales_employee", "interview_employee", "backoffice_employee")
 def render_home():
     return render_template('home.html')

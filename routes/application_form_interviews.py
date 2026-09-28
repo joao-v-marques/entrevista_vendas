@@ -52,7 +52,7 @@ def get_completed():
 # GET que gera e devolve o documento da entrevista em PDFs
 @bp_form_interviews.route("/application-form-interviews/<int:application_form_id>/document", methods=['GET'])
 @token_required
-@role_required("administrator", "director", "sales_employee")
+@role_required("administrator", "director", "sales_employee", "backoffice_employee")
 def download_document(application_form_id):
     try:
         ApplicationFormService.check_access(application_form_id, request.user)

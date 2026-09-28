@@ -10,20 +10,23 @@ bp_application_form = Blueprint("bp_application_form", __name__)
 
 @bp_application_form.route("/application-forms", methods=['GET'])
 @token_required
-@role_required("administrator", "director", "finance_employee", "sales_employee", "interview_employee")
+@role_required("administrator", "director", "finance_employee", "sales_employee", "interview_employee", "backoffice_employee")
 def get_all():
     try:
         user_id = request.user.get("id")
         role_name = request.user.get("role_name", "").lower()
 
         # diretoria e administradores veem tudo, vendas só o que lançou, financeiro só o que
-        # analisou por último e a entrevista não acompanha fichas (só aprova pela fila)
+        # analisou por último, o backoffice a fila de cadastro (5) e os finalizados (6)
+        # e a entrevista não acompanha fichas (só aprova pela fila)
         if role_name in ("administrator", "director"):
             application_forms = ApplicationFormService.get_all()
         elif role_name == "sales_employee":
             application_forms = ApplicationFormService.get_all(consultant_id=user_id)
         elif role_name == "finance_employee":
             application_forms = ApplicationFormService.get_all(financial_reviewer_id=user_id)
+        elif role_name == "backoffice_employee":
+            application_forms = ApplicationFormService.get_by_status(5) + ApplicationFormService.get_by_status(6)
         else:
             application_forms = []
 
@@ -39,7 +42,7 @@ def get_all():
 # GET de todos por status (USANDO QUERY PARAMS, VARIÁVEL É status_id)
 @bp_application_form.route("/application-forms/status", methods=['GET'])
 @token_required
-@role_required("administrator", "director", "finance_employee", "sales_employee", "interview_employee")
+@role_required("administrator", "director", "finance_employee", "sales_employee", "interview_employee", "backoffice_employee")
 def get_by_status():
     try:
         status_id = request.args.get('status_id')
@@ -61,6 +64,8 @@ def get_by_status():
         elif role_name == "finance_employee":
             application_forms = ApplicationFormService.get_by_status(status_id, financial_reviewer_id=user_id)
         elif role_name == "interview_employee" and status_id == "3":
+            application_forms = ApplicationFormService.get_by_status(status_id)
+        elif role_name == "backoffice_employee" and status_id in ("5", "6"):
             application_forms = ApplicationFormService.get_by_status(status_id)
         else:
             application_forms = []
@@ -100,7 +105,7 @@ def get_pending_management_approval():
 # GET agregado com TODOS os dados de um formulário (usado pela tela de visualização)
 @bp_application_form.route("/application-forms/<int:application_form_id>/details", methods=['GET'])
 @token_required
-@role_required("administrator", "director", "finance_employee", "sales_employee")
+@role_required("administrator", "director", "finance_employee", "sales_employee", "backoffice_employee")
 def get_full_details(application_form_id):
     try:
         ApplicationFormService.check_access(application_form_id, request.user)
@@ -258,7 +263,7 @@ def close_negotiation(application_form_id):
 # POST para finalizar o cadastro (status 5 -> 6. Finalizado)
 @bp_application_form.route("/application-forms/<int:application_form_id>/finalize", methods=['POST'])
 @token_required
-@role_required("administrator", "director", "sales_employee")
+@role_required("administrator", "director", "sales_employee", "backoffice_employee")
 def finalize_registration(application_form_id):
     try:
         ApplicationFormService.check_access(application_form_id, request.user)
