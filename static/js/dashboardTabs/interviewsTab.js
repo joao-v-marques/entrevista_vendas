@@ -15,7 +15,7 @@ import {
     ESCOLHA_MEDICO_ORIENTADOR_LABELS, classifyImc, getDeclaredConditions,
 } from "../utils/qualifyInterview.js";
 import { QUALIFY_INTERVIEW_GROUPS } from "../analyzeInterviewModals/qualifyInterviewQuestions.js";
-import { makeChart, barOptions, doughnutOptions, colorAt, BAR_STYLE, PALETTE, GREEN } from "./chartFactory.js";
+import { makeChart, barOptions, doughnutOptions, colorAt, BAR_STYLE, PALETTE, GREEN, SURFACE } from "./chartFactory.js";
 import {
     blockTitle, grid, kpiCard, kpiGrid, chartCard, contentCard,
     setText, setChartEmpty, renderBarList, renderTiles,
@@ -195,7 +195,7 @@ function renderParecer(panel, qualify) {
             datasets: [{
                 data: entries.map(([, count]) => count),
                 backgroundColor: entries.map(([key]) => PARECER_COLORS[key] || "#9ca3af"),
-                borderColor: "#fff",
+                borderColor: SURFACE,
                 borderWidth: 2,
                 hoverOffset: 5,
             }],
@@ -245,7 +245,7 @@ function renderDoctor(panel, qualify) {
             datasets: [{
                 data: entries.map(([, count]) => count),
                 backgroundColor: entries.map((_, index) => colorAt(index)),
-                borderColor: "#fff",
+                borderColor: SURFACE,
                 borderWidth: 2,
                 hoverOffset: 5,
             }],

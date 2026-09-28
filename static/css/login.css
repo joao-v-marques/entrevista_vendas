@@ -146,3 +146,13 @@ body {
     padding: 1.75rem 1.4rem 2rem;
   }
 }
+
+/* ---------- Tema escuro ----------
+   Fundo verde fixo mais fechado: a escala verde é invertida no escuro. */
+[data-theme="dark"] .login-page {
+  background: linear-gradient(135deg, #0b3219 0%, #145c2b 100%);
+}
+
+[data-theme="dark"] .login-card {
+  border: 1px solid var(--color-border);
+}

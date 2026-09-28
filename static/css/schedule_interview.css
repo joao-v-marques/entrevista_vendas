@@ -11,7 +11,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.55);
+  background: var(--color-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,6 +159,96 @@
 .flatpickr-time .flatpickr-am-pm:hover,
 .flatpickr-time input:focus {
   background: var(--green-50);
+}
+
+/* ---------- Tema escuro (calendário do flatpickr) ----------
+   O CSS do flatpickr vem com fundo branco fixo; aqui ele é trazido para as
+   superfícies do tema. */
+[data-theme="dark"] .schedule-date-picker {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%234cc47e' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M16 3v4M8 3v4M3 11h18'/%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] .flatpickr-calendar {
+  background: var(--color-bg-surface);
+  border-color: var(--color-border);
+}
+
+[data-theme="dark"] .flatpickr-calendar.arrowTop::before,
+[data-theme="dark"] .flatpickr-calendar.arrowTop::after {
+  border-bottom-color: var(--color-bg-surface);
+}
+
+[data-theme="dark"] .flatpickr-calendar.arrowBottom::before,
+[data-theme="dark"] .flatpickr-calendar.arrowBottom::after {
+  border-top-color: var(--color-bg-surface);
+}
+
+[data-theme="dark"] .flatpickr-months .flatpickr-month,
+[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
+[data-theme="dark"] .flatpickr-current-month input.cur-year,
+[data-theme="dark"] span.flatpickr-weekday,
+[data-theme="dark"] .flatpickr-time input,
+[data-theme="dark"] .flatpickr-time .flatpickr-time-separator,
+[data-theme="dark"] .flatpickr-time .flatpickr-am-pm {
+  color: var(--color-text);
+  fill: var(--color-text);
+  background: transparent;
+}
+
+[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months option {
+  background: var(--color-bg-surface);
+}
+
+[data-theme="dark"] .flatpickr-months .flatpickr-prev-month,
+[data-theme="dark"] .flatpickr-months .flatpickr-next-month {
+  color: var(--color-text-muted);
+  fill: var(--color-text-muted);
+}
+
+[data-theme="dark"] .flatpickr-months .flatpickr-prev-month:hover svg,
+[data-theme="dark"] .flatpickr-months .flatpickr-next-month:hover svg {
+  fill: var(--color-brand);
+}
+
+[data-theme="dark"] .numInputWrapper span.arrowUp::after {
+  border-bottom-color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .numInputWrapper span.arrowDown::after {
+  border-top-color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .flatpickr-day {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .flatpickr-day:hover,
+[data-theme="dark"] .flatpickr-day:focus {
+  background: var(--gray-100);
+  border-color: var(--gray-100);
+}
+
+[data-theme="dark"] .flatpickr-day.prevMonthDay,
+[data-theme="dark"] .flatpickr-day.nextMonthDay,
+[data-theme="dark"] .flatpickr-day.flatpickr-disabled,
+[data-theme="dark"] .flatpickr-day.flatpickr-disabled:hover {
+  color: var(--gray-400);
+  background: transparent;
+  border-color: transparent;
+}
+
+[data-theme="dark"] .flatpickr-day.selected,
+[data-theme="dark"] .flatpickr-day.selected:hover,
+[data-theme="dark"] .flatpickr-day.selected:focus {
+  color: var(--color-on-brand);
+}
+
+[data-theme="dark"] .flatpickr-time {
+  border-top-color: var(--color-border);
+}
+
+[data-theme="dark"] .flatpickr-calendar.hasTime .flatpickr-time {
+  border-top-color: var(--color-border);
 }
 
 @media (max-width: 860px) {

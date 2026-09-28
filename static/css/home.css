@@ -362,7 +362,7 @@
 }
 
 .icon-btn--primary {
-  color: #fff;
+  color: var(--color-on-brand);
   background: var(--color-brand);
   border-color: var(--color-brand);
 }
@@ -370,7 +370,7 @@
 .icon-btn--primary:hover {
   background: var(--color-brand-dark);
   border-color: var(--color-brand-dark);
-  color: #fff;
+  color: var(--color-on-brand);
 }
 
 .icon-btn--danger {
@@ -632,4 +632,26 @@ tbody tr:hover td {
   .fichas-table th:nth-child(6) {
     display: none;
   }
+}
+/* ---------- Tema escuro ----------
+   O hero mantém o verde da marca com texto branco, mas num gradiente fixo e
+   mais fechado (a escala verde é invertida no escuro e clarearia o fundo). */
+[data-theme="dark"] .hero {
+  background: linear-gradient(135deg, #0b3219 0%, #145c2b 100%);
+}
+
+[data-theme="dark"] .hero-eyebrow,
+[data-theme="dark"] .hero-title em {
+  color: #a8e0c0;
+}
+
+[data-theme="dark"] .hero-actions .btn--primary {
+  background: #fff;
+  color: #145c2b;
+  border-color: #fff;
+}
+
+[data-theme="dark"] .hero-actions .btn--primary:hover {
+  background: #d4f0e0;
+  border-color: #d4f0e0;
 }

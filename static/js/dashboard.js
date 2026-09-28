@@ -7,7 +7,7 @@
 // nasce com tamanho zero. Por isso a aba só se inicializa quando é exibida.
 
 import { inputToUTCStart, inputToUTCEnd } from "./dashboardTabs/aggregations.js";
-import { resizeTab } from "./dashboardTabs/chartFactory.js";
+import { resizeTab, applyChartTheme } from "./dashboardTabs/chartFactory.js";
 import { clearCache } from "./dashboardTabs/dashboardData.js";
 
 import * as overviewTab from "./dashboardTabs/overviewTab.js";
@@ -210,4 +210,12 @@ document.addEventListener("DOMContentLoaded", () => {
     stampUpdatedAt();
 
     showTab(window.location.hash.slice(1) || "visao-geral");
+});
+
+// troca de tema no menu do usuário: os gráficos guardam as cores na criação, então a
+// aba visível é redesenhada (os dados vêm do cache, sem novo fetch); as demais pegam
+// o tema novo quando forem exibidas, porque showTab sempre renderiza
+document.addEventListener("themechange", () => {
+    applyChartTheme();
+    renderActiveTab();
 });

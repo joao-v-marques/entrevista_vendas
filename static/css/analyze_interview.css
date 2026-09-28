@@ -15,7 +15,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.55);
+  background: var(--color-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -203,7 +203,7 @@
 
 .choice-option:hover {
   border-color: var(--blue-400);
-  background: #fff;
+  background: var(--color-bg-surface);
 }
 
 .choice-option:has(input:checked) {
@@ -268,14 +268,14 @@
 
 .decision-option--approve:hover {
   border-color: var(--green-400);
-  background: #fff;
+  background: var(--color-bg-surface);
 }
 
 .decision-option--approve:has(input:checked) {
   border-color: var(--green-500);
   background: var(--green-50);
   color: var(--green-700);
-  box-shadow: 0 0 0 3px rgba(34, 160, 78, 0.12);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 /* opção travada: não tem o que escolher, então não deve parecer clicável */
@@ -387,7 +387,7 @@
   font-size: 11px;
   font-weight: 600;
   color: var(--color-text-muted);
-  background: #fff;
+  background: var(--color-bg-surface);
   border: 1px solid var(--color-border);
   padding: 2px 8px;
   border-radius: 999px;
@@ -409,7 +409,7 @@
 .qualify-item {
   padding: 0.6rem 0.9rem;
   border-bottom: 1px solid var(--color-border-light);
-  background: #fff;
+  background: var(--color-bg-surface);
 }
 
 .qualify-item:last-child {
@@ -566,7 +566,7 @@
 
 .preset-option:hover {
   border-color: var(--blue-400);
-  background: #fff;
+  background: var(--color-bg-surface);
 }
 
 .preset-option:has(input:checked) {

@@ -28,8 +28,8 @@ body {
 .btn-spinner {
   width: 15px;
   height: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.45);
-  border-top-color: #fff;
+  border: 2px solid color-mix(in srgb, currentColor 40%, transparent);
+  border-top-color: currentColor;
   border-radius: 50%;
   animation: btn-spin 0.6s linear infinite;
   flex-shrink: 0;
@@ -430,12 +430,12 @@ body {
 .option-card:has(input:checked) {
   border-color: var(--green-500);
   background: var(--green-50);
-  box-shadow: 0 0 0 3px rgba(34, 160, 78, 0.1);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .option-card:has(input:checked) .option-card-text strong {
-  color: #fff;
-  background: var(--green-600);
+  color: var(--color-on-brand);
+  background: var(--color-brand);
 }
 
 /* ---------- Ações ---------- */
@@ -449,7 +449,7 @@ body {
   justify-content: flex-end;
   gap: 0.75rem;
   padding: 1rem 2.2rem;
-  background: rgba(255, 255, 255, 0.96);
+  background: color-mix(in srgb, var(--color-bg-surface) 96%, transparent);
   border-top: 1px solid var(--color-border);
   box-shadow: 0 -6px 16px rgba(26, 26, 23, 0.05);
   backdrop-filter: blur(6px);
@@ -477,7 +477,7 @@ body {
 .input,
 .select,
 .textarea {
-  background-color: #fff;
+  background-color: var(--color-bg-surface);
   border-color: var(--color-border);
 }
 
@@ -491,7 +491,7 @@ body {
 .select:focus,
 .textarea:focus {
   border-color: var(--green-600);
-  box-shadow: 0 0 0 3px rgba(34, 160, 78, 0.12);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .input:disabled,
@@ -530,7 +530,7 @@ input[type="file"]::-webkit-file-upload-button {
   font-weight: 500;
   font-family: inherit;
   color: var(--color-brand);
-  background: #fff;
+  background: var(--color-bg-surface);
   border: 1.5px solid var(--color-brand);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -540,7 +540,7 @@ input[type="file"]::-webkit-file-upload-button {
 input[type="file"]:hover::file-selector-button,
 input[type="file"]:hover::-webkit-file-upload-button {
   background: var(--color-brand);
-  color: #fff;
+  color: var(--color-on-brand);
 }
 
 /* ---------- Responsivo ---------- */
@@ -617,4 +617,9 @@ input[type="file"]:hover::-webkit-file-upload-button {
   .form-section-title {
     font-size: 0.98rem;
   }
+}
+
+/* ---------- Tema escuro ---------- */
+[data-theme="dark"] .form-actions {
+  box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.35);
 }

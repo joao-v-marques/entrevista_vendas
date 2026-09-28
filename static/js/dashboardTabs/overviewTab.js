@@ -9,7 +9,7 @@ import {
     parseDate, bucketDates, keyOfDate, filterByPeriod,
     percentOf, countBy, groupBy, sortedEntries, ageInDays, formatDays,
 } from "./aggregations.js";
-import { makeChart, barOptions, doughnutOptions, statusColor, BAR_STYLE, GREEN } from "./chartFactory.js";
+import { makeChart, barOptions, doughnutOptions, statusColor, BAR_STYLE, GREEN, SURFACE } from "./chartFactory.js";
 import {
     blockTitle, grid, kpiCard, kpiGrid, chartCard, contentCard,
     setText, setChartEmpty, renderLegend, renderTiles,
@@ -199,7 +199,7 @@ function renderStatus(panel, forms) {
             datasets: [{
                 data: entries.map(([, count]) => count),
                 backgroundColor: entries.map(([statusId]) => statusColor(statusId)),
-                borderColor: "#fff",
+                borderColor: SURFACE,
                 borderWidth: 2,
                 hoverOffset: 5,
             }],

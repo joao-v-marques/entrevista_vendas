@@ -368,6 +368,69 @@
   background: var(--color-border-light);
 }
 
+/* ---------- Alternar tema (item do menu do usuário) ---------- */
+.theme-toggle-icon {
+  flex-shrink: 0;
+}
+
+/* no claro mostra a lua (ativar escuro); no escuro mostra o sol */
+.theme-toggle-icon--sun,
+[data-theme="dark"] .theme-toggle-icon--moon {
+  display: none;
+}
+
+[data-theme="dark"] .theme-toggle-icon--sun {
+  display: block;
+}
+
+/* switch decorativo: o estado real está no aria-pressed do botão */
+.theme-switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 30px;
+  height: 17px;
+  margin-left: auto;
+  padding-left: 0;
+  background: var(--gray-300);
+  border-radius: 99px;
+  transition: background var(--transition);
+}
+
+.theme-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 13px;
+  height: 13px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  transition: transform var(--transition);
+}
+
+#btnToggleTheme {
+  gap: 9px;
+}
+
+#btnToggleTheme .theme-toggle-label {
+  margin-right: 14px;
+}
+
+#btnToggleTheme[aria-pressed="true"] .theme-switch {
+  background: var(--color-brand);
+}
+
+#btnToggleTheme[aria-pressed="true"] .theme-switch::after {
+  transform: translateX(13px);
+  background: var(--color-on-brand);
+}
+
+#btnToggleTheme:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: -2px;
+}
+
 /* ---------- Toggle mobile ---------- */
 .navbar-toggle {
   display: none;
@@ -529,7 +592,7 @@
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: rgba(17, 24, 39, 0.55);
+  background: var(--color-overlay);
 }
 
 .pwd-modal-overlay[hidden] {
@@ -646,5 +709,83 @@
   .pwd-modal-footer .btn {
     flex: 1;
     justify-content: center;
+  }
+}
+
+/* ---------- Tema escuro ----------
+   A barra vira cinza escuro (um degrau acima da página) e a marca fica na
+   faixa verde de baixo e no sublinhado lime dos links, que continuam iguais. */
+[data-theme="dark"] .navbar {
+  background: #1c1c19;
+  border-bottom-color: #1a7a3c;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+}
+
+[data-theme="dark"] .brand-logo {
+  color: var(--green-500);
+  background: rgba(76,196,126,0.12);
+  border-color: rgba(76,196,126,0.28);
+}
+
+[data-theme="dark"] .navbar-avatar {
+  color: var(--green-800);
+  background: rgba(76,196,126,0.14);
+  border-color: rgba(76,196,126,0.35);
+}
+
+[data-theme="dark"] .navbar-user {
+  border-left-color: rgba(255,255,255,0.14);
+}
+
+[data-theme="dark"] .nav-link,
+[data-theme="dark"] .nav-dropdown-toggle {
+  color: rgba(255,255,255,0.72);
+}
+
+[data-theme="dark"] .nav-link:hover,
+[data-theme="dark"] .nav-dropdown-toggle:hover,
+[data-theme="dark"] .nav-dropdown.open .nav-dropdown-toggle,
+[data-theme="dark"] .navbar-user-toggle:hover,
+[data-theme="dark"] .navbar-user.open .navbar-user-toggle {
+  background: rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] .nav-link.active {
+  background: rgba(76,196,126,0.14);
+  color: var(--green-800);
+}
+
+[data-theme="dark"] .nav-link--cta {
+  background: var(--color-brand);
+  color: var(--color-on-brand) !important;
+  border-color: var(--color-brand);
+}
+
+[data-theme="dark"] .nav-link--cta:hover {
+  background: var(--color-brand-dark) !important;
+  color: var(--color-on-brand) !important;
+}
+
+[data-theme="dark"] .nav-badge {
+  color: #1f1700;
+}
+
+[data-theme="dark"] .nav-dropdown-menu {
+  border: 1px solid var(--color-border);
+}
+
+[data-theme="dark"] .pwd-modal {
+  border: 1px solid var(--color-border);
+}
+
+@media (max-width: 768px) {
+  [data-theme="dark"] .nav-dropdown-menu {
+    border: none;
+    background: rgba(255,255,255,0.04);
+  }
+
+  [data-theme="dark"] .nav-dropdown-link.active,
+  [data-theme="dark"] .nav-dropdown-link:hover {
+    background: rgba(255,255,255,0.08);
   }
 }

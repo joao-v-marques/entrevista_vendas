@@ -953,7 +953,7 @@
 #requestReanalysisModalOverlay input[type="file"]:hover::file-selector-button,
 #requestReanalysisModalOverlay input[type="file"]:hover::-webkit-file-upload-button {
   background: var(--color-brand);
-  color: #fff;
+  color: var(--color-on-brand);
 }
 
 /* ---------- Modal: Encerrar Negociação ---------- */
@@ -1124,7 +1124,7 @@
   height: 24px;
   font-size: 12px;
   font-weight: 600;
-  color: #fff;
+  color: var(--color-on-brand);
   background: var(--color-brand);
   border-radius: 50%;
   flex-shrink: 0;
@@ -1267,8 +1267,8 @@
 }
 
 .edit-option:has(input:checked) strong {
-  color: #fff;
-  background: var(--green-600);
+  color: var(--color-on-brand);
+  background: var(--color-brand);
 }
 
 /* rodapé: indicador de alterações à esquerda, ações à direita */

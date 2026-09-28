@@ -66,6 +66,25 @@
   });
 })();
 
+// navbar.js — alternar tema claro/escuro (item do menu do usuário)
+(function () {
+  const btnTheme = document.getElementById('btnToggleTheme');
+  if (!btnTheme || !window.appTheme) return;
+
+  function syncButton() {
+    btnTheme.setAttribute('aria-pressed', window.appTheme.get() === 'dark' ? 'true' : 'false');
+  }
+
+  syncButton();
+
+  // o dropdown continua aberto para o usuário ver a troca acontecer
+  btnTheme.addEventListener('click', function () {
+    window.appTheme.set(window.appTheme.get() === 'dark' ? 'light' : 'dark');
+  });
+
+  document.addEventListener('themechange', syncButton);
+})();
+
 // navbar.js — logout
 (function () {
   const btnLogout = document.getElementById('btnLogout');

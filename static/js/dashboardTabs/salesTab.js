@@ -10,7 +10,7 @@ import {
     filterByPeriod, parseDate, diffInDays, percentOf, formatPercent, countBy, sortedEntries,
     ageRangeOf, AGE_RANGES, MONTH_LABELS, mean,
 } from "./aggregations.js";
-import { makeChart, barOptions, doughnutOptions, colorAt, BAR_STYLE, GREEN, PALETTE } from "./chartFactory.js";
+import { makeChart, barOptions, doughnutOptions, colorAt, BAR_STYLE, GREEN, PALETTE, SURFACE } from "./chartFactory.js";
 import {
     blockTitle, grid, kpiCard, kpiGrid, chartCard, contentCard,
     setText, setChartEmpty, renderBarList, renderTiles,
@@ -121,7 +121,7 @@ function renderCategory(panel, id, forms, keyFn, type) {
                 datasets: [{
                     data: values,
                     backgroundColor: labels.map((_, index) => colorAt(index)),
-                    borderColor: "#fff",
+                    borderColor: SURFACE,
                     borderWidth: 2,
                     hoverOffset: 5,
                 }],
@@ -159,7 +159,7 @@ function renderBeneficiaryType(panel, forms) {
             datasets: [{
                 data: entries.map(([, count]) => count),
                 backgroundColor: [PALETTE[2], PALETTE[0], PALETTE[3]],
-                borderColor: "#fff",
+                borderColor: SURFACE,
                 borderWidth: 2,
                 hoverOffset: 5,
             }],

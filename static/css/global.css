@@ -53,7 +53,7 @@ button.is-loading {
 .btn-spinner {
   width: 15px;
   height: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.45);
+  border: 2px solid color-mix(in srgb, currentColor 40%, transparent);
   border-top-color: currentColor;
   border-radius: 50%;
   animation: btn-spin 0.6s linear infinite;
@@ -154,6 +154,12 @@ button.is-loading {
   --color-brand-dark:    var(--green-700);
   --color-brand-light:   var(--green-500);
   --color-brand-faint:   var(--green-50);
+  /* texto sobre fundo --color-brand (no escuro o verde clareia e o texto escurece) */
+  --color-on-brand:      #fff;
+
+  /* Fundo escurecido atrás dos modais e anel de foco dos campos */
+  --color-overlay: rgba(17, 24, 39, 0.55);
+  --focus-ring:    rgba(26, 122, 60, 0.12);
 
   /* Dimensões */
   --navbar-height: 62px;
@@ -172,6 +178,101 @@ button.is-loading {
 
   /* Transições */
   --transition: 0.18s ease;
+}
+
+/* ---------- Tema escuro ----------
+   Ativado por data-theme="dark" no <html> (theme.js, antes do primeiro paint).
+   As escalas são invertidas em vez de só trocar os semânticos: os degraus
+   claros (50–200), usados como fundo, viram superfícies escuras tingidas, e os
+   escuros (600–900), usados como texto, viram tons claros. Assim os pares
+   "fundo 50 + texto 700" das telas continuam legíveis sem regra por regra.
+   Todos os pares texto/fundo usados nas telas ficam acima de 4.5:1. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Neutros — mesmo cinza quente do tema claro, só que escuro */
+  --gray-50:  #161614;   /* fundo da aplicação */
+  --gray-100: #262623;
+  --gray-200: #3a3934;   /* borda de card */
+  --gray-300: #4d4b45;
+  --gray-400: #8a857b;
+  --gray-500: #aaa59b;   /* texto secundário */
+  --gray-600: #c6c1b7;
+  --gray-700: #e8e4dc;   /* texto base */
+  --gray-800: #f2efe9;
+  --gray-900: #faf9f6;
+
+  --green-50:  #12261a;
+  --green-100: #173623;
+  --green-200: #1f5234;
+  --green-400: #5cc98a;
+  --green-500: #4cc47e;
+  --green-600: #6fd49a;
+  --green-700: #8ddfb0;
+  --green-800: #b0eac8;
+  --green-900: #d8f5e4;
+
+  --amber-50:  #2a2310;
+  --amber-100: #3d3112;
+  --amber-200: #5a4816;
+  --amber-600: #f0b53d;
+  --amber-700: #f3cd6a;
+
+  --blue-50:  #10252b;
+  --blue-100: #133a42;
+  --blue-200: #1d4a55;
+  --blue-600: #7fb6f7;
+  --blue-700: #94d6df;
+  --blue-800: #a9c4f5;
+
+  --red-50:  #2e1714;
+  --red-100: #45201a;
+  --red-500: #ef6f5f;
+  --red-700: #f5a497;
+
+  --purple-50:  #211b30;
+  --purple-100: #2e2442;
+  --purple-700: #c8b6f2;
+
+  --teal-50:  #0c2624;
+  --teal-100: #0f3532;
+  --teal-700: #82dccd;
+
+  --color-bg-surface:   #1f1f1c;
+  --color-border-light: #2e2d29;
+
+  --color-brand:       #4cc47e;
+  --color-brand-dark:  #6fd49a;
+  --color-brand-light: #5cc98a;
+  --color-on-brand:    #0b1f12;
+
+  --color-overlay: rgba(0, 0, 0, 0.65);
+  --focus-ring:    rgba(92, 201, 138, 0.35);
+
+  /* sombra suave some no fundo escuro — aqui ela precisa de mais densidade */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.35);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.45), 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,0.55), 0 4px 8px rgba(0,0,0,0.35);
+}
+
+/* Transição de cores só durante a troca de tema (o theme.js põe a classe por
+   um instante), para o carregamento da página não animar. */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 0.25s ease, border-color 0.25s ease,
+              color 0.25s ease, fill 0.25s ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transition,
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition: none !important;
+  }
 }
 
 /* ---------- Tipografia ---------- */
@@ -206,7 +307,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn--primary {
   background: var(--color-brand);
-  color: #fff;
+  color: var(--color-on-brand);
   border-color: var(--color-brand);
 }
 
@@ -334,7 +435,7 @@ h1, h2, h3, h4, h5, h6 {
 .select:focus,
 .textarea:focus {
   border-color: var(--color-brand);
-  box-shadow: 0 0 0 3px rgba(26, 122, 60, 0.12);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .input::placeholder,
@@ -699,4 +800,47 @@ html.modal-open {
   border: solid #fff;
   border-width: 0 1.8px 1.8px 0;
   transform: rotate(45deg);
+}
+
+/* ---------- Ajustes do tema escuro ----------
+   Botão de perigo e toasts mantêm texto branco, então usam um vermelho/verde
+   fixo mais fechado (a escala invertida clareia o 500 para servir de texto). */
+[data-theme="dark"] .btn--danger {
+  background: #b83a2c;
+  border-color: #b83a2c;
+  color: #fff;
+}
+
+[data-theme="dark"] .btn--danger:hover {
+  background: #9c2c20;
+  border-color: #9c2c20;
+}
+
+[data-theme="dark"] .input.error:focus,
+[data-theme="dark"] .select.error:focus,
+[data-theme="dark"] .textarea.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 111, 95, 0.3);
+}
+
+[data-theme="dark"] .select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23aaa59b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] .notyf__toast,
+[data-theme="dark"] .notyf__toast--success,
+[data-theme="dark"] .notyf__toast--success .notyf__ripple {
+  background: #1a7a3c !important;
+}
+
+[data-theme="dark"] .notyf__toast {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .notyf__toast--error,
+[data-theme="dark"] .notyf__toast--error .notyf__ripple {
+  background: #b83a2c !important;
+}
+
+[data-theme="dark"] .password-checklist li.is-met .password-checklist-icon::after {
+  border-color: var(--color-on-brand);
 }

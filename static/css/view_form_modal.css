@@ -236,7 +236,7 @@
 #viewFormModalOverlay .vf-event--rejected .vf-event-dot { background: var(--red-100);   color: var(--red-700); }
 #viewFormModalOverlay .vf-event--warning  .vf-event-dot { background: var(--amber-100); color: var(--amber-700); }
 #viewFormModalOverlay .vf-event--info     .vf-event-dot { background: var(--blue-100);  color: var(--blue-700); }
-#viewFormModalOverlay .vf-event--current  .vf-event-dot { background: var(--color-brand); color: #fff; }
+#viewFormModalOverlay .vf-event--current  .vf-event-dot { background: var(--color-brand); color: var(--color-on-brand); }
 
 #viewFormModalOverlay .vf-event-body {
   min-width: 0;

@@ -12,7 +12,7 @@ import {
     filterByPeriod, isActive, isFinalized, isRejected, isClosed,
     diffInDays, pct, percentOf, formatPercent, countBy, sortedEntries, mean, formatDays, initials,
 } from "./aggregations.js";
-import { makeChart, barOptions, doughnutOptions, colorAt, BAR_STYLE, PALETTE } from "./chartFactory.js";
+import { makeChart, barOptions, doughnutOptions, colorAt, BAR_STYLE, PALETTE, SURFACE } from "./chartFactory.js";
 import {
     blockTitle, grid, kpiCard, kpiGrid, chartCard, contentCard, tableCard,
     setText, setChartEmpty, fillTable, renderBarList,
@@ -298,7 +298,7 @@ function renderUsers(panel, users) {
             datasets: [{
                 data: roles.map(([, count]) => count),
                 backgroundColor: roles.map((_, index) => colorAt(index)),
-                borderColor: "#fff",
+                borderColor: SURFACE,
                 borderWidth: 2,
                 hoverOffset: 5,
             }],

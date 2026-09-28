@@ -33,9 +33,20 @@ export const STATUS_HEX = {
     12: "#9ca3af",
 };
 
-export const GREEN = "#1a7a3c";
-export const MUTED = "#6b7280";
-export const GRID = "rgba(145,158,171,0.16)";
+// Cores que dependem do tema claro/escuro. São `let` exportados de propósito: o import
+// de ES module é uma ligação viva, então as abas leem o valor do tema atual sempre
+// que montam um gráfico. applyChartTheme() troca os valores quando o tema muda.
+const THEME_COLORS = {
+    light: { green: "#1a7a3c", muted: "#6b7280", grid: "rgba(145,158,171,0.16)", surface: "#fff", tooltip: "rgba(17,24,39,0.92)", tooltipBorder: "transparent" },
+    // no escuro o verde clareia para manter contraste de objeto gráfico (≥3:1) sobre o card
+    dark: { green: "#4cc47e", muted: "#aaa59b", grid: "rgba(255,255,255,0.08)", surface: "#1f1f1c", tooltip: "rgba(46,45,41,0.97)", tooltipBorder: "#4d4b45" },
+};
+
+export let GREEN = THEME_COLORS.light.green;
+export let MUTED = THEME_COLORS.light.muted;
+export let GRID = THEME_COLORS.light.grid;
+// cor das bordas que separam as fatias das roscas (a do card atrás delas)
+export let SURFACE = THEME_COLORS.light.surface;
 
 export function statusColor(statusId) {
     return STATUS_HEX[statusId] || "#9ca3af";
@@ -49,11 +60,26 @@ export function colorAt(index) {
    Defaults globais
    ============================================================ */
 
+export function applyChartTheme() {
+    const colors = THEME_COLORS[window.appTheme && window.appTheme.get() === "dark" ? "dark" : "light"];
+    GREEN = colors.green;
+    MUTED = colors.muted;
+    GRID = colors.grid;
+    SURFACE = colors.surface;
+
+    if (!window.Chart) return;
+    Chart.defaults.color = MUTED;
+    Chart.defaults.borderColor = GRID;
+    Chart.defaults.plugins.tooltip.backgroundColor = colors.tooltip;
+    Chart.defaults.plugins.tooltip.borderColor = colors.tooltipBorder;
+    Chart.defaults.plugins.tooltip.borderWidth = colors.tooltipBorder === "transparent" ? 0 : 1;
+}
+
+applyChartTheme();
+
 if (window.Chart) {
     Chart.defaults.font.family = "'DM Sans', sans-serif";
     Chart.defaults.font.size = 11;
-    Chart.defaults.color = MUTED;
-    Chart.defaults.plugins.tooltip.backgroundColor = "rgba(17,24,39,0.92)";
     Chart.defaults.plugins.tooltip.padding = 10;
     Chart.defaults.plugins.tooltip.cornerRadius = 8;
     Chart.defaults.plugins.tooltip.titleFont = { weight: "600" };
