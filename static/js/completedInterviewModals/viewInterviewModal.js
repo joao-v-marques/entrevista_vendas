@@ -8,6 +8,7 @@ import {
 } from "../utils/detailsView.js";
 import { renderQualifyInterviewBody, renderInterviewObservations } from "../utils/qualifyInterviewView.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { syncBodyScrollLock } from "../utils/modalControl.js";
 
 const overlay = document.getElementById("viewInterviewModalOverlay");
 const idLabel = document.getElementById("viewInterviewModalId");
@@ -143,6 +144,7 @@ function buildBody(details) {
 
 function closeModal() {
     overlay.hidden = true;
+    syncBodyScrollLock();
     body.innerHTML = "";
 }
 
@@ -151,6 +153,7 @@ export async function openViewInterviewModal(applicationFormId) {
     idLabel.textContent = applicationFormId;
     body.innerHTML = `<p class="modal-loading">Carregando informações...</p>`;
     overlay.hidden = false;
+    syncBodyScrollLock();
 
     try {
         const response = await fetchWithAuth(`/entrevista-adesao/application-forms/${applicationFormId}/details`);

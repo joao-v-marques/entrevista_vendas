@@ -2,6 +2,7 @@ import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js";
 import { populateRejectedManagementFormsTable } from "../rejected_management_forms.js";
 import { setSubmitLoading } from "../utils/submitLoading.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { syncBodyScrollLock } from "../utils/modalControl.js";
 
 const overlay = document.getElementById("requestReanalysisModalOverlay");
 const formIdLabel = document.getElementById("requestReanalysisModalFormId");
@@ -17,6 +18,7 @@ let currentApplicationFormId = null;
 
 function closeModal() {
     overlay.hidden = true;
+    syncBodyScrollLock();
     currentApplicationFormId = null;
 }
 
@@ -35,6 +37,7 @@ export function openRequestReanalysisModal(applicationForm) {
     });
 
     overlay.hidden = false;
+    syncBodyScrollLock();
 }
 
 function submitForm() {

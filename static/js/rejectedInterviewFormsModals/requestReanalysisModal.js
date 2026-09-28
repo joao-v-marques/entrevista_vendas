@@ -2,6 +2,7 @@ import { fetchWithAuth } from "../utils/apiHelper.js";
 import { populateRejectedInterviewFormsTable } from "../rejected_interview_forms.js";
 import { setSubmitLoading } from "../utils/submitLoading.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { syncBodyScrollLock } from "../utils/modalControl.js";
 import { renderSection, renderInfoGrid } from "../utils/detailsView.js";
 import { FORM_FIELDS, DISCOUNT_FIELDS, BENEFICIARY_FIELDS, PORTABILITY_FIELDS, OTHER_FIELDS, INTERVIEW_FIELDS } from "../utils/applicationFormFields.js";
 
@@ -28,6 +29,7 @@ function buildBody(form) {
 
 function closeModal() {
     overlay.hidden = true;
+    syncBodyScrollLock();
     body.innerHTML = "";
     currentApplicationFormId = null;
 }
@@ -40,6 +42,7 @@ export function openRequestReanalysisModal(applicationForm) {
     body.innerHTML = buildBody(applicationForm);
 
     overlay.hidden = false;
+    syncBodyScrollLock();
 }
 
 confirmButton.addEventListener("click", async () => {

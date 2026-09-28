@@ -2,6 +2,7 @@ import { fetchWithAuth } from "../utils/apiHelper.js";
 import { populateAnalyzeInterviewTable } from "../analyze_interview.js";
 import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { syncBodyScrollLock } from "../utils/modalControl.js";
 
 const overlay = document.getElementById("rescheduleInterviewModalOverlay");
 const interviewIdLabel = document.getElementById("rescheduleModalInterviewId");
@@ -12,6 +13,7 @@ const applicationFormIdInput = document.getElementById("reschedule_application_f
 
 function closeModal() {
     overlay.hidden = true;
+    syncBodyScrollLock();
 }
 
 export function openRescheduleInterviewModal(applicationForm) {
@@ -22,6 +24,7 @@ export function openRescheduleInterviewModal(applicationForm) {
     applicationFormIdInput.value = applicationForm.id;
 
     overlay.hidden = false;
+    syncBodyScrollLock();
 }
 
 closeButton.addEventListener("click", closeModal);

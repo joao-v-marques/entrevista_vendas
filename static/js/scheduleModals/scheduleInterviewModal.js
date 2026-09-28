@@ -3,6 +3,7 @@ import { fetchWithAuth } from "../utils/apiHelper.js";
 import { populateScheduleInterviewTable } from "../schedule_interview.js";
 import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { syncBodyScrollLock } from "../utils/modalControl.js";
 
 const overlay = document.getElementById("scheduleInterviewModalOverlay");
 const formIdLabel = document.getElementById("scheduleModalFormId");
@@ -32,6 +33,7 @@ interviewDatePicker.altInput.required = true;
 
 function closeModal() {
     overlay.hidden = true;
+    syncBodyScrollLock();
 }
 
 export function openScheduleInterviewModal(applicationForm) {
@@ -45,6 +47,7 @@ export function openScheduleInterviewModal(applicationForm) {
     applicationFormIdInput.value = applicationForm.id;
 
     overlay.hidden = false;
+    syncBodyScrollLock();
 }
 
 function submitForm() {

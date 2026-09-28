@@ -2,6 +2,7 @@ import { fetchWithAuth } from "../utils/apiHelper.js";
 import { populateRejectedManagementFormsTable } from "../rejected_management_forms.js";
 import { setSubmitLoading } from "../utils/submitLoading.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { syncBodyScrollLock } from "../utils/modalControl.js";
 
 const overlay = document.getElementById("closeNegotiationModalOverlay");
 const formIdLabel = document.getElementById("closeNegotiationModalFormId");
@@ -15,6 +16,7 @@ let currentApplicationFormId = null;
 
 function closeModal() {
     overlay.hidden = true;
+    syncBodyScrollLock();
     currentApplicationFormId = null;
 }
 
@@ -25,6 +27,7 @@ export function openCloseNegotiationModal(applicationForm) {
     beneficiaryNameLabel.textContent = applicationForm.beneficiary_name;
 
     overlay.hidden = false;
+    syncBodyScrollLock();
 }
 
 confirmButton.addEventListener("click", async () => {

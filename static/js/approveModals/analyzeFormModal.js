@@ -2,6 +2,7 @@ import { fetchWithAuth, getLoggedUser } from "../utils/apiHelper.js"
 import { populateFormsApproveTable } from "../approve_form.js";
 import { getFormSubmitButton, setSubmitLoading } from "../utils/submitLoading.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { syncBodyScrollLock } from "../utils/modalControl.js";
 import { createModalTabs } from "../utils/modalTabs.js";
 import {
     escapeHtml,
@@ -311,6 +312,7 @@ async function loadDetails(applicationFormId, requestId) {
 
 function closeModal() {
     overlay.hidden = true;
+    syncBodyScrollLock();
     // invalida respostas ainda pendentes da ficha que acabou de ser fechada
     openRequestId += 1;
 }
@@ -351,6 +353,7 @@ export function openAnalyzeFormModal(applicationForm) {
     });
 
     overlay.hidden = false;
+    syncBodyScrollLock();
 }
 
 // atalhos "Ver dados completos" / "Ver detalhes do plano" do Resumo

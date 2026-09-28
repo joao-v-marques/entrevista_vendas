@@ -5,6 +5,7 @@ import { populateAnalyzeInterviewTable } from "../analyze_interview.js";
 import { QUALIFY_INTERVIEW_GROUPS, QUALIFY_INTERVIEW_TOTAL_ITEMS } from "./qualifyInterviewQuestions.js";
 import { setSubmitLoading } from "../utils/submitLoading.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
+import { syncBodyScrollLock } from "../utils/modalControl.js";
 import { classifyImc } from "../utils/qualifyInterview.js";
 
 const overlay = document.getElementById("analyzeInterviewModalOverlay");
@@ -40,6 +41,7 @@ const QUALIFY_ITEM_LABELS = new Map(
 
 function closeModal() {
     overlay.hidden = true;
+    syncBodyScrollLock();
 }
 
 // anexa (ou remove) a frase pré-definida como uma linha própria das observações,
@@ -369,6 +371,7 @@ export function openAnalyzeInterviewModal(applicationForm) {
         .finally(() => { submitButton.disabled = false; });
 
     overlay.hidden = false;
+    syncBodyScrollLock();
 }
 
 function submitForm() {
