@@ -324,10 +324,25 @@
                                 <input id="data_cancelamento_plano_anterior" class="input" name="previous_plan_cancellation_date" type="date" disabled required>
                             </div>
 
+                            <!-- Caso seja novo contrato, escolher o documento do contratante: CNPJ ou CAEPF (nunca os dois) -->
+                            <div class="form-group" id="documento_contratante_group" hidden>
+                                <label for="documento_contratante" class="form-label">NOVO CONTRATO: DOCUMENTO DO CONTRATANTE</label>
+                                <select id="documento_contratante" class="select">
+                                    <option value="CNPJ">CNPJ</option>
+                                    <option value="CAEPF">CAEPF</option>
+                                </select>
+                            </div>
+
                             <!-- Caso seja novo contrator empresarial informar CNPJ -->
                             <div class="form-group" id="cnpj_empresa_group" hidden>
                                 <label for="cnpj_empresa" class="form-label">NOVO CONTRATO EMPRESARIAL INFORMAR CNPJ:</label>
                                 <input id="cnpj_empresa" class="input" name="cnpj" type="text" placeholder="00.000.000/0000-00" inputmode="numeric" maxlength="18" pattern="\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}" title="Informe o CNPJ completo no formato 00.000.000/0000-00" disabled required>
+                            </div>
+
+                            <!-- Caso seja novo contrato com CAEPF -->
+                            <div class="form-group" id="caepf_group" hidden>
+                                <label for="caepf" class="form-label">NOVO CONTRATO INFORMAR CAEPF:</label>
+                                <input id="caepf" class="input" name="caepf" type="text" placeholder="000.000.000/000-00" inputmode="numeric" maxlength="18" pattern="\d{3}\.\d{3}\.\d{3}\/\d{3}-\d{2}" title="Informe o CAEPF completo no formato 000.000.000/000-00" disabled required>
                             </div>
 
                             <!-- Data da inclusão -->

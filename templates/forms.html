@@ -449,9 +449,22 @@
                                 <input id="edit_previous_plan_cancellation_date" class="input" name="previous_plan_cancellation_date" type="date" required>
                             </div>
 
+                            <div class="form-group" id="edit_document_type_group" hidden>
+                                <label for="edit_document_type" class="form-label required">Documento do contratante</label>
+                                <select id="edit_document_type" class="select">
+                                    <option value="CNPJ">CNPJ</option>
+                                    <option value="CAEPF">CAEPF</option>
+                                </select>
+                            </div>
+
                             <div class="form-group" id="edit_cnpj_group" hidden>
                                 <label for="edit_cnpj" class="form-label required">CNPJ (novo contrato empresarial)</label>
                                 <input id="edit_cnpj" class="input" name="cnpj" type="text" placeholder="00.000.000/0000-00" inputmode="numeric" maxlength="18" pattern="\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}" title="Informe o CNPJ completo no formato 00.000.000/0000-00" required>
+                            </div>
+
+                            <div class="form-group" id="edit_caepf_group" hidden>
+                                <label for="edit_caepf" class="form-label required">CAEPF (novo contrato)</label>
+                                <input id="edit_caepf" class="input" name="caepf" type="text" placeholder="000.000.000/000-00" inputmode="numeric" maxlength="18" pattern="\d{3}\.\d{3}\.\d{3}\/\d{3}-\d{2}" title="Informe o CAEPF completo no formato 000.000.000/000-00" required>
                             </div>
 
                             <div class="form-group">

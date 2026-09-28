@@ -77,7 +77,7 @@ function resetNewForm() {
     addResponsavelInclusaoCard();
 
     // realinha os campos condicionais com o estado padrão dos selects após o reset
-    toggleCnpjField();
+    toggleDocumentoContratanteFields();
     togglePlanoAnteriorField();
     toggleDiscountField();
     togglePortabilidadeFields();
@@ -139,9 +139,12 @@ form.addEventListener("submit", async (event) => {
     // o restante vira o payload do formulário principal
     const applicationFormData = Object.fromEntries(formData.entries());
 
-    // CNPJ, telefone e CPF mantêm a máscara na tela, mas são enviados só com os dígitos
+    // CNPJ, CAEPF, telefone e CPF mantêm a máscara na tela, mas são enviados só com os dígitos
     if (applicationFormData.cnpj) {
         applicationFormData.cnpj = applicationFormData.cnpj.replace(/\D/g, "");
+    }
+    if (applicationFormData.caepf) {
+        applicationFormData.caepf = applicationFormData.caepf.replace(/\D/g, "");
     }
     if (applicationFormData.beneficiary_phone) {
         applicationFormData.beneficiary_phone = applicationFormData.beneficiary_phone.replace(/\D/g, "");

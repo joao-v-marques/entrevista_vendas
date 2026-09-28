@@ -1,5 +1,5 @@
 import { fetchWithAuth, getErrorMessage } from "../utils/apiHelper.js";
-import { escapeHtml, formatCPF, formatCNPJ, formatPhone, formatDateTime, formatBeneficiaryType } from "../utils/detailsView.js";
+import { escapeHtml, formatCPF, formatCNPJ, formatCAEPF, formatPhone, formatDateTime, formatBeneficiaryType } from "../utils/detailsView.js";
 import { bindOverlayDismiss } from "../utils/modalOverlay.js";
 import { syncBodyScrollLock } from "../utils/modalControl.js";
 import { getStatusPillClass } from "../utils/statusPill.js";
@@ -31,6 +31,8 @@ const field = (name) => form.elements.namedItem(name);
 const inclusionTypeSelect = field("inclusion_type");
 const isDiscountSelect = field("is_discount");
 const isPortabilitySelect = field("is_portability");
+// sem name: não vai no payload, só decide se o campo visível é o CNPJ ou o CAEPF
+const documentTypeSelect = document.getElementById("edit_document_type");
 
 // estado da edição aberta
 let currentFormId = null;
@@ -57,6 +59,15 @@ function maskCnpj(digits) {
     if (digits.length > 2) masked += "." + digits.slice(2, 5);
     if (digits.length > 5) masked += "." + digits.slice(5, 8);
     if (digits.length > 8) masked += "/" + digits.slice(8, 12);
+    if (digits.length > 12) masked += "-" + digits.slice(12, 14);
+    return masked;
+}
+
+function maskCaepf(digits) {
+    let masked = digits.slice(0, 3);
+    if (digits.length > 3) masked += "." + digits.slice(3, 6);
+    if (digits.length > 6) masked += "." + digits.slice(6, 9);
+    if (digits.length > 9) masked += "/" + digits.slice(9, 12);
     if (digits.length > 12) masked += "-" + digits.slice(12, 14);
     return masked;
 }
@@ -108,6 +119,7 @@ const onlyDigits = (value) => (value || "").replace(/\D/g, "");
 
 bindMask(field("beneficiary_cpf"), 11, maskCpf);
 bindMask(field("cnpj"), 14, maskCnpj);
+bindMask(field("caepf"), 14, maskCaepf);
 bindMask(field("previous_plan"), 6, maskPlan);
 bindMask(field("model_proposal"), 6, maskPlan);
 bindMask(field("beneficiary_phone"), 11, maskPhone);
@@ -177,7 +189,8 @@ function applyInclusionTypeRules() {
     const isPlanChange = type === "Troca de Plano";
     const isExisting = type === "Existente";
 
-    setGroupVisible("edit_cnpj_group", isNewContract);
+    setGroupVisible("edit_document_type_group", isNewContract);
+    applyDocumentTypeRules();
     setGroupVisible("edit_previous_plan_group", isPlanChange);
     setGroupVisible("edit_previous_plan_cancellation_date_group", isPlanChange);
 
@@ -193,6 +206,14 @@ function applyInclusionTypeRules() {
 
     // Existente dispensa Estado civil e Profissão dos responsáveis
     responsiblesContainer.querySelectorAll(".edit-responsible").forEach(applyExistingRuleToResponsible);
+}
+
+// Novo Contrato pede CNPJ ou CAEPF, nunca os dois: só o escolhido fica visível (e é enviado)
+function applyDocumentTypeRules() {
+    const isNewContract = inclusionTypeSelect.value === "Novo Contrato";
+
+    setGroupVisible("edit_cnpj_group", isNewContract && documentTypeSelect.value === "CNPJ");
+    setGroupVisible("edit_caepf_group", isNewContract && documentTypeSelect.value === "CAEPF");
 }
 
 function applyDiscountRules() {
@@ -219,6 +240,7 @@ function applyBeneficiaryTypeRules() {
 }
 
 inclusionTypeSelect.addEventListener("change", applyInclusionTypeRules);
+documentTypeSelect.addEventListener("change", applyDocumentTypeRules);
 isDiscountSelect.addEventListener("change", applyDiscountRules);
 isPortabilitySelect.addEventListener("change", applyPortabilityRules);
 
@@ -305,6 +327,7 @@ function fillForm(applicationForm, responsibles) {
     // primeiro os campos que controlam a visibilidade, depois as regras e só então os
     // dependentes, senão as regras limpariam os valores recém-preenchidos
     inclusionTypeSelect.value = applicationForm.inclusion_type || "Existente";
+    documentTypeSelect.value = applicationForm.caepf ? "CAEPF" : "CNPJ";
     isDiscountSelect.value = toBoolValue(applicationForm.is_discount);
     isPortabilitySelect.value = toBoolValue(applicationForm.is_portability);
 
@@ -316,6 +339,7 @@ function fillForm(applicationForm, responsibles) {
         previous_plan: applicationForm.previous_plan || "",
         previous_plan_cancellation_date: toDateInputValue(applicationForm.previous_plan_cancellation_date),
         cnpj: applicationForm.cnpj ? formatCNPJ(applicationForm.cnpj) : "",
+        caepf: applicationForm.caepf ? formatCAEPF(applicationForm.caepf) : "",
         inclusion_date: toDateInputValue(applicationForm.inclusion_date),
         contract_type: applicationForm.contract_type,
         model_proposal: applicationForm.model_proposal || "",
@@ -361,8 +385,8 @@ function buildPayload() {
     // o select de desconto fica desabilitado (fora do FormData) quando o tipo é Existente
     if (inclusionTypeSelect.value === "Existente") applicationFormData.is_discount = "false";
 
-    // CNPJ, telefone e CPF mantêm a máscara na tela, mas são enviados só com os dígitos
-    ["cnpj", "beneficiary_phone", "beneficiary_cpf"].forEach(name => {
+    // CNPJ, CAEPF, telefone e CPF mantêm a máscara na tela, mas são enviados só com os dígitos
+    ["cnpj", "caepf", "beneficiary_phone", "beneficiary_cpf"].forEach(name => {
         if (applicationFormData[name]) applicationFormData[name] = onlyDigits(applicationFormData[name]);
     });
 

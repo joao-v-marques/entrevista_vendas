@@ -123,7 +123,9 @@ function renderBeneficiaryKpis(form) {
         : renderKpi({
             label: "Vínculo",
             value: textOrDash(form.beneficiary_type, "beneficiaryType"),
-            foot: form.cnpj ? `CNPJ: ${textOrDash(form.cnpj, "cnpj")}` : "",
+            foot: form.cnpj
+                ? `CNPJ: ${textOrDash(form.cnpj, "cnpj")}`
+                : form.caepf ? `CAEPF: ${textOrDash(form.caepf, "caepf")}` : "",
         });
 
     return `

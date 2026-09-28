@@ -25,6 +25,12 @@ export function formatCNPJ(value) {
     return digits.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
 }
 
+export function formatCAEPF(value) {
+    const digits = String(value).replace(/\D/g, "");
+    if (digits.length !== 14) return value;
+    return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3/$4-$5");
+}
+
 // o telefone é gravado só com dígitos (new_form.js tira a máscara antes do POST),
 // então quem exibe precisa remontá-la — com e sem o nono dígito
 export function formatPhone(value) {
@@ -83,6 +89,7 @@ export function formatValue(value, format) {
     if (format === "percentage") return `${(Number(value) * 100).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
     if (format === "cpf") return formatCPF(value);
     if (format === "cnpj") return formatCNPJ(value);
+    if (format === "caepf") return formatCAEPF(value);
     if (format === "phone") return formatPhone(value);
 
     return value;

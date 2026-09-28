@@ -42,25 +42,43 @@ form.addEventListener(
     true // captura, pois o evento "invalid" não borbulha
 );
 
-// ! ========== Validação: CNPJ só aparece para "Novo Contrato" ==========
+// ! ========== Validação: CNPJ ou CAEPF só aparecem para "Novo Contrato", nunca os dois juntos ==========
 const tipoInclusaoSelect = document.getElementById("tipo_inclusao");
+const documentoContratanteGroup = document.getElementById("documento_contratante_group");
+const documentoContratanteSelect = document.getElementById("documento_contratante");
 const cnpjGroup = document.getElementById("cnpj_empresa_group");
 const cnpjInput = document.getElementById("cnpj_empresa");
+const caepfGroup = document.getElementById("caepf_group");
+const caepfInput = document.getElementById("caepf");
 
-function toggleCnpjField() {
+function toggleDocumentoContratanteFields() {
     const isNovoContrato = tipoInclusaoSelect.value === "Novo Contrato";
 
-    cnpjGroup.hidden = !isNovoContrato;
-    // campo desabilitado não é incluído no FormData, então não é enviado ao backend
-    cnpjInput.disabled = !isNovoContrato;
-
+    documentoContratanteGroup.hidden = !isNovoContrato;
     if (!isNovoContrato) {
+        documentoContratanteSelect.value = "CNPJ";
+    }
+
+    const usaCnpj = isNovoContrato && documentoContratanteSelect.value === "CNPJ";
+    const usaCaepf = isNovoContrato && documentoContratanteSelect.value === "CAEPF";
+
+    cnpjGroup.hidden = !usaCnpj;
+    caepfGroup.hidden = !usaCaepf;
+    // campo desabilitado não é incluído no FormData, então não é enviado ao backend
+    cnpjInput.disabled = !usaCnpj;
+    caepfInput.disabled = !usaCaepf;
+
+    if (!usaCnpj) {
         cnpjInput.value = "";
+    }
+    if (!usaCaepf) {
+        caepfInput.value = "";
     }
 }
 
-tipoInclusaoSelect.addEventListener("change", toggleCnpjField);
-toggleCnpjField();
+tipoInclusaoSelect.addEventListener("change", toggleDocumentoContratanteFields);
+documentoContratanteSelect.addEventListener("change", toggleDocumentoContratanteFields);
+toggleDocumentoContratanteFields();
 
 // ! ========== Máscara: CNPJ no padrão 00.000.000/0000-00, sem permitir mais ou menos dígitos ==========
 function maskCnpj(digits) {
@@ -75,6 +93,21 @@ function maskCnpj(digits) {
 cnpjInput.addEventListener("input", () => {
     const digits = cnpjInput.value.replace(/\D/g, "").slice(0, 14);
     cnpjInput.value = maskCnpj(digits);
+});
+
+// ! ========== Máscara: CAEPF no padrão 000.000.000/000-00, sem permitir mais ou menos dígitos ==========
+function maskCaepf(digits) {
+    let masked = digits.slice(0, 3);
+    if (digits.length > 3) masked += "." + digits.slice(3, 6);
+    if (digits.length > 6) masked += "." + digits.slice(6, 9);
+    if (digits.length > 9) masked += "/" + digits.slice(9, 12);
+    if (digits.length > 12) masked += "-" + digits.slice(12, 14);
+    return masked;
+}
+
+caepfInput.addEventListener("input", () => {
+    const digits = caepfInput.value.replace(/\D/g, "").slice(0, 14);
+    caepfInput.value = maskCaepf(digits);
 });
 
 // ! ========== Validação: Plano anterior e data de cancelamento só aparecem para "Troca de Plano" ==========

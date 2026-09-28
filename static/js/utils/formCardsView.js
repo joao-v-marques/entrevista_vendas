@@ -231,12 +231,14 @@ function renderBeneficiaryHero(form) {
 
 function renderBondCard(form) {
     const cnpjField = { label: "CNPJ", key: "cnpj", format: "cnpj" };
+    const caepfField = { label: "CAEPF", key: "caepf", format: "caepf" };
 
     const body = isDependent(form)
-        ? renderRows(form, [...DEPENDENT_FIELDS, cnpjField])
+        ? renderRows(form, [...DEPENDENT_FIELDS, cnpjField, caepfField])
         : renderRows(form, [
             { label: "Vínculo", key: "beneficiary_type", format: "beneficiaryType" },
             cnpjField,
+            caepfField,
         ]);
 
     return renderCard({ title: "Vínculo", icon: "link", body });

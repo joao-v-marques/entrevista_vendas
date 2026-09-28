@@ -164,6 +164,7 @@ const SUMMARY_PLAN_FIELDS = [
     { label: "Mod./Prop.", key: "model_proposal" },
     { label: "Vencimento", key: "expiration_month" },
     { label: "CNPJ", key: "cnpj", format: "cnpj", optional: true },
+    { label: "CAEPF", key: "caepf", format: "caepf", optional: true },
     { label: "Plano anterior", key: "previous_plan", optional: true },
     { label: "Cancelamento do plano anterior", key: "previous_plan_cancellation_date", format: "date", optional: true },
     { label: "Adesão ao PA Digital", key: "is_pa_digital", format: "boolean" },

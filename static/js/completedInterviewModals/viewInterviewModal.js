@@ -36,6 +36,7 @@ const CONTRACT_FIELDS = [
     { label: "Tipo de Inclusão", key: "inclusion_type" },
     { label: "Data de Inclusão", key: "inclusion_date", format: "date" },
     { label: "CNPJ", key: "cnpj", format: "cnpj" },
+    { label: "CAEPF", key: "caepf", format: "caepf" },
     { label: "Tipo de Contrato", key: "contract_type" },
     { label: "Tipo de Plano", key: "plan_type" },
     { label: "Modelo da Proposta", key: "model_proposal" },

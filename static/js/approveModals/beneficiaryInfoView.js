@@ -8,6 +8,7 @@ const BENEFICIARY_FIELDS = [
     { label: "E-mail", key: "beneficiary_email" },
     { label: "E-mail de Cobrança", key: "billing_email" },
     { label: "CNPJ", key: "cnpj", format: "cnpj" },
+    { label: "CAEPF", key: "caepf", format: "caepf" },
     { label: "Consultor do Formulário", key: "consultant_name" },
 ];
 
@@ -23,6 +24,12 @@ function formatCNPJ(value) {
     return digits.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
 }
 
+function formatCAEPF(value) {
+    const digits = String(value).replace(/\D/g, "");
+    if (digits.length !== 14) return value;
+    return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3/$4-$5");
+}
+
 function formatValue(value, format) {
     if (value === null || value === undefined || value === "") return "—";
 
@@ -31,6 +38,7 @@ function formatValue(value, format) {
     if (format === "percentage") return `${(Number(value) * 100).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`;
     if (format === "cpf") return formatCPF(value);
     if (format === "cnpj") return formatCNPJ(value);
+    if (format === "caepf") return formatCAEPF(value);
 
     return value;
 }

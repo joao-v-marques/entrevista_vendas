@@ -12,6 +12,7 @@ export const FORM_FIELDS = [
     { label: "Tipo de Inclusão", key: "inclusion_type" },
     { label: "Data de Inclusão", key: "inclusion_date", format: "date" },
     { label: "CNPJ", key: "cnpj", format: "cnpj" },
+    { label: "CAEPF", key: "caepf", format: "caepf" },
     { label: "Plano Anterior", key: "previous_plan" },
     { label: "Data de Cancelamento do Plano Anterior", key: "previous_plan_cancellation_date", format: "date" },
     { label: "Tipo de Contrato", key: "contract_type" },
