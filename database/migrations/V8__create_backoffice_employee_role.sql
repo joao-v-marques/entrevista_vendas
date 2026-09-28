@@ -1,0 +1,2 @@
+INSERT INTO roles (name, description)
+VALUES ('backoffice_employee', 'Acesso à tela Vendas -> Formulários, restrito às fichas aguardando cadastro no Backoffice (status 5), possui permissão para finalizar a ficha.');
