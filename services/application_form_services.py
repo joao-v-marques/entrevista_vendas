@@ -43,6 +43,9 @@ class ApplicationFormService:
                 return True
 
             if role_name == "finance_employee":
+                if application_form.form_status_id == 1:
+                    return True
+
                 approval = ApplicationFormApprovalModel.get_by_application_form_id(application_form_id)
 
                 if approval and approval.financial_reviewer_id == user.get("id"):
