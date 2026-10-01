@@ -83,6 +83,40 @@ def download_document(application_form_id):
             "message": str(e)
         }), 500
 
+# POST que recebe de volta o documento da entrevista assinado pelo beneficiário (um único PDF)
+@bp_form_interviews.route("/application-form-interviews/<int:application_form_id>/signed-document", methods=['POST'])
+@token_required
+@role_required("administrator", "director", "sales_employee")
+def upload_signed_document(application_form_id):
+    try:
+        ApplicationFormService.check_access(application_form_id, request.user)
+
+        files = request.files.getlist("signed_document")
+
+        signed_document = InterviewDocumentService.upload_signed_document(application_form_id, files)
+
+        return jsonify(signed_document.to_dict()), 201
+    except ValidationError as e:
+        return jsonify({
+            "message": str(e)
+        }), 400
+    except ForbiddenError as e:
+        return jsonify({
+            "message": str(e)
+        }), 403
+    except NotFoundError as e:
+        return jsonify({
+            "message": str(e)
+        }), 404
+    except ConflictError as e:
+        return jsonify({
+            "message": str(e)
+        }), 409
+    except Exception as e:
+        return jsonify({
+            "message": str(e)
+        }), 500
+
 
 @bp_form_interviews.route("/application-form-interviews", methods=['POST'])
 @token_required

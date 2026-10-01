@@ -1,8 +1,12 @@
 import re
 import unicodedata
 from datetime import date, datetime, timezone
-from utils.exceptions import ConflictError, NotFoundError
+from utils.exceptions import AppError, ConflictError, NotFoundError, ValidationError
 
+from models.application_form_documents import ApplicationFormDocumentModel
+from models.application_form_interviews import ApplicationFormInterviewModel
+from models.application_form_models import ApplicationFormModel
+from services.application_form_documents_services import ApplicationFormDocumentService, MAX_TOTAL_SIZE_BYTES
 from services.application_form_services import ApplicationFormService
 from utils.qualify_interview_questions import QUALIFY_INTERVIEW_GROUPS, QUALIFY_INTERVIEW_QUESTIONS
 
@@ -109,6 +113,55 @@ def _slug(value):
 
 
 class InterviewDocumentService:
+    # Recebe de volta o documento da entrevista depois de assinado pelo beneficiário. É só registro:
+    # nenhuma etapa do fluxo depende dele. Um novo envio não apaga o anterior, a tela considera o
+    # mais recente como o atual.
+    @staticmethod
+    def upload_signed_document(application_form_id, files):
+        saved_paths = []
+        try:
+            application_form = ApplicationFormModel.get_by_id(application_form_id)
+
+            if not application_form:
+                raise NotFoundError("Ficha não encontrada")
+
+            interview = ApplicationFormInterviewModel.get_by_application_form_id(application_form_id)
+
+            if not interview or not interview.interview_reviewed_at:
+                raise ConflictError("A entrevista desta ficha ainda não foi analisada")
+
+            valid_files = ApplicationFormDocumentService.validate_files(
+                files, allowed_extensions=(".pdf",), max_files=1, max_total_size_bytes=MAX_TOTAL_SIZE_BYTES
+            )
+
+            if not valid_files:
+                raise ValidationError("Anexe o documento assinado em PDF")
+
+            # a extensão sozinha não garante nada: confere o cabeçalho para barrar arquivo renomeado
+            signed_file = valid_files[0]
+            header = signed_file.stream.read(5)
+            signed_file.stream.seek(0)
+
+            if header != b"%PDF-":
+                raise ValidationError("O arquivo enviado não é um PDF válido")
+
+            documents, saved_paths = ApplicationFormDocumentService.save_files(
+                application_form_id, application_form.beneficiary_name, valid_files
+            )
+
+            for document in documents:
+                document.document_type = "entrevista_assinada"
+
+            created_documents = ApplicationFormDocumentModel.create(documents)
+
+            return created_documents[0]
+        except AppError:
+            ApplicationFormDocumentService.delete_files(saved_paths)
+            raise
+        except Exception as e:
+            ApplicationFormDocumentService.delete_files(saved_paths)
+            raise Exception(str(e))
+
     # Monta tudo o que o PDF precisa a partir do /details, que já reúne ficha, entrevista,
     # responsáveis e entrevista qualificada numa consulta só.
     @staticmethod

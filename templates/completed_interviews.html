@@ -389,6 +389,85 @@
         </div>
     </div>
 
+    <!-- ===== MODAL: ENVIO DO DOCUMENTO DA ENTREVISTA ASSINADO ===== -->
+    <div class="modal-overlay" id="uploadSignedDocumentModalOverlay" hidden>
+        <div class="modal modal--sm modal--signed-upload" role="dialog" aria-modal="true"
+            aria-labelledby="uploadSignedDocumentModalTitle" aria-describedby="uploadSignedDocumentModalSubtitle">
+            <div class="modal-header">
+                <div class="edit-form-heading">
+                    <h2 class="modal-title" id="uploadSignedDocumentModalTitle">Documento assinado</h2>
+                    <span class="edit-form-subtitle" id="uploadSignedDocumentModalSubtitle">
+                        Ficha #<span id="uploadSignedDocumentModalFormId"></span>
+                    </span>
+                </div>
+                <button type="button" class="modal-close" id="uploadSignedDocumentModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- de quem é o documento e em que pé está a assinatura -->
+                <div class="signed-upload-context">
+                    <div class="signed-upload-context-info">
+                        <span class="signed-upload-context-name" id="uploadSignedDocumentBeneficiaryName"></span>
+                        <span class="signed-upload-context-meta" id="uploadSignedDocumentBeneficiaryMeta"></span>
+                    </div>
+                    <span class="pill" id="uploadSignedDocumentStatusPill"></span>
+                </div>
+
+                <p class="signed-upload-notice" id="uploadSignedDocumentReplaceNotice" hidden>
+                    O novo arquivo passa a ser o documento atual. O anterior continua guardado no histórico da ficha.
+                </p>
+
+                <form id="uploadSignedDocumentForm" class="signed-upload-form" novalidate>
+                    <!-- o input fica visualmente escondido, mas continua focável e dentro do form:
+                         a área inteira é o <label>, então clique e teclado abrem o seletor -->
+                    <label class="signed-upload-dropzone" id="uploadSignedDocumentDropzone" for="uploadSignedDocumentFile">
+                        <input id="uploadSignedDocumentFile" class="sr-only" name="signed_document" type="file"
+                            accept=".pdf,application/pdf" aria-describedby="uploadSignedDocumentHint uploadSignedDocumentError">
+
+                        <span class="signed-upload-dropzone-icon" aria-hidden="true">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 15V4M7.5 8.5 12 4l4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                                <path d="M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+                            </svg>
+                        </span>
+                        <span class="signed-upload-dropzone-title">
+                            Arraste o PDF assinado aqui ou <span class="signed-upload-dropzone-link">clique para selecionar</span>
+                        </span>
+                        <span class="signed-upload-dropzone-hint" id="uploadSignedDocumentHint">Somente PDF · 1 arquivo · até 20 MB</span>
+                    </label>
+
+                    <!-- cartão do arquivo escolhido; substitui a área de envio até ser removido -->
+                    <div class="signed-upload-file" id="uploadSignedDocumentFileCard" hidden>
+                        <span class="signed-upload-file-icon" aria-hidden="true">PDF</span>
+                        <div class="signed-upload-file-info">
+                            <span class="signed-upload-file-name" id="uploadSignedDocumentFileName"></span>
+                            <span class="signed-upload-file-size" id="uploadSignedDocumentFileSize"></span>
+                        </div>
+                        <button type="button" class="btn btn--ghost btn--sm" id="uploadSignedDocumentRemove">Remover</button>
+                    </div>
+
+                    <p class="signed-upload-error" id="uploadSignedDocumentError" role="alert" hidden></p>
+                </form>
+
+                <p class="signed-upload-shortcut">
+                    Ainda não baixou o documento para assinatura?
+                    <button type="button" class="signed-upload-shortcut-link" id="uploadSignedDocumentDownload">Baixar PDF da entrevista</button>
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" id="uploadSignedDocumentModalCancel">Cancelar</button>
+                <button form="uploadSignedDocumentForm" type="submit" class="btn btn--primary"
+                    id="uploadSignedDocumentModalSubmit" disabled>Enviar documento</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>

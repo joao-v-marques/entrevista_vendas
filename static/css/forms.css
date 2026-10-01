@@ -870,13 +870,15 @@
    quebrar em duas linhas e engordar a altura de todas as linhas da tabela */
 .forms-table .forms-col-parecer .pill,
 .forms-table .forms-cell-parecer .pill,
-.forms-table .forms-cell-preexisting .pill {
+.forms-table .forms-cell-preexisting .pill,
+.forms-table .forms-cell-result .pill {
   white-space: nowrap;
 }
 
 /* a pílula é um inline-flex dentro de uma célula composta: sem isso ela esticaria
    para a largura toda da coluna em vez de acompanhar o próprio texto */
-.forms-table .forms-cell-preexisting .forms-cell-stack {
+.forms-table .forms-cell-preexisting .forms-cell-stack,
+.forms-table .forms-cell-result .forms-cell-stack {
   align-items: flex-start;
   gap: 4px;
 }
@@ -954,6 +956,273 @@
 #requestReanalysisModalOverlay input[type="file"]:hover::-webkit-file-upload-button {
   background: var(--color-brand);
   color: var(--color-on-brand);
+}
+
+/* ---------- Modal: Documento Assinado (entrevistas realizadas) ---------- */
+/* .modal-body é display:flex e as peças abaixo também declaram display, o que venceria o hidden */
+#uploadSignedDocumentModalOverlay [hidden] {
+  display: none !important;
+}
+
+.modal--signed-upload .modal-body {
+  gap: 1rem;
+}
+
+/* faixa de quem é o documento, no mesmo visual da .edit-form-context */
+.signed-upload-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+/* com pouco espaço a pill desce para a linha de baixo em vez de espremer o nome */
+.signed-upload-context-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.signed-upload-context-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signed-upload-context-meta {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.signed-upload-context .pill {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.signed-upload-notice {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--amber-200);
+  border-left: 3px solid var(--amber-500);
+  border-radius: var(--radius-md);
+  background: var(--amber-50);
+  color: var(--amber-700);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.signed-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* área de envio: o <label> inteiro abre o seletor e recebe o arquivo arrastado */
+.signed-upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+  background: var(--color-bg-surface);
+  border: 1.5px dashed var(--gray-300);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.signed-upload-dropzone:hover,
+.signed-upload-dropzone.is-dragover {
+  border-color: var(--color-brand);
+  background: var(--color-brand-faint);
+}
+
+.signed-upload-dropzone.is-dragover {
+  border-style: solid;
+}
+
+/* o input escondido é quem recebe o foco; o anel aparece na área inteira */
+.signed-upload-dropzone:focus-within {
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.signed-upload-dropzone.has-error {
+  border-color: var(--red-500);
+  background: var(--red-50);
+}
+
+/* arrastar um novo arquivo por cima de um erro já mostra que a área vai aceitá-lo */
+.signed-upload-dropzone.has-error.is-dragover {
+  border-color: var(--color-brand);
+  background: var(--color-brand-faint);
+}
+
+.signed-upload-dropzone-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: var(--color-brand-faint);
+  color: var(--color-brand);
+  transition: transform var(--transition);
+}
+
+.signed-upload-dropzone.is-dragover .signed-upload-dropzone-icon {
+  transform: translateY(-2px);
+}
+
+.signed-upload-dropzone.has-error .signed-upload-dropzone-icon {
+  background: var(--red-100);
+  color: var(--red-700);
+}
+
+.signed-upload-dropzone-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.signed-upload-dropzone-link {
+  color: var(--color-brand);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.signed-upload-dropzone-hint {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+/* cartão do arquivo escolhido */
+.signed-upload-file {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 0.85rem;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+/* selo vermelho: a identidade visual que todo mundo associa a PDF */
+.signed-upload-file-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--red-50);
+  border: 1px solid var(--red-100);
+  color: var(--red-700);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.signed-upload-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.signed-upload-file-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signed-upload-file-size {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.signed-upload-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--red-700);
+}
+
+.signed-upload-shortcut {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.signed-upload-shortcut-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.signed-upload-shortcut-link:hover {
+  color: var(--color-brand-dark);
+}
+
+.signed-upload-shortcut-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.signed-upload-shortcut-link:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+/* o envio só libera com um PDF válido; o .btn não tem estado desabilitado próprio */
+#uploadSignedDocumentModalSubmit:disabled:not(.is-loading) {
+  cursor: not-allowed;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+@media (max-width: 480px) {
+  .signed-upload-dropzone {
+    padding: 1.35rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signed-upload-dropzone,
+  .signed-upload-dropzone-icon {
+    transition: none;
+  }
+
+  .signed-upload-dropzone.is-dragover .signed-upload-dropzone-icon {
+    transform: none;
+  }
 }
 
 /* ---------- Modal: Encerrar Negociação ---------- */

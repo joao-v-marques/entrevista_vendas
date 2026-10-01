@@ -3,6 +3,7 @@ import { formatDateToBR, formatDateTimeToBR } from "./utils/dateUtils.js";
 import { escapeHtml, formatCPF } from "./utils/detailsView.js";
 import { getStatusPillClass } from "./utils/statusPill.js";
 import { openViewInterviewModal } from "./completedInterviewModals/viewInterviewModal.js";
+import { openUploadSignedDocumentModal } from "./completedInterviewModals/uploadSignedDocumentModal.js";
 
 // guarda a lista completa carregada do backend; os filtros atuam sobre ela sem novo request
 let allInterviews = [];
@@ -218,6 +219,12 @@ function renderCompletedInterviewsTable(interviews, filters) {
             ? `<span class="pill pill--green">Aprovada</span>`
             : `<span class="pill pill--red">Reprovada</span>`;
 
+        // o documento assinado é só registro, não trava o fluxo; a pill só sinaliza o que falta
+        const signedPill = interview.has_signed_document
+            ? `<span class="pill pill--green">Assinado</span>`
+            : `<span class="pill pill--gray">Assinatura pendente</span>`;
+        const uploadTitle = interview.has_signed_document ? "Substituir documento assinado" : "Enviar documento assinado";
+
         const cpf = interview.beneficiary_cpf ? formatCPF(interview.beneficiary_cpf) : "";
         const reviewedAt = interview.interview_reviewed_at ? formatDateToBR(interview.interview_reviewed_at) : "";
 
@@ -237,7 +244,12 @@ function renderCompletedInterviewsTable(interviews, filters) {
             </td>
             <td class="forms-cell-consultant">${escapeHtml(interview.consultant_name)}</td>
             <td class="forms-cell-interviewer">${interview.interviewer_name ? escapeHtml(interview.interviewer_name) : "—"}</td>
-            <td class="forms-cell-result">${resultPill}</td>
+            <td class="forms-cell-result">
+                <div class="forms-cell-stack">
+                    ${resultPill}
+                    ${signedPill}
+                </div>
+            </td>
             <td class="status-column">
                 <span class="pill ${getStatusPillClass(interview.form_status_name)}">${escapeHtml(interview.form_status_name)}</span>
             </td>
@@ -248,6 +260,9 @@ function renderCompletedInterviewsTable(interviews, filters) {
                     </button>
                     <button class="icon-btn" title="Baixar PDF da Entrevista" aria-label="Baixar PDF da Entrevista" data-pdf-form-id="${interview.application_form_id}">
                         <svg viewBox="0 0 16 16" fill="none"><path d="M8 2v7.5M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.8 13h10.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                    </button>
+                    <button class="icon-btn" title="${uploadTitle}" aria-label="${uploadTitle}" data-upload-form-id="${interview.application_form_id}">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M8 10V2.5M5 5l3-3 3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.8 13h10.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
                     </button>
                 </div>
             </td>
@@ -309,7 +324,7 @@ export async function populateCompletedInterviewsTable() {
 
 // Baixa o PDF da entrevista. O documento é gerado sob demanda no servidor, o que leva alguns
 // instantes, então o botão trava enquanto isso para não disparar duas gerações.
-async function downloadInterviewDocument(button) {
+export async function downloadInterviewDocument(button) {
     button.disabled = true;
 
     try {
@@ -414,7 +429,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const tbodyCompletedInterviews = document.getElementById("tbodyCompletedInterviews");
 
     tbodyCompletedInterviews.addEventListener("click", (event) => {
-        // os dois botões são .icon-btn, então o que separa um do outro é o data-* específico
+        // os botões são todos .icon-btn, então o que separa um do outro é o data-* específico
         const viewButton = event.target.closest(".icon-btn[data-view-form-id]");
         if (viewButton) {
             openViewInterviewModal(Number(viewButton.dataset.viewFormId));
@@ -424,6 +439,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const pdfButton = event.target.closest(".icon-btn[data-pdf-form-id]");
         if (pdfButton) {
             downloadInterviewDocument(pdfButton);
+            return;
+        }
+
+        const uploadButton = event.target.closest(".icon-btn[data-upload-form-id]");
+        if (uploadButton) {
+            const applicationFormId = Number(uploadButton.dataset.uploadFormId);
+            const interview = allInterviews.find(item => Number(item.application_form_id) === applicationFormId);
+            if (interview) openUploadSignedDocumentModal(interview);
             return;
         }
 

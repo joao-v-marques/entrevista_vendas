@@ -37,7 +37,7 @@ class CompletedInterview:
     def __init__(self, id, interview_date, interview_approved, interview_observation, interview_reviewed_at,
                  application_form_id, interviewer_id, interviewer_name, beneficiary_name, beneficiary_cpf,
                  inclusion_type, consultant_id, consultant_name, form_status_id, form_status_name,
-                 qualify_interview_id=None):
+                 qualify_interview_id=None, has_signed_document=False):
         self.id = id
         self.interview_date = interview_date
         self.interview_approved = interview_approved
@@ -55,6 +55,8 @@ class CompletedInterview:
         self.form_status_name = form_status_name
         # id da entrevista qualificada vinculada, que o PDF vai precisar para saber o que renderizar
         self.qualify_interview_id = qualify_interview_id
+        # se o documento da entrevista já voltou assinado (anexo do tipo entrevista_assinada)
+        self.has_signed_document = has_signed_document
 
     def to_dict(self):
         return {
@@ -73,7 +75,8 @@ class CompletedInterview:
             "consultant_name": self.consultant_name,
             "form_status_id": self.form_status_id,
             "form_status_name": self.form_status_name,
-            "qualify_interview_id": self.qualify_interview_id
+            "qualify_interview_id": self.qualify_interview_id,
+            "has_signed_document": self.has_signed_document
         }
 
 class ApplicationFormInterviewModel:
@@ -133,7 +136,11 @@ class ApplicationFormInterviewModel:
                     uc.name AS consultant_name,
                     af.form_status_id,
                     fs.name AS form_status_name,
-                    qi.id AS qualify_interview_id
+                    qi.id AS qualify_interview_id,
+                    EXISTS (
+                        SELECT 1 FROM application_form_documents d
+                        WHERE d.application_form_id = af.id AND d.document_type = 'entrevista_assinada'
+                    ) AS has_signed_document
                 FROM application_form_interviews ai
                 INNER JOIN application_forms af ON af.id = ai.application_form_id
                 INNER JOIN users uc ON uc.id = af.consultant_id

@@ -100,6 +100,7 @@ function renderDocumentLink(document) {
     const uploadedAt = document.uploaded_at ? formatValue(document.uploaded_at, "datetime") : "";
     const meta = [size, uploadedAt].filter(Boolean).join(" · ");
     const isMedicalReport = document.document_type === "laudo_medico";
+    const isSignedInterview = document.document_type === "entrevista_assinada";
 
     return `
         <a class="document-item" href="/entrevista-adesao/application-form-documents/${document.id}/file"
@@ -107,6 +108,7 @@ function renderDocumentLink(document) {
             ${ICON_DOCUMENT}
             <span class="document-item-name">${escapeHtml(document.original_filename || "documento")}</span>
             ${isMedicalReport ? `<span class="pill pill--gray">Laudo médico</span>` : ""}
+            ${isSignedInterview ? `<span class="pill pill--gray">Entrevista assinada</span>` : ""}
             ${meta ? `<span class="document-item-size">${escapeHtml(meta)}</span>` : ""}
         </a>
     `;
@@ -119,6 +121,14 @@ function renderDocumentList(documents, emptyMessage) {
 
 function getMedicalReports(details) {
     return (details.documents || []).filter(document => document.document_type === "laudo_medico");
+}
+
+// documento da entrevista que voltou assinado; um reenvio não apaga o anterior, então o
+// mais recente vem primeiro e é tratado como o atual
+function getSignedInterviewDocuments(details) {
+    return (details.documents || [])
+        .filter(document => document.document_type === "entrevista_assinada")
+        .sort((a, b) => Number(b.id) - Number(a.id));
 }
 
 // a tabela de reanálises também guarda as pedidas após reprovação do financeiro; aqui só
@@ -385,10 +395,21 @@ function renderInterviewTab(details) {
            </button>`
         : "";
 
+    // o documento assinado é só registro: a falta dele não trava a aprovação, só fica sinalizada
+    const [signedDocument] = getSignedInterviewDocuments(details);
+    let signedLink = "";
+    if (qualify && signedDocument) {
+        signedLink = `<a class="btn btn--outline btn--sm" href="/entrevista-adesao/application-form-documents/${signedDocument.id}/file" target="_blank" rel="noopener">
+               ${ICON_DOCUMENT} Abrir documento assinado
+           </a>`;
+    } else if (qualify) {
+        signedLink = `<span class="pill pill--gray">Assinatura pendente</span>`;
+    }
+
     const interviewHtml = `
         <div class="mgmt-toolbar">
             <div class="approval-decision">${renderDecisionPill(interview.interview_approved)}</div>
-            <div class="mgmt-toolbar-actions">${pdfButton}</div>
+            <div class="mgmt-toolbar-actions">${signedLink}${pdfButton}</div>
         </div>
         ${renderInfoGrid(interview, interviewFields)}
     `;
@@ -463,8 +484,9 @@ function renderHistoryTab(details) {
 
 function renderDocumentsTab(details) {
     const documents = details.documents || [];
-    const formDocuments = documents.filter(document => document.document_type !== "laudo_medico");
+    const formDocuments = documents.filter(document => !["laudo_medico", "entrevista_assinada"].includes(document.document_type));
     const medicalReports = getMedicalReports(details);
+    const signedInterviewDocuments = getSignedInterviewDocuments(details);
 
     const toolbar = documents.length > 0
         ? `
@@ -484,6 +506,10 @@ function renderDocumentsTab(details) {
         <div class="mgmt-document-group">
             <p class="mgmt-document-group-title">Documentos da adesão</p>
             ${renderDocumentList(formDocuments, "Nenhum documento da adesão anexado.")}
+        </div>
+        <div class="mgmt-document-group">
+            <p class="mgmt-document-group-title">Entrevista assinada</p>
+            ${renderDocumentList(signedInterviewDocuments, "Nenhum documento assinado anexado.")}
         </div>
         <div class="mgmt-document-group">
             <p class="mgmt-document-group-title">Laudos médicos (reanálises)</p>
