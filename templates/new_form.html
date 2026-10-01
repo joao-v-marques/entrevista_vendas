@@ -706,6 +706,26 @@
         </section>
     </main>
 
+    <!-- ===== MODAL: LANÇAR DEPENDENTE PARA O TITULAR ===== -->
+    <div class="modal-overlay" id="addDependentModalOverlay" hidden>
+        <div class="modal modal--confirm" role="dialog" aria-modal="true" aria-labelledby="addDependentModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="addDependentModalTitle">Lançar dependente</h2>
+                <button type="button" class="modal-close" id="addDependentModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="addDependentModalText"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" id="addDependentNo">Não</button>
+                <button type="button" class="btn btn--primary" id="addDependentYes"
+                    data-dependent-url="{{ url_for('bp_render_new_form.render_formulario_ficha', type='secondary') }}">Sim</button>
+            </div>
+        </div>
+    </div>
+
     <footer class="footer">
         <span>© 2026 Unimed SS Paraíso — Sistema de Fichas de Adesão</span>
     </footer>

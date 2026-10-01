@@ -623,3 +623,81 @@ input[type="file"]:hover::-webkit-file-upload-button {
 [data-theme="dark"] .form-actions {
   box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.35);
 }
+
+/* ---------- Modal "Lançar dependente" ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 100;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  width: 100%;
+  max-height: calc(100vh - 3rem);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.modal--confirm {
+  max-width: 480px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  color: var(--green-800);
+}
+
+.modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-md);
+  transition: background var(--transition), color var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--gray-100);
+  color: var(--color-text);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--color-border-light);
+  background: var(--color-bg-secondary);
+}
