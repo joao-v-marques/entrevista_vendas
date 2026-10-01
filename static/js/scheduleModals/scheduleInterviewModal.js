@@ -18,7 +18,6 @@ const interviewDatePicker = flatpickr(interviewDateInput, {
     enableTime: true,
     time_24hr: true,
     minuteIncrement: 15,
-    minDate: "today",
     dateFormat: "Y-m-d\\TH:i",
     altInput: true,
     altFormat: "d/m/Y - H:i",
@@ -41,7 +40,6 @@ export function openScheduleInterviewModal(applicationForm) {
     renderBeneficiaryInfo(beneficiaryInfoGrid, applicationForm);
     scheduleInterviewForm.reset();
     interviewDatePicker.clear();
-    interviewDatePicker.set("minDate", new Date());
 
     // preenche o campo oculto que vai junto no envio pro backend
     applicationFormIdInput.value = applicationForm.id;

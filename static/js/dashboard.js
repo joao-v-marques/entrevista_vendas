@@ -6,7 +6,7 @@
 // aqui isso quebraria os gráficos — um <canvas> criado dentro de painel com [hidden]
 // nasce com tamanho zero. Por isso a aba só se inicializa quando é exibida.
 
-import { inputToUTCStart, inputToUTCEnd } from "./dashboardTabs/aggregations.js";
+import { inputToLocalStart, inputToLocalEnd, dayKey } from "./dashboardTabs/aggregations.js";
 import { resizeTab, applyChartTheme } from "./dashboardTabs/chartFactory.js";
 import { clearCache } from "./dashboardTabs/dashboardData.js";
 
@@ -36,8 +36,8 @@ let activeTab = null;
 
 function getPeriod() {
     return {
-        startMs: inputToUTCStart(document.getElementById("filterStart").value),
-        endMs: inputToUTCEnd(document.getElementById("filterEnd").value),
+        startMs: inputToLocalStart(document.getElementById("filterStart").value),
+        endMs: inputToLocalEnd(document.getElementById("filterEnd").value),
     };
 }
 
@@ -45,7 +45,8 @@ function setPreset(preset) {
     const startEl = document.getElementById("filterStart");
     const endEl = document.getElementById("filterEnd");
     const now = new Date();
-    const todayIso = now.toISOString().slice(0, 10);
+    // dayKey em vez de toISOString: o ISO é UTC e após as 21h já marcaria o dia seguinte
+    const todayIso = dayKey(now);
 
     if (preset === "all") {
         startEl.value = "";
@@ -56,7 +57,7 @@ function setPreset(preset) {
     } else {
         const days = Number(preset);
         const start = new Date(now.getTime() - (days - 1) * 86400000);
-        startEl.value = start.toISOString().slice(0, 10);
+        startEl.value = dayKey(start);
         endEl.value = todayIso;
     }
 }

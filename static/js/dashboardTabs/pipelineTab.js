@@ -7,7 +7,7 @@
 // e gerência pelo application_form_id, o tempo real de cada etapa aparece.
 
 import { escapeHtml } from "../utils/detailsView.js";
-import { formatDateToBR } from "../utils/dateUtils.js";
+import { formatTimestampDateToBR } from "../utils/dateUtils.js";
 import { getStatusPillClass } from "../utils/statusPill.js";
 import {
     loadForms, loadApprovals, loadInterviews, loadManagement, loadDocuments,
@@ -368,7 +368,7 @@ function renderOldest(panel, forms) {
                 <tr>
                     <td class="td-name">${escapeHtml(form.beneficiary_name || "—")}</td>
                     <td>${escapeHtml(form.consultant_name || "—")}</td>
-                    <td>${formatDateToBR(form.created_at)}</td>
+                    <td>${formatTimestampDateToBR(form.created_at)}</td>
                     <td><span class="pill ${getStatusPillClass(form.form_status_name)}">${escapeHtml(form.form_status_name || "—")}</span></td>
                     <td class="num-cell">${formatDays(age)}</td>
                 </tr>

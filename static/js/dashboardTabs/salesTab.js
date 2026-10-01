@@ -274,7 +274,7 @@ function renderSeason(panel, forms) {
 
     forms.forEach((form) => {
         const date = parseDate(form.created_at);
-        if (date) counts[date.getUTCMonth()]++;
+        if (date) counts[date.getMonth()]++;
     });
 
     if (setChartEmpty(panel, "slSeason", counts.every((value) => value === 0))) return;

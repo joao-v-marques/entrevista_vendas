@@ -6,7 +6,7 @@ import { escapeHtml } from "../utils/detailsView.js";
 import { loadForms, loadInterviews } from "./dashboardData.js";
 import {
     FINALIZED_ID, isActive, isFinalized, isRejected, isClosed,
-    parseDate, bucketDates, keyOfDate, filterByPeriod,
+    parseDate, bucketDates, keyOfDate, dayKey, filterByPeriod,
     percentOf, countBy, groupBy, sortedEntries, ageInDays, formatDays,
 } from "./aggregations.js";
 import { makeChart, barOptions, doughnutOptions, statusColor, BAR_STYLE, GREEN, SURFACE } from "./chartFactory.js";
@@ -86,14 +86,14 @@ function renderKpis(panel, forms) {
 
 function renderAlerts(panel, allForms, allInterviews) {
     const now = new Date();
-    const todayKey = now.toISOString().slice(0, 10);
+    const todayKey = dayKey(now);
     const weekAhead = now.getTime() + 7 * 86400000;
 
     const scheduled = allInterviews.filter((interview) => parseDate(interview.interview_date));
 
     const today = scheduled.filter((interview) => {
         const date = parseDate(interview.interview_date);
-        return date && date.toISOString().slice(0, 10) === todayKey;
+        return date && dayKey(date) === todayKey;
     }).length;
 
     const nextWeek = scheduled.filter((interview) => {

@@ -1,6 +1,7 @@
 // Funções puras usadas pelas abas do dashboard: nada aqui toca no DOM nem faz fetch.
-// Datas seguem a convenção do projeto (getters UTC), porque o Flask serializa
-// timestamptz como GMT e usar getters locais desloca o dia.
+// Datas usam getters locais: tudo que o dashboard filtra e agrupa é timestamptz
+// (created_at, interview_date), que o Flask converte para GMT ao serializar — com
+// getters UTC um registro feito após as 21h cairia no dia seguinte.
 
 /* ============================================================
    Status do formulário (database/migrations/V1__form_status.sql)
@@ -43,24 +44,24 @@ export function parseDate(value) {
 }
 
 export function dayKey(date) {
-    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(date.getUTCDate()).padStart(2, "0")}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 export function monthKey(date) {
-    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
 
-// converte um <input type="date"> (YYYY-MM-DD) para os limites UTC do dia
-export function inputToUTCStart(value) {
+// converte um <input type="date"> (YYYY-MM-DD) para os limites do dia no fuso local
+export function inputToLocalStart(value) {
     if (!value) return null;
     const [year, month, day] = value.split("-").map(Number);
-    return Date.UTC(year, month - 1, day, 0, 0, 0);
+    return new Date(year, month - 1, day, 0, 0, 0).getTime();
 }
 
-export function inputToUTCEnd(value) {
+export function inputToLocalEnd(value) {
     if (!value) return null;
     const [year, month, day] = value.split("-").map(Number);
-    return Date.UTC(year, month - 1, day, 23, 59, 59, 999);
+    return new Date(year, month - 1, day, 23, 59, 59, 999).getTime();
 }
 
 // diferença em dias entre dois campos de data; null quando qualquer ponta faltar
@@ -109,23 +110,23 @@ export function bucketDates(dates) {
     const byMonth = (last - first) / 86400000 > 92;
 
     const keys = [];
-    const cursor = new Date(Date.UTC(
-        first.getUTCFullYear(),
-        first.getUTCMonth(),
-        byMonth ? 1 : first.getUTCDate()
-    ));
+    const cursor = new Date(
+        first.getFullYear(),
+        first.getMonth(),
+        byMonth ? 1 : first.getDate()
+    );
 
     while (cursor <= last) {
         keys.push(byMonth ? monthKey(cursor) : dayKey(cursor));
-        if (byMonth) cursor.setUTCMonth(cursor.getUTCMonth() + 1);
-        else cursor.setUTCDate(cursor.getUTCDate() + 1);
+        if (byMonth) cursor.setMonth(cursor.getMonth() + 1);
+        else cursor.setDate(cursor.getDate() + 1);
     }
 
     const labels = keys.map((key) => {
         if (byMonth) {
             const [year, month] = key.split("-");
-            return new Date(Date.UTC(Number(year), Number(month) - 1, 1))
-                .toLocaleDateString("pt-BR", { month: "short", year: "2-digit", timeZone: "UTC" });
+            return new Date(Number(year), Number(month) - 1, 1)
+                .toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
         }
         const [, month, day] = key.split("-");
         return `${day}/${month}`;

@@ -11,15 +11,16 @@ const PENDING_STATUS = [
 
 const FINALIZED_STATUS = "Finalizado";
 
-// verifica se a data de cadastro pertence ao mês/ano atual
+// verifica se a data de cadastro pertence ao mês/ano atual. created_at é timestamptz
+// (chega convertido para GMT), então a comparação é no fuso local
 function isCurrentMonth(dateString) {
     if (!dateString) return false;
 
     const date = new Date(dateString);
     const now = new Date();
 
-    return date.getUTCMonth() === now.getUTCMonth()
-        && date.getUTCFullYear() === now.getUTCFullYear();
+    return date.getMonth() === now.getMonth()
+        && date.getFullYear() === now.getFullYear();
 }
 
 async function populateHomeStats() {

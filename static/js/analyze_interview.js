@@ -39,24 +39,24 @@ const TRIAGE_CHIPS = [
     { value: "next7", label: `Próximos ${UPCOMING_WINDOW_DAYS} dias` },
 ];
 
-// normaliza a data da entrevista (que vem como "Mon, 01 Jan 2001 00:00:00 GMT")
-// para "YYYY-MM-DD" em UTC, mesmo formato do <input type="date">
+// normaliza a data da entrevista (que vem como "Mon, 01 Jan 2001 15:00:00 GMT")
+// para "YYYY-MM-DD" no fuso local, mesmo formato do <input type="date">. É timestamptz,
+// então o Flask já mandou convertido para GMT e só os getters locais devolvem o dia agendado
 function getInterviewDateISO(form) {
     if (!form.interview_date) return "";
 
     const date = new Date(form.interview_date);
     if (isNaN(date)) return "";
 
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(date.getUTCDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
 }
 
 // dias até a entrevista: negativo = vencida, 0 = hoje, positivo = futura.
-// Os dois lados caem na meia-noite UTC para a conta dar dias inteiros — mesma convenção
-// de fuso que dateUtils.js e as outras listagens já usam.
+// Os dois lados partem do dia local e caem na meia-noite UTC só para a conta dar dias inteiros.
 function getDaysUntilInterview(form) {
     const dateISO = getInterviewDateISO(form);
     if (!dateISO) return null;
@@ -68,12 +68,12 @@ function getDaysUntilInterview(form) {
     return Math.round((interview - today) / 86400000);
 }
 
-// hora da entrevista ("14:30"), em UTC pelo mesmo motivo das datas
+// hora da entrevista ("14:30"), no fuso local pelo mesmo motivo da data
 function getInterviewTime(form) {
     const date = new Date(form.interview_date);
     if (isNaN(date)) return "";
 
-    return `${String(date.getUTCHours()).padStart(2, "0")}:${String(date.getUTCMinutes()).padStart(2, "0")}`;
+    return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
 // classificação única de urgência: ordem, etiqueta, cor da linha, chips e alerta saem daqui.

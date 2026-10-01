@@ -1,5 +1,5 @@
 import { fetchWithAuth } from "./utils/apiHelper.js";
-import { formatDateToBR, formatDateTimeToBR } from "./utils/dateUtils.js";
+import { formatTimestampDateToBR, formatDateTimeToBR } from "./utils/dateUtils.js";
 import { escapeHtml, formatCPF } from "./utils/detailsView.js";
 import { getStatusPillClass } from "./utils/statusPill.js";
 import { openViewInterviewModal } from "./completedInterviewModals/viewInterviewModal.js";
@@ -21,17 +21,18 @@ const RESULT_CHIPS = [
     { value: "rejected", label: "Reprovadas", pill: "pill--red" },
 ];
 
-// normaliza a data da entrevista (que vem como "Mon, 01 Jan 2001 00:00:00 GMT")
-// para "YYYY-MM-DD" em UTC, mesmo formato do <input type="date">
+// normaliza a data da entrevista (que vem como "Mon, 01 Jan 2001 15:00:00 GMT")
+// para "YYYY-MM-DD" no fuso local, mesmo formato do <input type="date">. É timestamptz,
+// então o Flask já mandou convertido para GMT e só os getters locais devolvem o dia agendado
 function getInterviewDateISO(interview) {
     if (!interview.interview_date) return "";
 
     const date = new Date(interview.interview_date);
     if (isNaN(date)) return "";
 
-    const year = date.getUTCFullYear();
-    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
-    const day = String(date.getUTCDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
 }
@@ -226,7 +227,7 @@ function renderCompletedInterviewsTable(interviews, filters) {
         const uploadTitle = interview.has_signed_document ? "Substituir documento assinado" : "Enviar documento assinado";
 
         const cpf = interview.beneficiary_cpf ? formatCPF(interview.beneficiary_cpf) : "";
-        const reviewedAt = interview.interview_reviewed_at ? formatDateToBR(interview.interview_reviewed_at) : "";
+        const reviewedAt = interview.interview_reviewed_at ? formatTimestampDateToBR(interview.interview_reviewed_at) : "";
 
         // Entrevista já registrada não pode ser editada, por isso não há ação de edição aqui.
         trInterview.innerHTML = `

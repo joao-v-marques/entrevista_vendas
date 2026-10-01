@@ -40,7 +40,7 @@ export function formatPhone(value) {
     return value;
 }
 
-// usa getters UTC porque as datas chegam em GMT (padrão do Flask), evitando shift de fuso
+// colunas `date`: usa getters UTC porque chegam como meia-noite GMT (padrão do Flask), evitando shift de fuso
 export function formatDate(value) {
     const date = new Date(value);
     if (isNaN(date.getTime())) return value;
@@ -52,14 +52,19 @@ export function formatDate(value) {
     return `${day}/${month}/${year}`;
 }
 
+// colunas `timestamptz`: o Flask converte para GMT ao serializar, então os getters
+// locais devolvem o horário em que foi cadastrado (12:00 continua 12:00, e não 15:00)
 export function formatDateTime(value) {
     const date = new Date(value);
     if (isNaN(date.getTime())) return value;
 
-    const hours = String(date.getUTCHours()).padStart(2, "0");
-    const minutes = String(date.getUTCMinutes()).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
 
-    return `${formatDate(value)} ${hours}:${minutes}`;
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
 export function formatBytes(value) {
