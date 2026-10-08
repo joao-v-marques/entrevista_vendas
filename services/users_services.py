@@ -129,7 +129,8 @@ class UserService:
             sector_id = to_id(data.get('sector_id'), "setor")
 
             # CPF em branco não apaga o que já está gravado: é ele que preenche o bloco de
-            # assinatura do intermediário no documento da entrevista qualificada. O campo é
+            # assinatura do intermediário no documento da entrevista qualificada, quando o usuário
+            # é o colaborador de vendas que lançou a ficha. O campo é
             # opcional aqui só por causa dos usuários cadastrados antes da coluna existir.
             cpf = normalize_cpf(data.get('cpf')) or existing_user.cpf
 

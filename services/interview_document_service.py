@@ -218,10 +218,11 @@ class InterviewDocumentService:
             },
 
             "entrevista": {
-                "atendente": _texto(interview.get("interviewer_name")),
-                # CPF do colaborador que conduziu a entrevista: vai preenchido no bloco de
-                # assinatura do intermediário, ao lado do nome dele
-                "atendente_cpf": _cpf(interview.get("interviewer_cpf")),
+                # o intermediário entre operadora e beneficiário é o colaborador de vendas que
+                # lançou a ficha, não quem conduziu a entrevista: nome e CPF vão preenchidos no
+                # bloco de assinatura do intermediário
+                "intermediario": _texto(form.get("consultant_name")),
+                "intermediario_cpf": _cpf(form.get("consultant_cpf")),
                 "consultor": _texto(form.get("consultant_name")),
                 "data": _data_hora(interview.get("interview_date")),
                 "analisada_em": _data_hora(interview.get("interview_reviewed_at")),
