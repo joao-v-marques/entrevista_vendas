@@ -133,7 +133,7 @@ function buildQualifyItemRow(item) {
                 </label>
             </div>
         </div>
-        <input type="text" class="input qualify-item-specification" data-specification-for="${item.key}" placeholder="Detalhes (opcional)..." hidden>
+        <input type="text" class="input qualify-item-specification" data-specification-for="${item.key}" placeholder="Especifique a doença (obrigatório)..." hidden>
     `;
 
     return row;
@@ -307,6 +307,7 @@ qualifyGroupsContainer.addEventListener("change", (event) => {
 
     specInput.hidden = !isYes;
     if (!isYes) {
+        row.classList.remove("qualify-item--invalid");
         specInput.value = "";
         updateObservationLine(QUALIFY_ITEM_LABELS.get(radio.name), "");
     }
@@ -333,6 +334,10 @@ qualifyGroupsContainer.addEventListener("input", (event) => {
 
     const specInput = event.target.closest(".qualify-item-specification");
     if (!specInput) return;
+
+    const specRow = specInput.closest(".qualify-item");
+    specRow.classList.remove("qualify-item--invalid");
+    specRow.closest(".qualify-group").classList.remove("qualify-group--missing");
 
     updateObservationLine(QUALIFY_ITEM_LABELS.get(specInput.dataset.specificationFor), specInput.value);
 });
@@ -404,6 +409,24 @@ function submitForm() {
                 firstMissingGroup.classList.add("qualify-group--missing");
             }
             firstMissingRow?.scrollIntoView({ behavior: "smooth", block: "center" });
+            return;
+        }
+
+        // doença marcada "Sim" exige especificação: é ela que vai para a declaração da CPT no contrato
+        const missingSpecifications = [...qualifyGroupsContainer.querySelectorAll(".qualify-item-specification")]
+            .filter(input => !input.hidden && !input.value.trim());
+        if (missingSpecifications.length > 0) {
+            const total = missingSpecifications.length;
+            notyf.error(`Especifique as doenças marcadas como "Sim" (${total} pendente${total > 1 ? "s" : ""}).`);
+
+            missingSpecifications.forEach(input => input.closest(".qualify-item").classList.add("qualify-item--invalid"));
+
+            const firstMissingSpecification = missingSpecifications[0];
+            const firstMissingGroup = firstMissingSpecification.closest(".qualify-group");
+            firstMissingGroup.open = true;
+            firstMissingGroup.classList.add("qualify-group--missing");
+            firstMissingSpecification.scrollIntoView({ behavior: "smooth", block: "center" });
+            firstMissingSpecification.focus({ preventScroll: true });
             return;
         }
 

@@ -1,5 +1,7 @@
 from models.qualify_interview import QualifyInterviewModel, QualifyInterview
+from services.interview_document_service import InterviewDocumentService
 from utils.exceptions import AppError, ValidationError
+from utils.qualify_interview_questions import QUALIFY_INTERVIEW_QUESTIONS
 from utils.validations import to_id, to_bool, to_number
 
 # Valores aceitos pelas constraints chk_escolha_medico_orientador e chk_parecer_unimed. Usada para tratamento de erro
@@ -71,6 +73,18 @@ class QualifyInterviewService:
 
             # A observação vai para o contrato, então é opcional mas nunca string vazia
             observation = (data.get('observation') or '').strip() or None
+
+            # Doença declarada exige especificação: ela vai para a declaração da CPT no contrato.
+            # A extração usa o mesmo parser do PDF, então o que passa aqui é o que sai no documento.
+            especificacoes = InterviewDocumentService._especificacoes(observation)
+            sem_especificacao = [
+                item["label"]
+                for item in QUALIFY_INTERVIEW_QUESTIONS
+                if to_bool(data.get(item["key"])) and item["key"] not in especificacoes
+            ]
+
+            if sem_especificacao:
+                raise ValidationError("Especifique as doenças declaradas: %s" % ", ".join(sem_especificacao[:5]))
 
             beneficiary_comments = (data.get('beneficiary_comments') or '').strip() or None
 
