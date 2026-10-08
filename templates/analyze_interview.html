@@ -444,17 +444,18 @@
 
                         <div class="form-group full-width">
                             <label class="form-label">Escolha do Médico Orientador</label>
+                            <p class="qualify-interview-hint">Somente a dispensa do médico orientador da operadora está disponível.</p>
                             <div class="choice-group" id="orientadorGroup">
                                 <label class="choice-option">
-                                    <input type="radio" name="escolha_medico_orientador" value="medico_unimed">
+                                    <input type="radio" name="escolha_medico_orientador" value="medico_unimed" disabled>
                                     <span>O preenchimento desta declaração contou com a presença do Médico Orientador indicado pela Unimed São Sebastião do Paraíso (sem ônus financeiro para o proponente).</span>
                                 </label>
                                 <label class="choice-option">
-                                    <input type="radio" name="escolha_medico_orientador" value="medico_proprio">
+                                    <input type="radio" name="escolha_medico_orientador" value="medico_proprio" disabled>
                                     <span>Dispensou a presença do médico orientador da operadora e optou por um médico de livre escolha, assumindo o ônus financeiro desta opção.</span>
                                 </label>
                                 <label class="choice-option">
-                                    <input type="radio" name="escolha_medico_orientador" value="dispensou_orientador">
+                                    <input type="radio" name="escolha_medico_orientador" value="dispensou_orientador" checked>
                                     <span>Dispensou a presença do médico orientador da operadora para auxiliar no preenchimento desta Declaração de Saúde.</span>
                                 </label>
                             </div>

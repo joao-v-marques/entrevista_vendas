@@ -43,13 +43,10 @@ class QualifyInterviewService:
             inserted_by = to_id(inserted_by, "usuário responsável")
 
             # Escolha do médico orientador
-            escolha_medico_orientador = (data.get('escolha_medico_orientador') or '').strip()
-
-            if not escolha_medico_orientador:
-                raise ValidationError("A escolha do médico orientador é obrigatória")
-
-            if escolha_medico_orientador not in ESCOLHAS_MEDICO_ORIENTADOR:
-                raise ValidationError("Escolha de médico orientador inválida")
+            # regra de negócio: o beneficiário sempre dispensa o médico orientador da operadora,
+            # independente do que vier no payload. As outras opções seguem aceitas pela constraint
+            # (e desenhadas no PDF) só por causa dos registros antigos
+            escolha_medico_orientador = 'dispensou_orientador'
 
             # Parecer da Unimed sobre a declaração de saúde
             parecer_unimed = (data.get('parecer_unimed') or '').strip()
