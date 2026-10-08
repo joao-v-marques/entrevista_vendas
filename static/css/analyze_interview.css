@@ -232,6 +232,16 @@
   cursor: not-allowed;
 }
 
+/* declaração da CPT: montada a partir dos detalhes do questionário, não é editável */
+#qualifyInterviewObservation[readonly],
+#qualifyInterviewObservation[readonly]:hover,
+#qualifyInterviewObservation[readonly]:focus {
+  background-color: var(--gray-100);
+  border-color: var(--color-border);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
 /* ---------- Decisão (sempre aprovada) ---------- */
 .decision-group {
   display: grid;
