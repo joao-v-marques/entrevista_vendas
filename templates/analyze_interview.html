@@ -432,6 +432,14 @@
                             <label class="form-label" for="qualifyBeneficiaryComments">Comentários e informações adicionais a respeito das perguntas formuladas que o BENEFICIÁRIO entende ser importante registrar</label>
                             <p class="qualify-interview-hint">Vai para o documento assinado pelo beneficiário, logo após o questionário de saúde. Opcional.</p>
                             <textarea class="textarea" id="qualifyBeneficiaryComments" name="qualify_beneficiary_comments" placeholder="Comentários do beneficiário sobre as perguntas..."></textarea>
+
+                            <!-- sem name: só controla se os comentários são copiados para a declaração da CPT -->
+                            <div class="preset-observations">
+                                <label class="preset-option">
+                                    <input type="checkbox" id="qualifyCommentsToCpt">
+                                    <span>Colocar os comentários adicionais também na CPT</span>
+                                </label>
+                            </div>
                         </div>
 
                         <div class="form-group full-width">

@@ -33,6 +33,8 @@ const PARECER_COM_PREEXISTENCIA = ["com_preexistencias_aceitou_cpt", "com_preexi
 // observação da entrevista qualificada (vai pro contrato); separada da observação interna acima
 const qualifyObservationTextarea = document.getElementById("qualifyInterviewObservation");
 const beneficiaryCommentsTextarea = document.getElementById("qualifyBeneficiaryComments");
+// quando marcado, os comentários do beneficiário são copiados também para o final da declaração da CPT
+const commentsToCptCheckbox = document.getElementById("qualifyCommentsToCpt");
 
 // mapa key -> label, usado pra anexar/atualizar a linha de detalhe na observação da entrevista qualificada
 const QUALIFY_ITEM_LABELS = new Map(
@@ -86,15 +88,22 @@ function renderScheduleInfo(container, applicationForm) {
 
 // ---------- Questionário de saúde (qualify_interview) ----------
 
-// anexa (ou atualiza/remove) uma linha de detalhe na observação da entrevista qualificada (a que vai pro contrato),
-// identificada pelo label da pergunta
-function updateObservationLine(label, detailText) {
-    const prefix = `${label}:`;
-    const lines = qualifyObservationTextarea.value.split("\n").filter(line => !line.startsWith(prefix));
+// remonta a observação da entrevista qualificada (a declaração da CPT, que vai pro contrato) a partir
+// do estado do modal: uma linha "<label>: <detalhe>" por doença especificada, na ordem do questionário,
+// e, se a opção estiver marcada, os comentários do beneficiário no final. O formato das linhas é o
+// que o PDF desfaz em InterviewDocumentService._especificacoes
+function renderCptObservation() {
+    const lines = [...qualifyGroupsContainer.querySelectorAll(".qualify-item-specification")]
+        .filter(input => !input.hidden && input.value.trim())
+        .map(input => `${QUALIFY_ITEM_LABELS.get(input.dataset.specificationFor)}: ${input.value.trim()}`);
 
-    if (detailText && detailText.trim()) lines.push(`${prefix} ${detailText.trim()}`);
+    const comments = beneficiaryCommentsTextarea.value.trim();
+    if (commentsToCptCheckbox.checked && comments) {
+        if (lines.length > 0) lines.push("");
+        lines.push(`Comentários do beneficiário: ${comments}`);
+    }
 
-    qualifyObservationTextarea.value = lines.join("\n").replace(/^\n+/, "").replace(/\n+$/, "");
+    qualifyObservationTextarea.value = lines.join("\n");
 }
 
 function buildQualifyItemRow(item) {
@@ -263,6 +272,7 @@ function resetQualifyInterviewUI() {
     updateImcDisplay();
     updateOverallProgress();
     updateParecerOptions();
+    renderCptObservation();
 }
 
 // lê o estado atual dos toggles/medidas; retorna as respostas e a lista de itens pendentes ou inválidos
@@ -309,8 +319,8 @@ qualifyGroupsContainer.addEventListener("change", (event) => {
     if (!isYes) {
         row.classList.remove("qualify-item--invalid");
         specInput.value = "";
-        updateObservationLine(QUALIFY_ITEM_LABELS.get(radio.name), "");
     }
+    renderCptObservation();
 
     const groupEl = row.closest(".qualify-group");
     groupEl.classList.remove("qualify-group--missing");
@@ -339,8 +349,11 @@ qualifyGroupsContainer.addEventListener("input", (event) => {
     specRow.classList.remove("qualify-item--invalid");
     specRow.closest(".qualify-group").classList.remove("qualify-group--missing");
 
-    updateObservationLine(QUALIFY_ITEM_LABELS.get(specInput.dataset.specificationFor), specInput.value);
+    renderCptObservation();
 });
+
+beneficiaryCommentsTextarea.addEventListener("input", renderCptObservation);
+commentsToCptCheckbox.addEventListener("change", renderCptObservation);
 
 orientadorGroup.addEventListener("change", () => {
     orientadorGroup.classList.remove("choice-group--missing");

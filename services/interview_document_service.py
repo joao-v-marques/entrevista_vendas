@@ -244,6 +244,7 @@ class InterviewDocumentService:
             "questionario": questionario,
             "total_perguntas": len(QUALIFY_INTERVIEW_QUESTIONS),
             "doencas_declaradas": InterviewDocumentService._doencas_declaradas(qualify),
+            "cpt_texto_adicional": InterviewDocumentService._texto_adicional_cpt(qualify.get("observation")),
         }
 
     # Achata os 27 grupos no formato que o renderizador desenha direto: cada linha já vem com a
@@ -299,7 +300,7 @@ class InterviewDocumentService:
 
     # As especificações por pergunta são digitadas no modal de análise e guardadas na observação
     # da entrevista qualificada, uma por linha, no formato "<rótulo da tela>: <texto>" — ver
-    # updateObservationLine em static/js/analyzeInterviewModals/analyzeInterviewModal.js.
+    # renderCptObservation em static/js/analyzeInterviewModals/analyzeInterviewModal.js.
     # Aqui o caminho é desfeito para reassociar cada texto à sua pergunta.
     #
     # O casamento usa o rótulo da TELA (item["label"]), que é o que o modal grava, e não o
@@ -329,3 +330,16 @@ class InterviewDocumentService:
                     break
 
         return encontradas
+
+    # O que sobra da observação além das especificações: os comentários do beneficiário, quando o
+    # entrevistador marca a opção de levá-los também para a CPT. O campo é só leitura no modal,
+    # então não há outra origem para essas linhas.
+    @staticmethod
+    def _texto_adicional_cpt(observacao):
+        if not observacao:
+            return VAZIO
+
+        prefixos = tuple("%s:" % item["label"] for item in QUALIFY_INTERVIEW_QUESTIONS if item.get("label"))
+        linhas = [l.strip() for l in str(observacao).replace("\r\n", "\n").split("\n") if l.strip()]
+
+        return "\n".join(l for l in linhas if not l.startswith(prefixos))

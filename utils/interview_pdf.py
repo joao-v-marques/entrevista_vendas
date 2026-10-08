@@ -760,11 +760,13 @@ def _pagina_parecer(ctx):
 
 def _pagina_cpt(ctx):
     declaradas = ctx["doencas_declaradas"]
+    texto_adicional = ctx["cpt_texto_adicional"]
+
+    lista = []
 
     # cada declaração vem com a doença e, quando houve, a especificação que o entrevistador
     # digitou — as duas juntas, porque só o nome da doença não diz o que foi declarado
     if declaradas:
-        lista = []
         for item in declaradas:
             if item["especificacao"]:
                 texto = "• <b>%s</b> %s %s" % (
@@ -775,7 +777,15 @@ def _pagina_cpt(ctx):
             else:
                 texto = "• <b>%s</b>" % _rico(item["doenca"])
             lista.append(Paragraph(texto, S.ITEM_TEXTO))
-    else:
+
+    # comentários do beneficiário que o entrevistador optou por levar também para a CPT: vêm
+    # depois das doenças, na mesma caixa
+    if texto_adicional:
+        if lista:
+            lista.append(Spacer(1, 2 * mm))
+        lista.extend(_observacao(texto_adicional))
+
+    if not lista:
         lista = [Paragraph("", S.ITEM_TEXTO)]
 
     flowables = [
