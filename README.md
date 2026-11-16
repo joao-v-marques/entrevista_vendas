@@ -39,9 +39,6 @@ quando aprovou e com qual observação. Fichas reprovadas não morrem: cada seto
 **solicitar reanálise** (devolvendo a ficha à etapa anterior) ou **encerrar a negociação**,
 mantendo o histórico completo para consulta.
 
-> **Nota:** projeto desenvolvido como estudo de caso de um processo real de operadora de saúde.
-> Nomes, dados e documentos usados em demonstração são fictícios.
-
 ---
 
 ## Funcionalidades
