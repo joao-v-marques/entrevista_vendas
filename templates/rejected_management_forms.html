@@ -364,10 +364,12 @@
 
     <!-- ===== MODAL: SOLICITAR REANÁLISE ===== -->
     <div class="modal-overlay" id="requestReanalysisModalOverlay" hidden>
-        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="requestReanalysisModalTitle">
+        <div class="modal modal--reanalysis" role="dialog" aria-modal="true" aria-labelledby="requestReanalysisModalTitle">
             <div class="modal-header">
-                <h2 class="modal-title" id="requestReanalysisModalTitle">Solicitar Reanálise da Ficha #<span id="requestReanalysisModalFormId"></span>
-                </h2>
+                <div class="rr-header-text">
+                    <h2 class="modal-title" id="requestReanalysisModalTitle">Solicitar reanálise</h2>
+                    <p class="rr-header-sub">Ficha #<span id="requestReanalysisModalFormId"></span>, reprovada pela gerência</p>
+                </div>
                 <button type="button" class="modal-close" id="requestReanalysisModalClose" aria-label="Fechar">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                         <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
@@ -376,39 +378,66 @@
                 </button>
             </div>
 
-            <div class="modal-body">
-                <section class="modal-section">
-                    <h3 class="form-section-title">Beneficiário</h3>
-                    <p class="form-card-description" id="requestReanalysisBeneficiaryName"></p>
+            <div class="modal-body rr-body">
+                <!-- motivo da reprova: é o que o consultor precisa responder, por isso vem primeiro.
+                     Preenchido pelo requestReanalysisModal.js a partir do GET /details -->
+                <section class="rr-verdict" aria-labelledby="rrVerdictTitle" aria-live="polite">
+                    <div class="rr-verdict-head">
+                        <svg class="rr-verdict-icon" width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                            <circle cx="8" cy="8" r="6.3" stroke="currentColor" stroke-width="1.4"/>
+                            <path d="M8 4.8v3.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle cx="8" cy="11" r="0.9" fill="currentColor"/>
+                        </svg>
+                        <h3 class="rr-verdict-title" id="rrVerdictTitle">Motivo da reprova</h3>
+                    </div>
+                    <div class="rr-verdict-content" id="requestReanalysisReason"></div>
                 </section>
 
-                <section class="modal-section">
-                    <h3 class="form-section-title">Dados da Reanálise</h3>
+                <!-- resumo do beneficiário, montado a partir da linha da tabela e atualizado com o /details -->
+                <aside class="rr-beneficiary" id="requestReanalysisBeneficiary" aria-label="Dados do beneficiário"></aside>
 
-                    <form id="requestReanalysisForm" class="form-grid">
+                <div class="rr-main">
+                    <!-- solicitações anteriores desta ficha na gerência; fica oculto se não houver -->
+                    <details class="rr-history" id="requestReanalysisHistory" hidden>
+                        <summary class="rr-history-summary" id="requestReanalysisHistorySummary"></summary>
+                        <ol class="rr-history-list" id="requestReanalysisHistoryList"></ol>
+                    </details>
+
+                    <form id="requestReanalysisForm" class="rr-form" novalidate>
                         <!-- ID do usuário logado, ou seja, quem está solicitando a reanálise -->
                         <input type="hidden" id="reanalysis_requester_id" name="requester_id">
 
-                        <div class="form-group full-width">
-                            <label class="form-label" for="reanalysisObservation">Observações da solicitação</label>
-                            <textarea class="textarea" id="reanalysisObservation" name="reanalysis_observation"
-                                placeholder="Descreva o motivo da reanálise e as informações complementares para a gerência..."
+                        <div class="rr-field">
+                            <label class="form-label required" for="reanalysisObservation">Sua resposta à gerência</label>
+                            <p class="rr-field-hint" id="reanalysisObservationHint">Explique o que mudou desde a reprova ou o que a gerência deve considerar nesta nova análise.</p>
+                            <textarea class="textarea rr-textarea" id="reanalysisObservation" name="reanalysis_observation"
+                                aria-describedby="reanalysisObservationHint reanalysisObservationError"
                                 required></textarea>
+                            <p class="rr-field-error" id="reanalysisObservationError" hidden>Escreva a resposta à gerência para solicitar a reanálise.</p>
                         </div>
 
-                        <div class="form-group full-width">
-                            <label class="form-label" for="reanalysisMedicalReport">Laudo médico (opcional)</label>
-                            <input id="reanalysisMedicalReport" class="input" name="medical_report" type="file" multiple
-                                accept=".pdf,.jpg,.jpeg,.png">
+                        <div class="rr-field">
+                            <span class="form-label" id="reanalysisMedicalReportLabel">Laudos médicos <span class="rr-optional">(opcional)</span></span>
+                            <label class="rr-dropzone" for="reanalysisMedicalReport" id="reanalysisDropzone">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M12 15V4m0 0L8 8m4-4l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                </svg>
+                                <span class="rr-dropzone-text"><strong>Escolha os arquivos</strong> ou arraste para cá</span>
+                                <span class="rr-dropzone-hint">PDF, JPG ou PNG</span>
+                            </label>
+                            <input id="reanalysisMedicalReport" class="rr-file-input" name="medical_report" type="file" multiple
+                                accept=".pdf,.jpg,.jpeg,.png" aria-labelledby="reanalysisMedicalReportLabel">
+                            <ul class="rr-file-list" id="reanalysisFileList" hidden></ul>
                         </div>
                     </form>
-                </section>
+                </div>
             </div>
 
             <div class="modal-footer">
                 <button type="button" class="btn btn--ghost" id="requestReanalysisModalCancel">Cancelar</button>
                 <button form="requestReanalysisForm" type="submit" class="btn btn--primary"
-                    id="requestReanalysisModalSubmit">Solicitar Reanálise</button>
+                    id="requestReanalysisModalSubmit">Solicitar reanálise</button>
             </div>
         </div>
     </div>

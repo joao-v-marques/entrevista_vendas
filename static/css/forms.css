@@ -958,6 +958,460 @@
   color: var(--color-on-brand);
 }
 
+/* ---------- Modal: Solicitar Reanálise da gerência (rejected_management_forms.html) ----------
+   O consultor abre este modal para responder a uma reprova, então o motivo escrito pela
+   gerência é a peça principal: vem no topo, em tipo maior, como citação. O beneficiário fica
+   numa coluna lateral de consulta e o formulário embaixo do motivo, na ordem de leitura.
+   Tudo escopado em .modal--reanalysis porque o mesmo id de overlay existe em outras telas. */
+.modal--reanalysis {
+  max-width: 960px;
+}
+
+.rr-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rr-header-sub {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.modal--reanalysis .rr-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  grid-template-areas:
+    "verdict aside"
+    "main    aside";
+  align-items: start;
+  gap: 1.5rem 1.75rem;
+}
+
+/* motivo da reprova */
+.rr-verdict {
+  grid-area: verdict;
+  padding: 1.1rem 1.35rem 1.2rem;
+  background: var(--red-50);
+  border-left: 4px solid var(--red-500);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+.rr-verdict-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.6rem;
+  color: var(--red-700);
+}
+
+.rr-verdict-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rr-verdict-quote {
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: var(--gray-800);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 68ch;
+}
+
+.rr-verdict-quote--empty {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.rr-verdict-author {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.4rem;
+  margin-top: 0.75rem;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--red-700);
+}
+
+.rr-verdict-date {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.rr-verdict-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.rr-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 4px 0;
+}
+
+.rr-skeleton-line {
+  display: block;
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--red-100) 0%, color-mix(in srgb, var(--red-100) 45%, transparent) 50%, var(--red-100) 100%);
+  background-size: 200% 100%;
+  animation: rr-shimmer 1.2s linear infinite;
+}
+
+.rr-skeleton-line--short {
+  width: 55%;
+}
+
+@keyframes rr-shimmer {
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rr-skeleton-line { animation: none; }
+}
+
+/* resumo do beneficiário */
+.rr-beneficiary {
+  grid-area: aside;
+  position: sticky;
+  top: 0;
+  padding: 1.15rem 1.2rem;
+  background: var(--gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+
+.rr-ben-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rr-ben-name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--gray-800);
+  overflow-wrap: anywhere;
+}
+
+.rr-ben-cpf {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rr-ben-type {
+  margin-top: 0.5rem;
+}
+
+.rr-ben-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.rr-ben-row {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.rr-ben-row:last-child {
+  border-bottom: none;
+}
+
+.rr-ben-row dt {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  padding-top: 1px;
+}
+
+.rr-ben-row dd {
+  display: flex;
+  flex-direction: column;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.rr-ben-sub {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.rr-ben-tags {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* coluna principal: histórico + formulário */
+.rr-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.rr-history {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.rr-history-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.7rem 1rem;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  list-style: none;
+  border-radius: var(--radius-md);
+}
+
+.rr-history-summary::-webkit-details-marker {
+  display: none;
+}
+
+.rr-history-summary::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform var(--transition);
+  flex-shrink: 0;
+}
+
+.rr-history[open] .rr-history-summary::before {
+  transform: rotate(45deg);
+}
+
+.rr-history-summary:hover {
+  background: var(--gray-50);
+}
+
+.rr-history-summary:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+.rr-history-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem 0.5rem;
+}
+
+.rr-history-item {
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.rr-history-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 0.75rem;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.rr-history-text {
+  margin-top: 2px;
+  font-size: 13.5px;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rr-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.rr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rr-field-hint {
+  margin-top: -2px;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.rr-textarea {
+  min-height: 132px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.rr-field-error {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--red-700);
+}
+
+.rr-optional {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* o input de arquivo real fica escondido, mas focável; quem aparece é a área de soltar */
+.rr-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rr-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 1.15rem 1rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--color-bg-surface);
+  border: 1.5px dashed var(--gray-300);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), color var(--transition);
+}
+
+.rr-dropzone svg {
+  margin-bottom: 2px;
+}
+
+.rr-dropzone-text {
+  font-size: 13.5px;
+  color: var(--color-text);
+}
+
+.rr-dropzone-text strong {
+  font-weight: 600;
+  color: var(--color-brand);
+}
+
+.rr-dropzone-hint {
+  font-size: 12px;
+}
+
+.rr-dropzone:hover,
+.rr-dropzone.is-dragging {
+  border-color: var(--color-brand);
+  background: var(--green-50);
+  color: var(--color-brand);
+}
+
+.rr-field:has(.rr-file-input:focus-visible) .rr-dropzone {
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.rr-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rr-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  background: var(--gray-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.rr-file svg {
+  flex-shrink: 0;
+}
+
+.rr-file-name {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rr-file-size {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.rr-file-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition), color var(--transition);
+}
+
+.rr-file-remove:hover {
+  background: var(--red-50);
+  color: var(--red-700);
+}
+
+.rr-file-remove:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 1px;
+}
+
+@media (max-width: 760px) {
+  .modal--reanalysis .rr-body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "verdict"
+      "aside"
+      "main";
+    gap: 1.25rem;
+  }
+
+  .rr-beneficiary {
+    position: static;
+  }
+
+  .rr-verdict-quote {
+    font-size: 15.5px;
+  }
+}
+
 /* ---------- Modal: Documento Assinado (entrevistas realizadas) ---------- */
 /* .modal-body é display:flex e as peças abaixo também declaram display, o que venceria o hidden */
 #uploadSignedDocumentModalOverlay [hidden] {
