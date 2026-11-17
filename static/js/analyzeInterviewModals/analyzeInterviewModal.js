@@ -18,6 +18,12 @@ const cancelButton = document.getElementById("analyzeInterviewModalCancel");
 const submitButton = document.getElementById("analyzeInterviewModalSubmit");
 const applicationFormIdInput = document.getElementById("analyze_interview_application_form_id");
 const interviewerIdInput = document.getElementById("analyze_interview_interviewer_id");
+
+// modal de confirmação final, aberto só depois que todas as validações abaixo passarem
+const finalizeOverlay = document.getElementById("finalizeAnalysisModalOverlay");
+const finalizeCloseButton = document.getElementById("finalizeAnalysisModalClose");
+const finalizeBackButton = document.getElementById("finalizeAnalysisModalBack");
+const finalizeConfirmButton = document.getElementById("finalizeAnalysisModalConfirm");
 const observationTextarea = document.getElementById("interviewObservation");
 const observationPresets = document.getElementById("interviewObservationPresets");
 const qualifyGroupsContainer = document.getElementById("qualifyInterviewGroups");
@@ -41,9 +47,20 @@ const QUALIFY_ITEM_LABELS = new Map(
     QUALIFY_INTERVIEW_GROUPS.flatMap(group => group.items.map(item => [item.key, item.label]))
 );
 
+// dados da análise já validados, aguardando a confirmação do modal de finalização
+let pendingAnalysisData = null;
+
 function closeModal() {
     overlay.hidden = true;
+    finalizeOverlay.hidden = true;
+    pendingAnalysisData = null;
     syncBodyScrollLock();
+}
+
+// o modal de confirmação fica sobreposto ao de análise, que continua aberto por baixo
+// (com tudo preenchido) caso o usuário escolha voltar
+function closeFinalizeModal() {
+    finalizeOverlay.hidden = true;
 }
 
 // anexa (ou remove) a frase pré-definida como uma linha própria das observações,
@@ -374,6 +391,8 @@ export function openAnalyzeInterviewModal(applicationForm) {
     resetQualifyInterviewUI();
     orientadorGroup.classList.remove("choice-group--missing");
     parecerGroup.classList.remove("choice-group--missing");
+    finalizeOverlay.hidden = true;
+    pendingAnalysisData = null;
 
     // preenche os campos ocultos que vão junto no envio pro backend
     applicationFormIdInput.value = applicationForm.id;
@@ -494,58 +513,73 @@ function submitForm() {
             beneficiary_comments: beneficiaryCommentsTextarea.value.trim(),
         };
 
-        // trava o botão durante o envio: a constraint UNIQUE já barra a duplicata no banco,
-        // isso só evita que um duplo clique vire um 409 desnecessário na cara do usuário
-        setSubmitLoading(submitButton, true);
+        // só depois de passar por todas as validações acima é que pedimos a confirmação
+        // final — dá chance do entrevistador voltar e revisar o questionário com o
+        // beneficiário antes de realmente enviar
+        pendingAnalysisData = data;
+        finalizeOverlay.hidden = false;
+    });
+}
 
-        try {
-            const response = await fetchWithAuth("/entrevista-adesao/application-form-interviews", {
-                method: "PUT",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
+// envia de fato a análise já confirmada no modal de finalização
+async function sendAnalysis(data) {
+    // trava o botão durante o envio: a constraint UNIQUE já barra a duplicata no banco,
+    // isso só evita que um duplo clique vire um 409 desnecessário na cara do usuário
+    setSubmitLoading(finalizeConfirmButton, true);
 
-            if (!response.ok) {
-                const errorJSON = await response.json().catch(() => null);
-                const backendMessage = errorJSON?.message;
+    try {
+        const response = await fetchWithAuth("/entrevista-adesao/application-form-interviews", {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
 
-                // 409: a entrevista já foi analisada. O backend fez rollback, então nada foi
-                // gravado em duplicidade — mas insistir aqui não leva a lugar nenhum, então
-                // fechamos o modal e recarregamos a tabela pra linha sair da lista
-                if (response.status === 409) {
-                    notyf.error(backendMessage || "Esta entrevista já foi analisada.");
-                    closeModal();
-                    await populateAnalyzeInterviewTable();
-                    return;
-                }
+        if (!response.ok) {
+            const errorJSON = await response.json().catch(() => null);
+            const backendMessage = errorJSON?.message;
 
-                // 400: mensagem de validação do backend, já escrita para o usuário. Mostra como
-                // veio e mantém o modal aberto, preservando tudo o que foi preenchido
-                if (response.status === 400) {
-                    notyf.error(backendMessage || "Dados inválidos na análise da entrevista.");
-                    return;
-                }
-
-                // 500 e afins: a mensagem é texto cru de Python/Postgres, não vai para a tela
-                console.error("Erro ao enviar a análise da entrevista:", response.status, backendMessage);
-                notyf.error("Houve um erro ao enviar a análise. Tente novamente.");
+            // 409: a entrevista já foi analisada. O backend fez rollback, então nada foi
+            // gravado em duplicidade — mas insistir aqui não leva a lugar nenhum, então
+            // fechamos os modais e recarregamos a tabela pra linha sair da lista
+            if (response.status === 409) {
+                notyf.error(backendMessage || "Esta entrevista já foi analisada.");
+                closeFinalizeModal();
+                closeModal();
+                await populateAnalyzeInterviewTable();
                 return;
             }
 
-            closeModal();
-            notyf.success("Análise da entrevista enviada com sucesso!");
-            await populateAnalyzeInterviewTable();
-        } catch (error) {
-            // falha de rede ou erro ao processar a resposta
-            console.error("Erro ao enviar a análise da entrevista:", error);
+            // 400: mensagem de validação do backend, já escrita para o usuário. Mostra como
+            // veio, fecha a confirmação e mantém o modal de análise aberto, preservando tudo
+            // o que foi preenchido
+            if (response.status === 400) {
+                notyf.error(backendMessage || "Dados inválidos na análise da entrevista.");
+                closeFinalizeModal();
+                return;
+            }
+
+            // 500 e afins: a mensagem é texto cru de Python/Postgres, não vai para a tela
+            console.error("Erro ao enviar a análise da entrevista:", response.status, backendMessage);
             notyf.error("Houve um erro ao enviar a análise. Tente novamente.");
-        } finally {
-            // reabilita sempre, para que o usuário consiga tentar de novo depois de um erro
-            setSubmitLoading(submitButton, false);
+            closeFinalizeModal();
+            return;
         }
-    });
+
+        closeFinalizeModal();
+        closeModal();
+        notyf.success("Análise da entrevista enviada com sucesso!");
+        await populateAnalyzeInterviewTable();
+    } catch (error) {
+        // falha de rede ou erro ao processar a resposta
+        console.error("Erro ao enviar a análise da entrevista:", error);
+        notyf.error("Houve um erro ao enviar a análise. Tente novamente.");
+        closeFinalizeModal();
+    } finally {
+        // reabilita sempre, para que o usuário consiga tentar de novo depois de um erro
+        setSubmitLoading(finalizeConfirmButton, false);
+    }
 }
 
 observationPresets.addEventListener("change", (event) => {
@@ -558,8 +592,22 @@ observationTextarea.addEventListener("input", syncPresetsFromObservation);
 closeButton.addEventListener("click", closeModal);
 cancelButton.addEventListener("click", closeModal);
 bindOverlayDismiss(overlay, closeModal);
+
+finalizeCloseButton.addEventListener("click", closeFinalizeModal);
+finalizeBackButton.addEventListener("click", closeFinalizeModal);
+bindOverlayDismiss(finalizeOverlay, closeFinalizeModal);
+finalizeConfirmButton.addEventListener("click", () => {
+    if (pendingAnalysisData) sendAnalysis(pendingAnalysisData);
+});
+
 document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !overlay.hidden) closeModal();
+    if (event.key !== "Escape") return;
+    // fecha só o modal de cima: se a confirmação estiver aberta, o de análise continua
+    if (!finalizeOverlay.hidden) {
+        closeFinalizeModal();
+    } else if (!overlay.hidden) {
+        closeModal();
+    }
 });
 
 document.addEventListener("DOMContentLoaded", () => {

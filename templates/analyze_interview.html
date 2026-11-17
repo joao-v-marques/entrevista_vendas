@@ -535,6 +535,31 @@
         </div>
     </div>
 
+    <!-- ===== MODAL: CONFIRMAR FINALIZAÇÃO DA ENTREVISTA QUALIFICADA ===== -->
+    <div class="modal-overlay" id="finalizeAnalysisModalOverlay" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="finalizeAnalysisModalTitle">
+            <div class="modal-header">
+                <h2 class="modal-title" id="finalizeAnalysisModalTitle">Finalizar Entrevista Qualificada?</h2>
+                <button type="button" class="modal-close" id="finalizeAnalysisModalClose" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p class="modal-confirm-text">Você tem certeza que deseja finalizar a entrevista qualificada?</p>
+                <p class="modal-confirm-text">Confirme com o beneficiário se nenhuma doença preexistente ficou de fora do questionário. Se faltar algo, clique em "Voltar à Entrevista" e inclua a informação antes de enviar.</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" id="finalizeAnalysisModalBack">Voltar à Entrevista</button>
+                <button type="button" class="btn btn--primary" id="finalizeAnalysisModalConfirm">Confirmar e Finalizar</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="{{ url_for('static', filename='js/utils/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
