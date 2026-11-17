@@ -93,6 +93,7 @@ class QualifyInterviewService:
                 is_meningite=to_bool(data.get('is_meningite')),
                 is_tuberculose=to_bool(data.get('is_tuberculose')),
                 is_hepatite=to_bool(data.get('is_hepatite')),
+                is_outros_infecciosas=to_bool(data.get('is_outros_infecciosas')),
 
                 # 2. Neoplasias malignas (câncer)
                 is_aparelho_digestivo_cancer=to_bool(data.get('is_aparelho_digestivo_cancer')),
@@ -105,21 +106,25 @@ class QualifyInterviewService:
                 is_pele=to_bool(data.get('is_pele')),
                 is_tireoide=to_bool(data.get('is_tireoide')),
                 is_trato_urinario_cancer=to_bool(data.get('is_trato_urinario_cancer')),
+                is_outros_neoplasias_malignas=to_bool(data.get('is_outros_neoplasias_malignas')),
 
                 # 3. Neoplasias benignas
                 is_tireoide_benigna=to_bool(data.get('is_tireoide_benigna')),
                 is_genitais_femininos_benigna=to_bool(data.get('is_genitais_femininos_benigna')),
+                is_outros_neoplasias_benignas=to_bool(data.get('is_outros_neoplasias_benignas')),
 
                 # 4. Doenças do sangue
                 is_anemia=to_bool(data.get('is_anemia')),
                 is_coagulacao_hemofilias=to_bool(data.get('is_coagulacao_hemofilias')),
                 is_purpura=to_bool(data.get('is_purpura')),
+                is_outros_sangue=to_bool(data.get('is_outros_sangue')),
 
                 # 5. Doenças endócrinas e relacionadas
                 is_diabetes=to_bool(data.get('is_diabetes')),
                 is_tireoide_endocrina=to_bool(data.get('is_tireoide_endocrina')),
                 is_hipofise=to_bool(data.get('is_hipofise')),
                 is_suprarrenal=to_bool(data.get('is_suprarrenal')),
+                is_outros_endocrinas=to_bool(data.get('is_outros_endocrinas')),
                 peso_kg=peso_kg,
                 altura_cm=altura_cm,
 
@@ -128,6 +133,7 @@ class QualifyInterviewService:
                 is_autismo=to_bool(data.get('is_autismo')),
                 is_depressao=to_bool(data.get('is_depressao')),
                 is_transtorno_identidade_sexual=to_bool(data.get('is_transtorno_identidade_sexual')),
+                is_outros_psiquiatricos=to_bool(data.get('is_outros_psiquiatricos')),
 
                 # 7. Doenças do sistema nervoso
                 is_avc=to_bool(data.get('is_avc')),
@@ -139,6 +145,7 @@ class QualifyInterviewService:
                 is_paralisias_polineuropatias=to_bool(data.get('is_paralisias_polineuropatias')),
                 is_parkinson=to_bool(data.get('is_parkinson')),
                 is_ame=to_bool(data.get('is_ame')),
+                is_outros_sistema_nervoso=to_bool(data.get('is_outros_sistema_nervoso')),
 
                 # 8. Doenças dos olhos e anexos
                 is_alteracao_retina=to_bool(data.get('is_alteracao_retina')),
@@ -153,6 +160,7 @@ class QualifyInterviewService:
                 is_pterigio=to_bool(data.get('is_pterigio')),
                 is_retinopatia_diabetica=to_bool(data.get('is_retinopatia_diabetica')),
                 is_presbiopia=to_bool(data.get('is_presbiopia')),
+                is_outros_olhos=to_bool(data.get('is_outros_olhos')),
 
                 # 9. Doenças do ouvido, nariz ou garganta
                 is_diminuicao_audicao=to_bool(data.get('is_diminuicao_audicao')),
@@ -161,6 +169,7 @@ class QualifyInterviewService:
                 is_rinite=to_bool(data.get('is_rinite')),
                 is_sinusite=to_bool(data.get('is_sinusite')),
                 is_problemas_adenoide=to_bool(data.get('is_problemas_adenoide')),
+                is_outros_ouvido_nariz_garganta=to_bool(data.get('is_outros_ouvido_nariz_garganta')),
 
                 # 10. Doenças do coração
                 is_angina_pectoris=to_bool(data.get('is_angina_pectoris')),
@@ -171,6 +180,7 @@ class QualifyInterviewService:
                 is_insuficiencia_cardiaca=to_bool(data.get('is_insuficiencia_cardiaca')),
                 is_insuficiencia_coronariana=to_bool(data.get('is_insuficiencia_coronariana')),
                 is_uso_marcapasso=to_bool(data.get('is_uso_marcapasso')),
+                is_outros_coracao=to_bool(data.get('is_outros_coracao')),
 
                 # 11. Doenças do sistema circulatório
                 is_aneurismas=to_bool(data.get('is_aneurismas')),
@@ -179,6 +189,7 @@ class QualifyInterviewService:
                 is_trombose_tromboflebite=to_bool(data.get('is_trombose_tromboflebite')),
                 is_ulcera_perna=to_bool(data.get('is_ulcera_perna')),
                 is_varizes=to_bool(data.get('is_varizes')),
+                is_outros_circulatorio=to_bool(data.get('is_outros_circulatorio')),
 
                 # 12. Doenças do sistema respiratório
                 is_apneia_sono=to_bool(data.get('is_apneia_sono')),
@@ -188,6 +199,7 @@ class QualifyInterviewService:
                 is_enfisema_dpoc=to_bool(data.get('is_enfisema_dpoc')),
                 is_fibrose_pulmonar=to_bool(data.get('is_fibrose_pulmonar')),
                 is_pneumonia=to_bool(data.get('is_pneumonia')),
+                is_outros_respiratorio=to_bool(data.get('is_outros_respiratorio')),
 
                 # 13. Doenças do sistema digestivo
                 is_cirrose_hepatica=to_bool(data.get('is_cirrose_hepatica')),
@@ -199,6 +211,7 @@ class QualifyInterviewService:
                 is_ulcera_peptica=to_bool(data.get('is_ulcera_peptica')),
                 is_hepatite_digestiva=to_bool(data.get('is_hepatite_digestiva')),
                 is_esteatose_hepatica=to_bool(data.get('is_esteatose_hepatica')),
+                is_outros_digestivo=to_bool(data.get('is_outros_digestivo')),
 
                 # 14. Hérnias
                 is_hernia_inguinal=to_bool(data.get('is_hernia_inguinal')),
@@ -206,11 +219,13 @@ class QualifyInterviewService:
                 is_hernia_umbilical=to_bool(data.get('is_hernia_umbilical')),
                 is_hernia_epigastrica=to_bool(data.get('is_hernia_epigastrica')),
                 is_hernia_incisional=to_bool(data.get('is_hernia_incisional')),
+                is_outros_hernias=to_bool(data.get('is_outros_hernias')),
 
                 # 15. Doenças da pele
                 is_tumores_pele=to_bool(data.get('is_tumores_pele')),
                 is_nodulos_cistos=to_bool(data.get('is_nodulos_cistos')),
                 is_queloide=to_bool(data.get('is_queloide')),
+                is_outros_pele=to_bool(data.get('is_outros_pele')),
 
                 # 16. Doenças osteomusculares e/ou da coluna
                 is_artrite=to_bool(data.get('is_artrite')),
@@ -227,6 +242,7 @@ class QualifyInterviewService:
                 is_reumatismo=to_bool(data.get('is_reumatismo')),
                 is_tendinite=to_bool(data.get('is_tendinite')),
                 is_dores_coluna=to_bool(data.get('is_dores_coluna')),
+                is_outros_osteomusculares=to_bool(data.get('is_outros_osteomusculares')),
 
                 # 17. Doenças do aparelho urinário
                 is_calculo_renal=to_bool(data.get('is_calculo_renal')),
@@ -234,6 +250,7 @@ class QualifyInterviewService:
                 is_insuficiencia_renal=to_bool(data.get('is_insuficiencia_renal')),
                 is_transplante_renal=to_bool(data.get('is_transplante_renal')),
                 is_nefrite_nefrose=to_bool(data.get('is_nefrite_nefrose')),
+                is_outros_urinario=to_bool(data.get('is_outros_urinario')),
 
                 # 18. Doenças do aparelho genital feminino
                 is_cisto_ovario=to_bool(data.get('is_cisto_ovario')),
@@ -242,6 +259,7 @@ class QualifyInterviewService:
                 is_nodulo_mamario=to_bool(data.get('is_nodulo_mamario')),
                 is_prolapso_uterino=to_bool(data.get('is_prolapso_uterino')),
                 is_ruptura_perineal=to_bool(data.get('is_ruptura_perineal')),
+                is_outros_genital_feminino=to_bool(data.get('is_outros_genital_feminino')),
 
                 # 19. Doenças do aparelho genital masculino
                 is_esterilidade=to_bool(data.get('is_esterilidade')),
@@ -251,6 +269,7 @@ class QualifyInterviewService:
                 is_impotencia_sexual=to_bool(data.get('is_impotencia_sexual')),
                 is_testiculo_alto=to_bool(data.get('is_testiculo_alto')),
                 is_varicocele=to_bool(data.get('is_varicocele')),
+                is_outros_genital_masculino=to_bool(data.get('is_outros_genital_masculino')),
 
                 # 20. Doenças bucomaxilo
                 is_micrognatia=to_bool(data.get('is_micrognatia')),
@@ -259,6 +278,7 @@ class QualifyInterviewService:
                 is_alteracao_atm=to_bool(data.get('is_alteracao_atm')),
                 is_ma_formacao_arcada_dentaria=to_bool(data.get('is_ma_formacao_arcada_dentaria')),
                 is_uso_aparelho_ortodontico=to_bool(data.get('is_uso_aparelho_ortodontico')),
+                is_outros_bucomaxilar=to_bool(data.get('is_outros_bucomaxilar')),
 
                 # 21 a 27. Perguntas gerais
                 is_traumatismos_fraturas=to_bool(data.get('is_traumatismos_fraturas')),
