@@ -114,6 +114,14 @@ function renderCptObservation() {
         .filter(input => !input.hidden && input.value.trim())
         .map(input => `${QUALIFY_ITEM_LABELS.get(input.dataset.specificationFor)}: ${input.value.trim()}`);
 
+    // obesidade (qualquer grau) vem do IMC, não de uma pergunta: entra como linha solta, que o PDF
+    // desenha na caixa da CPT junto do texto adicional (InterviewDocumentService._texto_adicional_cpt)
+    const obesity = getObesityLabel();
+    if (obesity) {
+        if (lines.length > 0) lines.push("");
+        lines.push(obesity);
+    }
+
     const comments = beneficiaryCommentsTextarea.value.trim();
     if (commentsToCptCheckbox.checked && comments) {
         if (lines.length > 0) lines.push("");
@@ -202,22 +210,34 @@ function buildImcRow() {
     return row;
 }
 
+// IMC a partir das medidas digitadas no modal; null enquanto peso ou altura estiverem vazios
+function computeImc() {
+    const pesoKg = Number(qualifyGroupsContainer.querySelector('input[name="peso_kg"]')?.value);
+    const alturaCm = Number(qualifyGroupsContainer.querySelector('input[name="altura_cm"]')?.value);
+
+    if (!pesoKg || !alturaCm) return null;
+
+    const alturaM = alturaCm / 100;
+    return pesoKg / (alturaM * alturaM);
+}
+
+// "Obesidade Grau I/II/III" quando o IMC indicar obesidade, senão null
+function getObesityLabel() {
+    const imc = computeImc();
+    if (imc === null) return null;
+
+    const label = classifyImc(imc);
+    return label.startsWith("Obesidade") ? label : null;
+}
+
 function updateImcDisplay() {
     const imcLabel = document.getElementById("qualifyImcValue");
     if (!imcLabel) return;
 
-    const pesoKg = Number(qualifyGroupsContainer.querySelector('input[name="peso_kg"]')?.value);
-    const alturaCm = Number(qualifyGroupsContainer.querySelector('input[name="altura_cm"]')?.value);
-
-    if (!pesoKg || !alturaCm) {
-        imcLabel.textContent = "—";
-        return;
-    }
-
-    const alturaM = alturaCm / 100;
-    const imc = pesoKg / (alturaM * alturaM);
-
-    imcLabel.textContent = `${imc.toFixed(1).replace(".", ",")} — ${classifyImc(imc)}`;
+    const imc = computeImc();
+    imcLabel.textContent = imc === null
+        ? "—"
+        : `${imc.toFixed(1).replace(".", ",")} — ${classifyImc(imc)}`;
 }
 
 function renderQualifyInterviewGroups() {
@@ -249,8 +269,10 @@ function updateOverallProgress() {
 
 // ---------- Parecer da Unimed ----------
 
+// doenças marcadas "Sim" + obesidade pelo IMC, que também é preexistência para o parecer
 function countDeclaredConditions() {
-    return qualifyGroupsContainer.querySelectorAll('.qualify-item-toggle input[value="true"]:checked').length;
+    const declared = qualifyGroupsContainer.querySelectorAll('.qualify-item-toggle input[value="true"]:checked').length;
+    return declared + (getObesityLabel() ? 1 : 0);
 }
 
 // libera só os pareceres coerentes com o questionário: sem nenhuma doença marcada "Sim" não faz
@@ -356,6 +378,9 @@ qualifyGroupsContainer.addEventListener("input", (event) => {
         updateImcDisplay();
         updateGroupProgress(row.closest(".qualify-group"));
         updateOverallProgress();
+        // a obesidade depende das medidas: muda a CPT e os pareceres disponíveis
+        renderCptObservation();
+        updateParecerOptions();
         return;
     }
 
