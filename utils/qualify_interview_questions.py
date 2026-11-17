@@ -10,6 +10,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_meningite', "label": 'Meningite?', "document_label": 'Meningite?'},
             {"key": 'is_tuberculose', "label": 'Tuberculose?', "document_label": 'Tuberculose?'},
             {"key": 'is_hepatite', "label": 'Hepatite?', "document_label": 'Hepatite?'},
+            {"key": 'is_outros_infecciosas', "label": 'Outras doenças infecciosas ou parasitárias?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -27,6 +28,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_pele', "label": 'Pele?', "document_label": 'Pele?'},
             {"key": 'is_tireoide', "label": 'Tireóide (câncer)?', "document_label": 'Tireóide?'},
             {"key": 'is_trato_urinario_cancer', "label": 'Trato urinário (rins, bexiga, outros)?', "document_label": 'Trato urinário (rins, bexiga, outros)?'},
+            {"key": 'is_outros_neoplasias_malignas', "label": 'Outras neoplasias malignas (câncer)?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -36,6 +38,7 @@ QUALIFY_INTERVIEW_GROUPS = [
         "items": [
             {"key": 'is_tireoide_benigna', "label": 'Tireóide (nódulo benigno)?', "document_label": 'Tireoide?'},
             {"key": 'is_genitais_femininos_benigna', "label": 'Órgãos genitais femininos (tumor benigno) - útero, ovário, outros?', "document_label": 'Órgãos genitais femininos (útero, ovário, outros)?'},
+            {"key": 'is_outros_neoplasias_benignas', "label": 'Outras neoplasias benignas?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -46,6 +49,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_anemia', "label": 'Anemia?', "document_label": 'Anemia?'},
             {"key": 'is_coagulacao_hemofilias', "label": 'Doenças da coagulação ou hemofilias?', "document_label": 'Doenças da coagulação ou hemofilias?'},
             {"key": 'is_purpura', "label": 'Púrpura?', "document_label": 'Púrpura?'},
+            {"key": 'is_outros_sangue', "label": 'Outras doenças do sangue?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -57,6 +61,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_tireoide_endocrina', "label": 'Distúrbio de tireóide?', "document_label": 'Tireóide?'},
             {"key": 'is_hipofise', "label": 'Distúrbio de hipófise?', "document_label": 'Hipófise?'},
             {"key": 'is_suprarrenal', "label": 'Distúrbio de supra renal?', "document_label": 'Supra renal?'},
+            {"key": 'is_outros_endocrinas', "label": 'Outras doenças endócrinas e relacionadas?', "document_label": 'Outros?'},
             {"key": 'peso_kg', "label": 'Peso', "document_label": 'Especifique o seu peso Kg', "type": 'measure', "unit": 'kg'},
             {"key": 'altura_cm', "label": 'Altura', "document_label": 'Especifique a sua altura m cm', "type": 'measure', "unit": 'cm'},
             {"key": 'idade', "document_label": 'Qual a sua idade', "type": 'computed'},
@@ -72,6 +77,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_autismo', "label": 'Autismo?', "document_label": 'Autismo?'},
             {"key": 'is_depressao', "label": 'Depressão?', "document_label": 'Depressão'},
             {"key": 'is_transtorno_identidade_sexual', "label": 'Possui diagnóstico de transtorno de identidade sexual?', "document_label": 'Possui diagnóstico Transtorno de identidade sexual. Se a resposta for positiva, está sendo acompanhado em atenção especializada no processo transexualizador?'},
+            {"key": 'is_outros_psiquiatricos', "label": 'Outros transtornos psiquiátricos, mentais ou de identidade sexual?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -88,6 +94,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_paralisias_polineuropatias', "label": 'Paralisias ou polineuropatias?', "document_label": 'Paralisias ou polineuropatias?'},
             {"key": 'is_parkinson', "label": 'Parkinson?', "document_label": 'Parkinson?'},
             {"key": 'is_ame', "label": 'Atrofia Muscular Espinhal (AME)?', "document_label": 'Possui Atrofia Muscular Espinhal (AME): doença neurológica progressiva que leva a perda de força, movimentos, capacidade de engolir e respirar'},
+            {"key": 'is_outros_sistema_nervoso', "label": 'Outras doenças do sistema nervoso?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -107,6 +114,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_pterigio', "label": 'Pterígio?', "document_label": 'Pterígio?'},
             {"key": 'is_retinopatia_diabetica', "label": 'Retinopatia diabética?', "document_label": 'Retinopatia diabética?'},
             {"key": 'is_presbiopia', "label": 'Presbiopia (queda da visão para perto)?', "document_label": 'Presbiopia? (Queda da visão para perto)'},
+            {"key": 'is_outros_olhos', "label": 'Outras doenças dos olhos e anexos?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -120,6 +128,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_rinite', "label": 'Rinite?', "document_label": 'Rinite?'},
             {"key": 'is_sinusite', "label": 'Sinusite?', "document_label": 'Sinusite?'},
             {"key": 'is_problemas_adenoide', "label": 'Problemas de adenoide, tumor, desvio de septo, pólipos?', "document_label": 'Problemas de adenóide, tumor, desvio de septo, pólipos?'},
+            {"key": 'is_outros_ouvido_nariz_garganta', "label": 'Outras doenças do ouvido, nariz ou garganta?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -135,6 +144,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_insuficiencia_cardiaca', "label": 'Insuficiência cardíaca?', "document_label": 'Insuficiência cardíaca?'},
             {"key": 'is_insuficiencia_coronariana', "label": 'Insuficiência coronariana?', "document_label": 'Insuficiência coronariana?'},
             {"key": 'is_uso_marcapasso', "label": 'Uso de marca-passo?', "document_label": 'Uso de marcapasso'},
+            {"key": 'is_outros_coracao', "label": 'Outras doenças do coração?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -148,6 +158,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_trombose_tromboflebite', "label": 'Trombose ou tromboflebite?', "document_label": 'Trombose ou Trombo flebites?'},
             {"key": 'is_ulcera_perna', "label": 'Úlcera de perna?', "document_label": 'Úlcera de perna?'},
             {"key": 'is_varizes', "label": 'Varizes de membros inferiores ou microvarizes?', "document_label": 'Varizes de membros inferiores ou Micro varizes?'},
+            {"key": 'is_outros_circulatorio', "label": 'Outras doenças do sistema circulatório?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -162,6 +173,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_enfisema_dpoc', "label": 'Enfisema (DPOC)?', "document_label": 'Enfisema?(DPOC)'},
             {"key": 'is_fibrose_pulmonar', "label": 'Fibrose pulmonar?', "document_label": 'Fibrose pulmonar?'},
             {"key": 'is_pneumonia', "label": 'Pneumonia?', "document_label": 'Pneumonia?'},
+            {"key": 'is_outros_respiratorio', "label": 'Outras doenças do sistema respiratório?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -178,6 +190,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_ulcera_peptica', "label": 'Úlcera péptica?', "document_label": 'Úlcera péptica?'},
             {"key": 'is_hepatite_digestiva', "label": 'Hepatites (doença digestiva)?', "document_label": 'Hepatites?'},
             {"key": 'is_esteatose_hepatica', "label": 'Esteatose hepática?', "document_label": 'Esteatose Hepática'},
+            {"key": 'is_outros_digestivo', "label": 'Outras doenças do sistema digestivo?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -190,6 +203,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_hernia_umbilical', "label": 'Umbilical?', "document_label": 'Umbilical?'},
             {"key": 'is_hernia_epigastrica', "label": 'Epigástrica?', "document_label": 'Epigástrica?'},
             {"key": 'is_hernia_incisional', "label": 'Incisional?', "document_label": 'Incisional?'},
+            {"key": 'is_outros_hernias', "label": 'Outros tipos de hérnia?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -200,6 +214,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_tumores_pele', "label": 'Tumores?', "document_label": 'Tumores?'},
             {"key": 'is_nodulos_cistos', "label": 'Nódulos ou cistos?', "document_label": 'Nódulos ou cistos?'},
             {"key": 'is_queloide', "label": 'Quelóide?', "document_label": 'Quelóide?'},
+            {"key": 'is_outros_pele', "label": 'Outras doenças da pele?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -221,6 +236,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_reumatismo', "label": 'Reumatismo?', "document_label": 'Reumatismo?'},
             {"key": 'is_tendinite', "label": 'Tendinite?', "document_label": 'Tendinite?'},
             {"key": 'is_dores_coluna', "label": 'Dores na coluna (lombociatalgia ou outras dores cervical/torácica)?', "document_label": 'Dores na coluna? Lombociatalgia ou outras dores de coluna cervical ou torácica?'},
+            {"key": 'is_outros_osteomusculares', "label": 'Outras doenças osteomusculares e/ou da coluna?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -233,6 +249,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_insuficiencia_renal', "label": 'Insuficiência renal (aguda ou crônica)?', "document_label": 'Insuficiência renal? ( )Aguda ( ) Crônica'},
             {"key": 'is_transplante_renal', "label": 'Necessidade de transplante renal?', "document_label": 'Necessidade de transplante renal?'},
             {"key": 'is_nefrite_nefrose', "label": 'Nefrite ou nefrose?', "document_label": 'Nefrite ou nefrose ?'},
+            {"key": 'is_outros_urinario', "label": 'Outras doenças do aparelho urinário?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -246,6 +263,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_nodulo_mamario', "label": 'Nódulo mamário?', "document_label": 'Nódulo mamário?'},
             {"key": 'is_prolapso_uterino', "label": 'Prolapso uterino?', "document_label": 'Prolapso uterino?'},
             {"key": 'is_ruptura_perineal', "label": 'Ruptura perineal ou outras?', "document_label": 'Ruptura perineal ou outras?'},
+            {"key": 'is_outros_genital_feminino', "label": 'Outras doenças do aparelho genital feminino?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -260,6 +278,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_impotencia_sexual', "label": 'Impotência sexual?', "document_label": 'Impotência Sexual?'},
             {"key": 'is_testiculo_alto', "label": 'Testículo alto (fora da bolsa escrotal)?', "document_label": 'Testículo alto? (fora da bolsa escrotal)'},
             {"key": 'is_varicocele', "label": 'Varicocele?', "document_label": 'Varicocele?'},
+            {"key": 'is_outros_genital_masculino', "label": 'Outras doenças do aparelho genital masculino?', "document_label": 'Outros?'},
         ],
     },
     {
@@ -273,6 +292,7 @@ QUALIFY_INTERVIEW_GROUPS = [
             {"key": 'is_alteracao_atm', "label": 'Alteração da articulação temporomandibular (ATM)?', "document_label": 'Alteração da articulação temporomandibular (ATM)?'},
             {"key": 'is_ma_formacao_arcada_dentaria', "label": 'Má formação da arcada dentária?', "document_label": 'Má formação da arcada dentária?'},
             {"key": 'is_uso_aparelho_ortodontico', "label": 'Usou ou usa aparelho ortodôntico?', "document_label": 'Usou ou usa aparelho ortodôntico?'},
+            {"key": 'is_outros_bucomaxilar', "label": 'Outras doenças bucomaxilares?', "document_label": 'Outros?'},
         ],
     },
     {
