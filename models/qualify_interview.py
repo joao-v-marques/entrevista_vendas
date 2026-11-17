@@ -3,63 +3,63 @@ from database.connect_db import get_db_connection
 class QualifyInterview:
     def __init__(self, application_form_interview_id, inserted_by, escolha_medico_orientador, parecer_unimed, peso_kg, altura_cm,
                  # 1. Doenças infecciosas ou parasitárias
-                 is_hiv=False, is_chagas=False, is_hanseniase=False, is_meningite=False, is_tuberculose=False, is_hepatite=False,
+                 is_hiv=False, is_chagas=False, is_hanseniase=False, is_meningite=False, is_tuberculose=False, is_hepatite=False, is_outros_infecciosas=False,
                  # 2. Neoplasias malignas (câncer)
                  is_aparelho_digestivo_cancer=False, is_aparelho_respiratorio_cancer=False, is_leucemia=False, is_linfoma=False,
                  is_mama_cancer=False, is_genitais_femininos=False, is_genitais_masculinos=False, is_pele=False,
-                 is_tireoide=False, is_trato_urinario_cancer=False,
+                 is_tireoide=False, is_trato_urinario_cancer=False, is_outros_neoplasias_malignas=False,
                  # 3. Neoplasias benignas
-                 is_tireoide_benigna=False, is_genitais_femininos_benigna=False,
+                 is_tireoide_benigna=False, is_genitais_femininos_benigna=False, is_outros_neoplasias_benignas=False,
                  # 4. Doenças do sangue
-                 is_anemia=False, is_coagulacao_hemofilias=False, is_purpura=False,
+                 is_anemia=False, is_coagulacao_hemofilias=False, is_purpura=False, is_outros_sangue=False,
                  # 5. Doenças endócrinas e relacionadas
-                 is_diabetes=False, is_tireoide_endocrina=False, is_hipofise=False, is_suprarrenal=False,
+                 is_diabetes=False, is_tireoide_endocrina=False, is_hipofise=False, is_suprarrenal=False, is_outros_endocrinas=False,
                  # 6. Transtornos psiquiátricos, mentais ou de identidade sexual
-                 is_psicose_esquizofrenia=False, is_autismo=False, is_depressao=False, is_transtorno_identidade_sexual=False,
+                 is_psicose_esquizofrenia=False, is_autismo=False, is_depressao=False, is_transtorno_identidade_sexual=False, is_outros_psiquiatricos=False,
                  # 7. Doenças do sistema nervoso
                  is_avc=False, is_enxaqueca=False, is_alzheimer=False, is_epilepsia=False, is_esclerose_multipla=False,
-                 is_paralisia_cerebral=False, is_paralisias_polineuropatias=False, is_parkinson=False, is_ame=False,
+                 is_paralisia_cerebral=False, is_paralisias_polineuropatias=False, is_parkinson=False, is_ame=False, is_outros_sistema_nervoso=False,
                  # 8. Doenças dos olhos e anexos
                  is_alteracao_retina=False, is_astigmatismo=False, is_catarata=False, is_ceratocone=False, is_estrabismo=False,
                  is_glaucoma=False, is_hipermetropia=False, is_miopia=False, is_transplante_cornea=False, is_pterigio=False,
-                 is_retinopatia_diabetica=False, is_presbiopia=False,
+                 is_retinopatia_diabetica=False, is_presbiopia=False, is_outros_olhos=False,
                  # 9. Doenças do ouvido, nariz ou garganta
                  is_diminuicao_audicao=False, is_hipertrofia_cornetos_amigdalas=False, is_labirintite=False, is_rinite=False,
-                 is_sinusite=False, is_problemas_adenoide=False,
+                 is_sinusite=False, is_problemas_adenoide=False, is_outros_ouvido_nariz_garganta=False,
                  # 10. Doenças do coração
                  is_angina_pectoris=False, is_arritmia_cardiaca=False, is_disfuncao_valvulas=False, is_hipertensao_arterial=False,
-                 is_infarto_miocardio=False, is_insuficiencia_cardiaca=False, is_insuficiencia_coronariana=False, is_uso_marcapasso=False,
+                 is_infarto_miocardio=False, is_insuficiencia_cardiaca=False, is_insuficiencia_coronariana=False, is_uso_marcapasso=False, is_outros_coracao=False,
                  # 11. Doenças do sistema circulatório
                  is_aneurismas=False, is_hemorroidas=False, is_insuficiencia_arterial_periferica=False,
-                 is_trombose_tromboflebite=False, is_ulcera_perna=False, is_varizes=False,
+                 is_trombose_tromboflebite=False, is_ulcera_perna=False, is_varizes=False, is_outros_circulatorio=False,
                  # 12. Doenças do sistema respiratório
                  is_apneia_sono=False, is_asma=False, is_bronquiectasia=False, is_bronquite=False, is_enfisema_dpoc=False,
-                 is_fibrose_pulmonar=False, is_pneumonia=False,
+                 is_fibrose_pulmonar=False, is_pneumonia=False, is_outros_respiratorio=False,
                  # 13. Doenças do sistema digestivo
                  is_cirrose_hepatica=False, is_colelitiase=False, is_colite=False, is_doenca_diverticular=False,
                  is_doencas_pancreas=False, is_gastrite=False, is_ulcera_peptica=False, is_hepatite_digestiva=False,
-                 is_esteatose_hepatica=False,
+                 is_esteatose_hepatica=False, is_outros_digestivo=False,
                  # 14. Hérnias
                  is_hernia_inguinal=False, is_hernia_hiato=False, is_hernia_umbilical=False, is_hernia_epigastrica=False,
-                 is_hernia_incisional=False,
+                 is_hernia_incisional=False, is_outros_hernias=False,
                  # 15. Doenças da pele
-                 is_tumores_pele=False, is_nodulos_cistos=False, is_queloide=False,
+                 is_tumores_pele=False, is_nodulos_cistos=False, is_queloide=False, is_outros_pele=False,
                  # 16. Doenças osteomusculares e/ou da coluna
                  is_artrite=False, is_artrite_reumatoide=False, is_artrose=False, is_desvios_coluna=False, is_esclerodermia=False,
                  is_calos_osseos=False, is_sequelas_fraturas=False, is_hernia_disco=False, is_lupus=False, is_osteomielite=False,
-                 is_osteoporose=False, is_reumatismo=False, is_tendinite=False, is_dores_coluna=False,
+                 is_osteoporose=False, is_reumatismo=False, is_tendinite=False, is_dores_coluna=False, is_outros_osteomusculares=False,
                  # 17. Doenças do aparelho urinário
                  is_calculo_renal=False, is_incontinencia_urinaria=False, is_insuficiencia_renal=False,
-                 is_transplante_renal=False, is_nefrite_nefrose=False,
+                 is_transplante_renal=False, is_nefrite_nefrose=False, is_outros_urinario=False,
                  # 18. Doenças do aparelho genital feminino
                  is_cisto_ovario=False, is_endometriose=False, is_infertilidade_feminina=False, is_nodulo_mamario=False,
-                 is_prolapso_uterino=False, is_ruptura_perineal=False,
+                 is_prolapso_uterino=False, is_ruptura_perineal=False, is_outros_genital_feminino=False,
                  # 19. Doenças do aparelho genital masculino
                  is_esterilidade=False, is_fimose=False, is_hiperplasia_prostata=False, is_hipospadia=False,
-                 is_impotencia_sexual=False, is_testiculo_alto=False, is_varicocele=False,
+                 is_impotencia_sexual=False, is_testiculo_alto=False, is_varicocele=False, is_outros_genital_masculino=False,
                  # 20. Doenças bucomaxilo
                  is_micrognatia=False, is_prognatia=False, is_alteracao_maxila=False, is_alteracao_atm=False,
-                 is_ma_formacao_arcada_dentaria=False, is_uso_aparelho_ortodontico=False,
+                 is_ma_formacao_arcada_dentaria=False, is_uso_aparelho_ortodontico=False, is_outros_bucomaxilar=False,
                  # 21 a 27. Perguntas gerais
                  is_traumatismos_fraturas=False, is_sequelas_acidentes_congenitas=False, is_cirurgia_previa=False,
                  is_internacao_tratamento_outro=False, is_radioterapia_quimioterapia_dialise=False,
@@ -74,6 +74,7 @@ class QualifyInterview:
         self.is_meningite = is_meningite
         self.is_tuberculose = is_tuberculose
         self.is_hepatite = is_hepatite
+        self.is_outros_infecciosas = is_outros_infecciosas
 
         # 2. Neoplasias malignas (câncer)
         self.is_aparelho_digestivo_cancer = is_aparelho_digestivo_cancer
@@ -86,21 +87,25 @@ class QualifyInterview:
         self.is_pele = is_pele
         self.is_tireoide = is_tireoide
         self.is_trato_urinario_cancer = is_trato_urinario_cancer
+        self.is_outros_neoplasias_malignas = is_outros_neoplasias_malignas
 
         # 3. Neoplasias benignas
         self.is_tireoide_benigna = is_tireoide_benigna
         self.is_genitais_femininos_benigna = is_genitais_femininos_benigna
+        self.is_outros_neoplasias_benignas = is_outros_neoplasias_benignas
 
         # 4. Doenças do sangue
         self.is_anemia = is_anemia
         self.is_coagulacao_hemofilias = is_coagulacao_hemofilias
         self.is_purpura = is_purpura
+        self.is_outros_sangue = is_outros_sangue
 
         # 5. Doenças endócrinas e relacionadas
         self.is_diabetes = is_diabetes
         self.is_tireoide_endocrina = is_tireoide_endocrina
         self.is_hipofise = is_hipofise
         self.is_suprarrenal = is_suprarrenal
+        self.is_outros_endocrinas = is_outros_endocrinas
         self.peso_kg = peso_kg
         self.altura_cm = altura_cm
 
@@ -109,6 +114,7 @@ class QualifyInterview:
         self.is_autismo = is_autismo
         self.is_depressao = is_depressao
         self.is_transtorno_identidade_sexual = is_transtorno_identidade_sexual
+        self.is_outros_psiquiatricos = is_outros_psiquiatricos
 
         # 7. Doenças do sistema nervoso
         self.is_avc = is_avc
@@ -120,6 +126,7 @@ class QualifyInterview:
         self.is_paralisias_polineuropatias = is_paralisias_polineuropatias
         self.is_parkinson = is_parkinson
         self.is_ame = is_ame
+        self.is_outros_sistema_nervoso = is_outros_sistema_nervoso
 
         # 8. Doenças dos olhos e anexos
         self.is_alteracao_retina = is_alteracao_retina
@@ -134,6 +141,7 @@ class QualifyInterview:
         self.is_pterigio = is_pterigio
         self.is_retinopatia_diabetica = is_retinopatia_diabetica
         self.is_presbiopia = is_presbiopia
+        self.is_outros_olhos = is_outros_olhos
 
         # 9. Doenças do ouvido, nariz ou garganta
         self.is_diminuicao_audicao = is_diminuicao_audicao
@@ -142,6 +150,7 @@ class QualifyInterview:
         self.is_rinite = is_rinite
         self.is_sinusite = is_sinusite
         self.is_problemas_adenoide = is_problemas_adenoide
+        self.is_outros_ouvido_nariz_garganta = is_outros_ouvido_nariz_garganta
 
         # 10. Doenças do coração
         self.is_angina_pectoris = is_angina_pectoris
@@ -152,6 +161,7 @@ class QualifyInterview:
         self.is_insuficiencia_cardiaca = is_insuficiencia_cardiaca
         self.is_insuficiencia_coronariana = is_insuficiencia_coronariana
         self.is_uso_marcapasso = is_uso_marcapasso
+        self.is_outros_coracao = is_outros_coracao
 
         # 11. Doenças do sistema circulatório
         self.is_aneurismas = is_aneurismas
@@ -160,6 +170,7 @@ class QualifyInterview:
         self.is_trombose_tromboflebite = is_trombose_tromboflebite
         self.is_ulcera_perna = is_ulcera_perna
         self.is_varizes = is_varizes
+        self.is_outros_circulatorio = is_outros_circulatorio
 
         # 12. Doenças do sistema respiratório
         self.is_apneia_sono = is_apneia_sono
@@ -169,6 +180,7 @@ class QualifyInterview:
         self.is_enfisema_dpoc = is_enfisema_dpoc
         self.is_fibrose_pulmonar = is_fibrose_pulmonar
         self.is_pneumonia = is_pneumonia
+        self.is_outros_respiratorio = is_outros_respiratorio
 
         # 13. Doenças do sistema digestivo
         self.is_cirrose_hepatica = is_cirrose_hepatica
@@ -180,6 +192,7 @@ class QualifyInterview:
         self.is_ulcera_peptica = is_ulcera_peptica
         self.is_hepatite_digestiva = is_hepatite_digestiva
         self.is_esteatose_hepatica = is_esteatose_hepatica
+        self.is_outros_digestivo = is_outros_digestivo
 
         # 14. Hérnias
         self.is_hernia_inguinal = is_hernia_inguinal
@@ -187,11 +200,13 @@ class QualifyInterview:
         self.is_hernia_umbilical = is_hernia_umbilical
         self.is_hernia_epigastrica = is_hernia_epigastrica
         self.is_hernia_incisional = is_hernia_incisional
+        self.is_outros_hernias = is_outros_hernias
 
         # 15. Doenças da pele
         self.is_tumores_pele = is_tumores_pele
         self.is_nodulos_cistos = is_nodulos_cistos
         self.is_queloide = is_queloide
+        self.is_outros_pele = is_outros_pele
 
         # 16. Doenças osteomusculares e/ou da coluna
         self.is_artrite = is_artrite
@@ -208,6 +223,7 @@ class QualifyInterview:
         self.is_reumatismo = is_reumatismo
         self.is_tendinite = is_tendinite
         self.is_dores_coluna = is_dores_coluna
+        self.is_outros_osteomusculares = is_outros_osteomusculares
 
         # 17. Doenças do aparelho urinário
         self.is_calculo_renal = is_calculo_renal
@@ -215,6 +231,7 @@ class QualifyInterview:
         self.is_insuficiencia_renal = is_insuficiencia_renal
         self.is_transplante_renal = is_transplante_renal
         self.is_nefrite_nefrose = is_nefrite_nefrose
+        self.is_outros_urinario = is_outros_urinario
 
         # 18. Doenças do aparelho genital feminino
         self.is_cisto_ovario = is_cisto_ovario
@@ -223,6 +240,7 @@ class QualifyInterview:
         self.is_nodulo_mamario = is_nodulo_mamario
         self.is_prolapso_uterino = is_prolapso_uterino
         self.is_ruptura_perineal = is_ruptura_perineal
+        self.is_outros_genital_feminino = is_outros_genital_feminino
 
         # 19. Doenças do aparelho genital masculino
         self.is_esterilidade = is_esterilidade
@@ -232,6 +250,7 @@ class QualifyInterview:
         self.is_impotencia_sexual = is_impotencia_sexual
         self.is_testiculo_alto = is_testiculo_alto
         self.is_varicocele = is_varicocele
+        self.is_outros_genital_masculino = is_outros_genital_masculino
 
         # 20. Doenças bucomaxilo
         self.is_micrognatia = is_micrognatia
@@ -240,6 +259,7 @@ class QualifyInterview:
         self.is_alteracao_atm = is_alteracao_atm
         self.is_ma_formacao_arcada_dentaria = is_ma_formacao_arcada_dentaria
         self.is_uso_aparelho_ortodontico = is_uso_aparelho_ortodontico
+        self.is_outros_bucomaxilar = is_outros_bucomaxilar
 
         # 21 a 27. Perguntas gerais
         self.is_traumatismos_fraturas = is_traumatismos_fraturas
@@ -274,6 +294,7 @@ class QualifyInterview:
             "is_meningite": self.is_meningite,
             "is_tuberculose": self.is_tuberculose,
             "is_hepatite": self.is_hepatite,
+            "is_outros_infecciosas": self.is_outros_infecciosas,
 
             # 2. Neoplasias malignas (câncer)
             "is_aparelho_digestivo_cancer": self.is_aparelho_digestivo_cancer,
@@ -286,21 +307,25 @@ class QualifyInterview:
             "is_pele": self.is_pele,
             "is_tireoide": self.is_tireoide,
             "is_trato_urinario_cancer": self.is_trato_urinario_cancer,
+            "is_outros_neoplasias_malignas": self.is_outros_neoplasias_malignas,
 
             # 3. Neoplasias benignas
             "is_tireoide_benigna": self.is_tireoide_benigna,
             "is_genitais_femininos_benigna": self.is_genitais_femininos_benigna,
+            "is_outros_neoplasias_benignas": self.is_outros_neoplasias_benignas,
 
             # 4. Doenças do sangue
             "is_anemia": self.is_anemia,
             "is_coagulacao_hemofilias": self.is_coagulacao_hemofilias,
             "is_purpura": self.is_purpura,
+            "is_outros_sangue": self.is_outros_sangue,
 
             # 5. Doenças endócrinas e relacionadas
             "is_diabetes": self.is_diabetes,
             "is_tireoide_endocrina": self.is_tireoide_endocrina,
             "is_hipofise": self.is_hipofise,
             "is_suprarrenal": self.is_suprarrenal,
+            "is_outros_endocrinas": self.is_outros_endocrinas,
             "peso_kg": self.peso_kg,
             "altura_cm": self.altura_cm,
 
@@ -309,6 +334,7 @@ class QualifyInterview:
             "is_autismo": self.is_autismo,
             "is_depressao": self.is_depressao,
             "is_transtorno_identidade_sexual": self.is_transtorno_identidade_sexual,
+            "is_outros_psiquiatricos": self.is_outros_psiquiatricos,
 
             # 7. Doenças do sistema nervoso
             "is_avc": self.is_avc,
@@ -320,6 +346,7 @@ class QualifyInterview:
             "is_paralisias_polineuropatias": self.is_paralisias_polineuropatias,
             "is_parkinson": self.is_parkinson,
             "is_ame": self.is_ame,
+            "is_outros_sistema_nervoso": self.is_outros_sistema_nervoso,
 
             # 8. Doenças dos olhos e anexos
             "is_alteracao_retina": self.is_alteracao_retina,
@@ -334,6 +361,7 @@ class QualifyInterview:
             "is_pterigio": self.is_pterigio,
             "is_retinopatia_diabetica": self.is_retinopatia_diabetica,
             "is_presbiopia": self.is_presbiopia,
+            "is_outros_olhos": self.is_outros_olhos,
 
             # 9. Doenças do ouvido, nariz ou garganta
             "is_diminuicao_audicao": self.is_diminuicao_audicao,
@@ -342,6 +370,7 @@ class QualifyInterview:
             "is_rinite": self.is_rinite,
             "is_sinusite": self.is_sinusite,
             "is_problemas_adenoide": self.is_problemas_adenoide,
+            "is_outros_ouvido_nariz_garganta": self.is_outros_ouvido_nariz_garganta,
 
             # 10. Doenças do coração
             "is_angina_pectoris": self.is_angina_pectoris,
@@ -352,6 +381,7 @@ class QualifyInterview:
             "is_insuficiencia_cardiaca": self.is_insuficiencia_cardiaca,
             "is_insuficiencia_coronariana": self.is_insuficiencia_coronariana,
             "is_uso_marcapasso": self.is_uso_marcapasso,
+            "is_outros_coracao": self.is_outros_coracao,
 
             # 11. Doenças do sistema circulatório
             "is_aneurismas": self.is_aneurismas,
@@ -360,6 +390,7 @@ class QualifyInterview:
             "is_trombose_tromboflebite": self.is_trombose_tromboflebite,
             "is_ulcera_perna": self.is_ulcera_perna,
             "is_varizes": self.is_varizes,
+            "is_outros_circulatorio": self.is_outros_circulatorio,
 
             # 12. Doenças do sistema respiratório
             "is_apneia_sono": self.is_apneia_sono,
@@ -369,6 +400,7 @@ class QualifyInterview:
             "is_enfisema_dpoc": self.is_enfisema_dpoc,
             "is_fibrose_pulmonar": self.is_fibrose_pulmonar,
             "is_pneumonia": self.is_pneumonia,
+            "is_outros_respiratorio": self.is_outros_respiratorio,
 
             # 13. Doenças do sistema digestivo
             "is_cirrose_hepatica": self.is_cirrose_hepatica,
@@ -380,6 +412,7 @@ class QualifyInterview:
             "is_ulcera_peptica": self.is_ulcera_peptica,
             "is_hepatite_digestiva": self.is_hepatite_digestiva,
             "is_esteatose_hepatica": self.is_esteatose_hepatica,
+            "is_outros_digestivo": self.is_outros_digestivo,
 
             # 14. Hérnias
             "is_hernia_inguinal": self.is_hernia_inguinal,
@@ -387,11 +420,13 @@ class QualifyInterview:
             "is_hernia_umbilical": self.is_hernia_umbilical,
             "is_hernia_epigastrica": self.is_hernia_epigastrica,
             "is_hernia_incisional": self.is_hernia_incisional,
+            "is_outros_hernias": self.is_outros_hernias,
 
             # 15. Doenças da pele
             "is_tumores_pele": self.is_tumores_pele,
             "is_nodulos_cistos": self.is_nodulos_cistos,
             "is_queloide": self.is_queloide,
+            "is_outros_pele": self.is_outros_pele,
 
             # 16. Doenças osteomusculares e/ou da coluna
             "is_artrite": self.is_artrite,
@@ -408,6 +443,7 @@ class QualifyInterview:
             "is_reumatismo": self.is_reumatismo,
             "is_tendinite": self.is_tendinite,
             "is_dores_coluna": self.is_dores_coluna,
+            "is_outros_osteomusculares": self.is_outros_osteomusculares,
 
             # 17. Doenças do aparelho urinário
             "is_calculo_renal": self.is_calculo_renal,
@@ -415,6 +451,7 @@ class QualifyInterview:
             "is_insuficiencia_renal": self.is_insuficiencia_renal,
             "is_transplante_renal": self.is_transplante_renal,
             "is_nefrite_nefrose": self.is_nefrite_nefrose,
+            "is_outros_urinario": self.is_outros_urinario,
 
             # 18. Doenças do aparelho genital feminino
             "is_cisto_ovario": self.is_cisto_ovario,
@@ -423,6 +460,7 @@ class QualifyInterview:
             "is_nodulo_mamario": self.is_nodulo_mamario,
             "is_prolapso_uterino": self.is_prolapso_uterino,
             "is_ruptura_perineal": self.is_ruptura_perineal,
+            "is_outros_genital_feminino": self.is_outros_genital_feminino,
 
             # 19. Doenças do aparelho genital masculino
             "is_esterilidade": self.is_esterilidade,
@@ -432,6 +470,7 @@ class QualifyInterview:
             "is_impotencia_sexual": self.is_impotencia_sexual,
             "is_testiculo_alto": self.is_testiculo_alto,
             "is_varicocele": self.is_varicocele,
+            "is_outros_genital_masculino": self.is_outros_genital_masculino,
 
             # 20. Doenças bucomaxilo
             "is_micrognatia": self.is_micrognatia,
@@ -440,6 +479,7 @@ class QualifyInterview:
             "is_alteracao_atm": self.is_alteracao_atm,
             "is_ma_formacao_arcada_dentaria": self.is_ma_formacao_arcada_dentaria,
             "is_uso_aparelho_ortodontico": self.is_uso_aparelho_ortodontico,
+            "is_outros_bucomaxilar": self.is_outros_bucomaxilar,
 
             # 21 a 27. Perguntas gerais
             "is_traumatismos_fraturas": self.is_traumatismos_fraturas,
@@ -566,83 +606,83 @@ class QualifyInterviewModel:
         sql_query = """
             INSERT INTO qualify_interviews (
                 -- 1. Doenças infecciosas ou parasitárias
-                is_hiv, is_chagas, is_hanseniase, is_meningite, is_tuberculose, is_hepatite,
+                is_hiv, is_chagas, is_hanseniase, is_meningite, is_tuberculose, is_hepatite, is_outros_infecciosas,
 
                 -- 2. Neoplasias malignas (câncer)
                 is_aparelho_digestivo_cancer, is_aparelho_respiratorio_cancer, is_leucemia, is_linfoma,
                 is_mama_cancer, is_genitais_femininos, is_genitais_masculinos, is_pele, is_tireoide,
-                is_trato_urinario_cancer,
+                is_trato_urinario_cancer, is_outros_neoplasias_malignas,
 
                 -- 3. Neoplasias benignas
-                is_tireoide_benigna, is_genitais_femininos_benigna,
+                is_tireoide_benigna, is_genitais_femininos_benigna, is_outros_neoplasias_benignas,
 
                 -- 4. Doenças do sangue
-                is_anemia, is_coagulacao_hemofilias, is_purpura,
+                is_anemia, is_coagulacao_hemofilias, is_purpura, is_outros_sangue,
 
                 -- 5. Doenças endócrinas e relacionadas
-                is_diabetes, is_tireoide_endocrina, is_hipofise, is_suprarrenal, peso_kg, altura_cm,
+                is_diabetes, is_tireoide_endocrina, is_hipofise, is_suprarrenal, is_outros_endocrinas, peso_kg, altura_cm,
 
                 -- 6. Transtornos psiquiátricos, mentais ou de identidade sexual
-                is_psicose_esquizofrenia, is_autismo, is_depressao, is_transtorno_identidade_sexual,
+                is_psicose_esquizofrenia, is_autismo, is_depressao, is_transtorno_identidade_sexual, is_outros_psiquiatricos,
 
                 -- 7. Doenças do sistema nervoso
                 is_avc, is_enxaqueca, is_alzheimer, is_epilepsia, is_esclerose_multipla,
-                is_paralisia_cerebral, is_paralisias_polineuropatias, is_parkinson, is_ame,
+                is_paralisia_cerebral, is_paralisias_polineuropatias, is_parkinson, is_ame, is_outros_sistema_nervoso,
 
                 -- 8. Doenças dos olhos e anexos
                 is_alteracao_retina, is_astigmatismo, is_catarata, is_ceratocone, is_estrabismo,
                 is_glaucoma, is_hipermetropia, is_miopia, is_transplante_cornea, is_pterigio,
-                is_retinopatia_diabetica, is_presbiopia,
+                is_retinopatia_diabetica, is_presbiopia, is_outros_olhos,
 
                 -- 9. Doenças do ouvido, nariz ou garganta
                 is_diminuicao_audicao, is_hipertrofia_cornetos_amigdalas, is_labirintite, is_rinite,
-                is_sinusite, is_problemas_adenoide,
+                is_sinusite, is_problemas_adenoide, is_outros_ouvido_nariz_garganta,
 
                 -- 10. Doenças do coração
                 is_angina_pectoris, is_arritmia_cardiaca, is_disfuncao_valvulas, is_hipertensao_arterial,
                 is_infarto_miocardio, is_insuficiencia_cardiaca, is_insuficiencia_coronariana,
-                is_uso_marcapasso,
+                is_uso_marcapasso, is_outros_coracao,
 
                 -- 11. Doenças do sistema circulatório
                 is_aneurismas, is_hemorroidas, is_insuficiencia_arterial_periferica,
-                is_trombose_tromboflebite, is_ulcera_perna, is_varizes,
+                is_trombose_tromboflebite, is_ulcera_perna, is_varizes, is_outros_circulatorio,
 
                 -- 12. Doenças do sistema respiratório
                 is_apneia_sono, is_asma, is_bronquiectasia, is_bronquite, is_enfisema_dpoc,
-                is_fibrose_pulmonar, is_pneumonia,
+                is_fibrose_pulmonar, is_pneumonia, is_outros_respiratorio,
 
                 -- 13. Doenças do sistema digestivo
                 is_cirrose_hepatica, is_colelitiase, is_colite, is_doenca_diverticular,
                 is_doencas_pancreas, is_gastrite, is_ulcera_peptica, is_hepatite_digestiva,
-                is_esteatose_hepatica,
+                is_esteatose_hepatica, is_outros_digestivo,
 
                 -- 14. Hérnias
                 is_hernia_inguinal, is_hernia_hiato, is_hernia_umbilical, is_hernia_epigastrica,
-                is_hernia_incisional,
+                is_hernia_incisional, is_outros_hernias,
 
                 -- 15. Doenças da pele
-                is_tumores_pele, is_nodulos_cistos, is_queloide,
+                is_tumores_pele, is_nodulos_cistos, is_queloide, is_outros_pele,
 
                 -- 16. Doenças osteomusculares e/ou da coluna
                 is_artrite, is_artrite_reumatoide, is_artrose, is_desvios_coluna, is_esclerodermia,
                 is_calos_osseos, is_sequelas_fraturas, is_hernia_disco, is_lupus, is_osteomielite,
-                is_osteoporose, is_reumatismo, is_tendinite, is_dores_coluna,
+                is_osteoporose, is_reumatismo, is_tendinite, is_dores_coluna, is_outros_osteomusculares,
 
                 -- 17. Doenças do aparelho urinário
                 is_calculo_renal, is_incontinencia_urinaria, is_insuficiencia_renal, is_transplante_renal,
-                is_nefrite_nefrose,
+                is_nefrite_nefrose, is_outros_urinario,
 
                 -- 18. Doenças do aparelho genital feminino
                 is_cisto_ovario, is_endometriose, is_infertilidade_feminina, is_nodulo_mamario,
-                is_prolapso_uterino, is_ruptura_perineal,
+                is_prolapso_uterino, is_ruptura_perineal, is_outros_genital_feminino,
 
                 -- 19. Doenças do aparelho genital masculino
                 is_esterilidade, is_fimose, is_hiperplasia_prostata, is_hipospadia, is_impotencia_sexual,
-                is_testiculo_alto, is_varicocele,
+                is_testiculo_alto, is_varicocele, is_outros_genital_masculino,
 
                 -- 20. Doenças bucomaxilo
                 is_micrognatia, is_prognatia, is_alteracao_maxila, is_alteracao_atm,
-                is_ma_formacao_arcada_dentaria, is_uso_aparelho_ortodontico,
+                is_ma_formacao_arcada_dentaria, is_uso_aparelho_ortodontico, is_outros_bucomaxilar,
 
                 -- 21 a 27. Perguntas gerais
                 is_traumatismos_fraturas, is_sequelas_acidentes_congenitas, is_cirurgia_previa,
@@ -659,7 +699,8 @@ class QualifyInterviewModel:
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
                 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
-                %s, %s, %s, %s, %s, %s, %s, %s, %s
+                %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
             )
             RETURNING id, created_at
         """
@@ -671,6 +712,7 @@ class QualifyInterviewModel:
             qualify_interview.is_meningite,
             qualify_interview.is_tuberculose,
             qualify_interview.is_hepatite,
+            qualify_interview.is_outros_infecciosas,
 
             # 2. Neoplasias malignas (câncer)
             qualify_interview.is_aparelho_digestivo_cancer,
@@ -683,21 +725,25 @@ class QualifyInterviewModel:
             qualify_interview.is_pele,
             qualify_interview.is_tireoide,
             qualify_interview.is_trato_urinario_cancer,
+            qualify_interview.is_outros_neoplasias_malignas,
 
             # 3. Neoplasias benignas
             qualify_interview.is_tireoide_benigna,
             qualify_interview.is_genitais_femininos_benigna,
+            qualify_interview.is_outros_neoplasias_benignas,
 
             # 4. Doenças do sangue
             qualify_interview.is_anemia,
             qualify_interview.is_coagulacao_hemofilias,
             qualify_interview.is_purpura,
+            qualify_interview.is_outros_sangue,
 
             # 5. Doenças endócrinas e relacionadas
             qualify_interview.is_diabetes,
             qualify_interview.is_tireoide_endocrina,
             qualify_interview.is_hipofise,
             qualify_interview.is_suprarrenal,
+            qualify_interview.is_outros_endocrinas,
             qualify_interview.peso_kg,
             qualify_interview.altura_cm,
 
@@ -706,6 +752,7 @@ class QualifyInterviewModel:
             qualify_interview.is_autismo,
             qualify_interview.is_depressao,
             qualify_interview.is_transtorno_identidade_sexual,
+            qualify_interview.is_outros_psiquiatricos,
 
             # 7. Doenças do sistema nervoso
             qualify_interview.is_avc,
@@ -717,6 +764,7 @@ class QualifyInterviewModel:
             qualify_interview.is_paralisias_polineuropatias,
             qualify_interview.is_parkinson,
             qualify_interview.is_ame,
+            qualify_interview.is_outros_sistema_nervoso,
 
             # 8. Doenças dos olhos e anexos
             qualify_interview.is_alteracao_retina,
@@ -731,6 +779,7 @@ class QualifyInterviewModel:
             qualify_interview.is_pterigio,
             qualify_interview.is_retinopatia_diabetica,
             qualify_interview.is_presbiopia,
+            qualify_interview.is_outros_olhos,
 
             # 9. Doenças do ouvido, nariz ou garganta
             qualify_interview.is_diminuicao_audicao,
@@ -739,6 +788,7 @@ class QualifyInterviewModel:
             qualify_interview.is_rinite,
             qualify_interview.is_sinusite,
             qualify_interview.is_problemas_adenoide,
+            qualify_interview.is_outros_ouvido_nariz_garganta,
 
             # 10. Doenças do coração
             qualify_interview.is_angina_pectoris,
@@ -749,6 +799,7 @@ class QualifyInterviewModel:
             qualify_interview.is_insuficiencia_cardiaca,
             qualify_interview.is_insuficiencia_coronariana,
             qualify_interview.is_uso_marcapasso,
+            qualify_interview.is_outros_coracao,
 
             # 11. Doenças do sistema circulatório
             qualify_interview.is_aneurismas,
@@ -757,6 +808,7 @@ class QualifyInterviewModel:
             qualify_interview.is_trombose_tromboflebite,
             qualify_interview.is_ulcera_perna,
             qualify_interview.is_varizes,
+            qualify_interview.is_outros_circulatorio,
 
             # 12. Doenças do sistema respiratório
             qualify_interview.is_apneia_sono,
@@ -766,6 +818,7 @@ class QualifyInterviewModel:
             qualify_interview.is_enfisema_dpoc,
             qualify_interview.is_fibrose_pulmonar,
             qualify_interview.is_pneumonia,
+            qualify_interview.is_outros_respiratorio,
 
             # 13. Doenças do sistema digestivo
             qualify_interview.is_cirrose_hepatica,
@@ -777,6 +830,7 @@ class QualifyInterviewModel:
             qualify_interview.is_ulcera_peptica,
             qualify_interview.is_hepatite_digestiva,
             qualify_interview.is_esteatose_hepatica,
+            qualify_interview.is_outros_digestivo,
 
             # 14. Hérnias
             qualify_interview.is_hernia_inguinal,
@@ -784,11 +838,13 @@ class QualifyInterviewModel:
             qualify_interview.is_hernia_umbilical,
             qualify_interview.is_hernia_epigastrica,
             qualify_interview.is_hernia_incisional,
+            qualify_interview.is_outros_hernias,
 
             # 15. Doenças da pele
             qualify_interview.is_tumores_pele,
             qualify_interview.is_nodulos_cistos,
             qualify_interview.is_queloide,
+            qualify_interview.is_outros_pele,
 
             # 16. Doenças osteomusculares e/ou da coluna
             qualify_interview.is_artrite,
@@ -805,6 +861,7 @@ class QualifyInterviewModel:
             qualify_interview.is_reumatismo,
             qualify_interview.is_tendinite,
             qualify_interview.is_dores_coluna,
+            qualify_interview.is_outros_osteomusculares,
 
             # 17. Doenças do aparelho urinário
             qualify_interview.is_calculo_renal,
@@ -812,6 +869,7 @@ class QualifyInterviewModel:
             qualify_interview.is_insuficiencia_renal,
             qualify_interview.is_transplante_renal,
             qualify_interview.is_nefrite_nefrose,
+            qualify_interview.is_outros_urinario,
 
             # 18. Doenças do aparelho genital feminino
             qualify_interview.is_cisto_ovario,
@@ -820,6 +878,7 @@ class QualifyInterviewModel:
             qualify_interview.is_nodulo_mamario,
             qualify_interview.is_prolapso_uterino,
             qualify_interview.is_ruptura_perineal,
+            qualify_interview.is_outros_genital_feminino,
 
             # 19. Doenças do aparelho genital masculino
             qualify_interview.is_esterilidade,
@@ -829,6 +888,7 @@ class QualifyInterviewModel:
             qualify_interview.is_impotencia_sexual,
             qualify_interview.is_testiculo_alto,
             qualify_interview.is_varicocele,
+            qualify_interview.is_outros_genital_masculino,
 
             # 20. Doenças bucomaxilo
             qualify_interview.is_micrognatia,
@@ -837,6 +897,7 @@ class QualifyInterviewModel:
             qualify_interview.is_alteracao_atm,
             qualify_interview.is_ma_formacao_arcada_dentaria,
             qualify_interview.is_uso_aparelho_ortodontico,
+            qualify_interview.is_outros_bucomaxilar,
 
             # 21 a 27. Perguntas gerais
             qualify_interview.is_traumatismos_fraturas,
